@@ -1,0 +1,125 @@
+---
+title: "Writing with R Markdown"
+subtitle: "Practice Set"
+author: "Your Name Here"
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    theme: lumen
+    toc: true
+    toc_float: true
+    toc_depth: 2
+    number_sections: true
+always_allow_html: true
+---
+
+
+```{r include = FALSE}
+knitr::opts_chunk$set(error = T,  echo =  T, eval = T, warning =T, message = T)
+```
+
+
+# Notes: {-}
+
+0. Download $\texttt{R}$ (https://cran.rstudio.com) and $\texttt{RStudio}$ (https://posit.co/download/rstudio-desktop/) in your computer. Alternatively, access $\texttt{RStudio}$ at <https://rstudio.hmcse.uwf.edu>. 
+
+1. Download this file from $\textit{Canvas}$ and open it with $\texttt{RStudio}$.
+
+2. This will be the typical homework format for all the homework assignments in this semester. We are using  $\texttt{R}$ Markdown here, which allows us to type answer as well as display our computation using $\texttt{R}$. Use this assignment to practice writing Markdown.
+
+3. First, we will learn how to author a document:
+  a. See the block at the top of the document between the $``---"$ and $``---"$ syntax. This block is called **YAML** block.
+  b. Write your name beside the ''author'' option above.
+  c. If you want, you can give any title/ subtitle beside the "title" and "subtitle" options.
+  d. I fixed the date as the current system date. No need to change this.
+
+4. Write your answer after my questions. I have marked it with "Write your answer here". 
+5. If your answer needs any $\texttt{R}$ computation, I have created the $\texttt{R}$ code chunks. Alternatively, you can also add a code chunk with the the keyboard shortcut **Ctrl + Alt + I** (Windows) or **Cmd + Option + I** (Mac) or the **Add Chunk** command in the editor toolbar.
+
+6. After writing one answer, please click the **Knit** button, or **Ctrl+Shift+K** (Windows), or **Cmd+Shift+K** (Mac), to compile the document.
+
+7. **Important: Don't wait too long to knit. If there is a mistake, you will find it as soon as it happens.**
+
+8. Now, use the following question to practice writing Markdown.
+
+<br>
+<br>
+
+
+
+# Authoring 
+### Update the document author deatils. Hint: please go to the top of the document (YAML block), find the "author" field, and insert your name within "..." beside it. {-}
+
+Your answer should be at the top of this document.
+
+# Writing plain text.
+
+### a. What is your major? {-}
+
+Write your answer here.
+
+### b. What is your learning goal from this course? {-}
+
+Write your answer here.
+
+
+# Writing $\texttt{R}$ code.
+
+### a. Using $\texttt{R}$, sum any two numbers that you want and show the output. I have given you the sample code below. Make sure to remove ''#'' from the code. {-}
+
+Write your answer within the $\texttt{R}$ code chunk. 
+```{r}
+# x = <<Any number you like>>
+# y = <<Any number you like>>
+# x + y
+```
+
+
+
+
+### b. Load the $\texttt{tidyverse}$ package in $\texttt{R}$. {-}
+
+Write your answer within the $\texttt{R}$ code chunk.
+```{r}
+# Write here. Remember to remove "#"
+# Remember, to load a package, you should use  library("...").
+# If it shows an error in loading (there is no package called ...), the package is not installed. Then you have to install it first using  install.package("...").
+
+```
+
+
+
+
+## Practice everything together
+
+- Now answer the next questions for the $\texttt{mtcars}$ data.
+
+## Q1 - Q2: 
+How many observations and variables do we have?
+
+**Ans:** 
+```{r}
+# Your code here.
+```
+
+There are ... cars and ... variables in the data.
+
+
+## Q3:
+What are the variables (or column names)?
+```{r}
+# Your code here
+```
+
+The column names are ...
+
+## Q6: Plot the "mpg" column against "disp" column?
+```{r}
+# Your code here
+```
+
+
+## Final Instructions
+
+1. Don't forget to knit. 
+2. Download the HTML file. This is what you will submit for homework.

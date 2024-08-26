@@ -1,0 +1,529 @@
+---
+title: "Recap: Part 2"
+subtitle: "Description and Inference"
+author: "Ranadeep Daw"
+date: "`r Sys.Date()`"
+execute:
+  echo: true
+  eval: true
+  warning: false
+  message: false
+output:
+  revealjs::revealjs_presentation:
+    theme: "simple"
+    self_contained: yes
+    mode: selfcontained
+    keep_md: true
+    center: true
+    widescreen: true
+    slide_number: true
+    width: 1600
+    height: 900
+    df-print: paged
+    html-math-method: katex
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = T, warning = F, message = F)
+```
+
+
+
+## Lecture Outline
+
+* Recap of summarization tools
+* Computation
+* Inference
+
+
+# Data Summarization
+
+## Topics
+
+  
+  - Range
+  - Quantiles
+    - Percentiles
+    - Quartiles
+    - Inter-quantile range
+    - Boxplot
+  - Outliers
+  
+
+
+## Range
+
+* *Definition:* The difference between the highest and lowest measurements in a group of data:
+<center> Range = Largest data - smallest data. </center>
+
+* $\texttt{R}$ syntax: Use $\texttt{max(...) - min(...)}$, **not $\texttt{range(...)}$**.
+
+```{r}
+lifespan = c(39, 50, 82, 37, 42, 40, 41, 16, 32)
+range(lifespan)
+max(lifespan) - min(lifespan)
+```
+
+
+
+## Quantiles
+
+* Recall that half the data are above median, and rest of the data are below the median.
+* Similarly, we define the $k$-th quantile of a data as the value below which $k$-th fraction of the data lies.
+* $\texttt{R}$ syntax: 
+```{r eval=F} 
+quantile(vector, quantile) 
+```
+
+## Percentiles
+
+* *Notation*: The $k$-th percentile is denoted with $P_k$.
+* *Definition*: $k\%$ of the data are less than or equal to $P_k$.
+* *Note*: Median is the $50$-th percentile.
+* *Example:* Finding $30$-th percentile of the lifespan example.
+```{r} 
+lifespan = c(39, 50, 82, 37, 42, 40, 41, 16, 32)
+quantile(lifespan, 0.30) 
+```
+
+
+## Quartiles
+
+* When the data is divided into $4$ equal parts, we talk about quartiles:
+  - $Q_1$: $\frac{1}{4}$ of all the data are $\leq$ 1st quartile.
+  - $Q_2$: $\frac{1}{2}$ of all the data are $\leq$ 2nd quartile.
+  - $Q_3$: $\frac{3}{4}$ of all the data are $\leq$ 3rd quartile.
+  
+  
+  
+## Quartiles vs Percentiles
+
+* $Q_1$ is the $25$-th percentile (or $P_{25}$).
+* $Q_2$ is the $50$-th percentile, or the median (or $P_{50}$).
+* $Q_3$ is the $75$-th percentile (or $P_{75}$).
+
+
+## Inter-quartile range (IQR)
+* *Definition*: $IQR$ = 3rd Quartile - 1st Quartile = $Q_3 - Q_1$.
+* $\texttt{R}$ syntax:
+```{r eval=F}
+quantile(<vector_name>, 0.25) #1st quartile
+quantile(<vector_name>, 0.50) #2nd quartile
+quantile(<vector_name>, 0.75) #3rd quartile
+quantile(<vector_name>, c(0.25, 0.5, 0.75)) #All quartiles
+IQR(<vector_name>)
+```
+
+
+
+## Example: Quartiles and IQR of lifespan example
+
+```{r}
+lifespan = c(39, 50, 82, 37, 42, 40, 41, 16, 32)
+# All quartiles
+quantile(lifespan, c(0.25, 0.50, 0.75))
+
+#IQR
+IQR(lifespan)
+
+```
+
+
+
+
+
+
+
+## Boxplot
+
+* A box plot (or box-and-whisker plot) displays the distribution of data based on a five-number summary: the minimum, first quartile ($Q_1$), median ($Q_2$), third quartile ($Q_3$), and maximum. 
+
+* Helps in plotting the quantiles and check *outliers*.
+
+* $\texttt{R}$ syntax:
+
+```{r eval=F}
+boxplot(<vector_name>)
+```
+
+
+
+## Example:
+
+* Let's try the $\texttt{mtcars}$ data and plot the boxplot of the weights (column name $\texttt{wt}$).
+
+
+```{r out.width="40%", out.height="40%"}
+data("mtcars")
+weights = mtcars$wt
+boxplot(weights)
+```
+
+
+## Check the answers
+
+```{r}
+quantile(weights, c(0.25, 0.5, 0.75)) # 3 quantiles
+cat("Min= ", min(weights), ", Max=", max(weights))
+cat("Upper fence: ", quantile(weights, 0.75) + 1.5 * IQR(weights)) 
+```
+
+
+
+
+
+
+## Outliers
+
+
+* *Definition*: An outlier is a data (or set of data points) that differs significantly from the other observations in the sample, raising doubts about whether it truly belongs to the sample.
+
+* Outliers heavily effect some statistics, e.g., mean, variance, range.
+* Median, IQR, quantiles are relatively robust to outliers.
+
+
+
+## Example 
+
+* Suppose a dataset on 20-week-old mallard ducks shows the following record in kg: ^[source: Biostatistical Analysis, Prentice Hall].
+<center> 1.87,3.75,3.79,3.82,3.85,3.87.3.90.3.94,3.96,3.99,
+3.99,4.00,4.03,4.04,4.05,4.06,4.09,8.97, 39.8 </center>
+
+
+* Except the last point, the range of the data is between 1.87 and 8.97.
+
+* Just by scanning, $39.8$ kg is clearly an outlier here.
+
+
+
+## Quartile method for Outlier Detection 
+
+* We can detect outliers using quartiles and IQR:
+  - Anything below lower fence = $Q_1 - 1.5*IQR$.
+  - Anything above upper fence = $Q_3 + 1.5*IQR$.
+  
+## Example
+
+```{r}
+weights = c(1.87,3.75,3.79,3.82,3.85,3.87,3.90,3.94,3.96,3.99, 3.99,4.00,4.03,4.04,4.05,4.06,4.09,8.97,39.8)
+Q_1 = quantile(weights, 0.25)
+Q_3 = quantile(weights, 0.75)
+iqr = IQR(weights)
+outlier_lower_fence = Q_1 - 1.5* iqr #outlier lower bound
+outlier_upper_fence = Q_3 + 1.5* iqr #outlier upper bound
+outlier_lower_fence
+outlier_upper_fence
+```
+
+
+## Example (cont.)
+
+* How many outliers on the lower side?
+  - <span style="color: red;">Anything below or lower than the lower fence.</span>
+  
+```{r}
+sum(weights < outlier_lower_fence)
+```
+
+
+* How many outliers on the upper side?
+  - <span style="color: red;">Anything above or greater than the upper fence.</span>
+  
+```{r}
+sum(weights > outlier_upper_fence)
+```
+
+## Example with $\texttt{boxplot}$ 
+
+```{r out.width="50%", out.height="50%"}
+boxplot(weights)
+```
+
+* Doesn't show very well, but clearly detects the outliers.
+
+## Effect of Outliers
+
+* Heavy effect on mean, variance, range.
+* Does not affect much median, IQR.
+
+
+## Example with Duck Weights
+
+
+```{r}
+weights = c(1.87,3.75,3.79,3.82,3.85,3.87,3.90,3.94,3.96,3.99, 
+            3.99,4.00,4.03,4.04,4.05,4.06,4.09,8.97,39.8)
+weights_no_outliers =  c(3.75,3.79,3.82,3.85,3.87,3.90,3.94,3.96,3.99, 
+                         3.99,4.00,4.03,4.04,4.05,4.06,4.09)
+mean_with_outliers = mean(weights)
+mean_without_outliers = mean(weights_no_outliers)
+median_with_outliers  = median(weights)
+median_without_outliers = median(weights_no_outliers)
+cat("Mean with outliers = ", mean_with_outliers, "\n", 
+    "Mean without outliers = ", mean_without_outliers, "\n",
+    "Median with outliers = ", median_with_outliers, "\n", 
+    "Median without outliers = ", median_without_outliers)
+```
+
+
+## Example with duck weights
+
+* Let's compare the effect on variance, range, and inter-quartile range in class.
+  - Variance - heavily affected.
+
+```{r}
+weights = c(1.87,3.75,3.79,3.82,3.85,3.87,3.90,3.94,3.96,3.99, 
+            3.99,4.00,4.03,4.04,4.05,4.06,4.09,8.97,39.8)
+weights_no_outliers =  c(3.75,3.79,3.82,3.85,3.87,3.90,3.94,3.96,3.99, 
+                         3.99,4.00,4.03,4.04,4.05,4.06,4.09)
+
+var(weights)
+var(weights_no_outliers)
+```
+
+
+## IQR
+IQR - not affected.
+
+```{r}
+
+IQR(weights) # Without outlier
+IQR(weights_no_outliers) # With outlier
+
+```
+
+
+## Range
+Range - again heavily affected.
+
+```{r}
+
+max(weights) - min(weights) # Without outlier
+max(weights_no_outliers) - min(weights_no_outliers) # With outlier
+```
+
+
+
+
+
+
+
+## Summarization so far
+
+* We learnt
+  - Mean
+  - Median
+  - Variance, Standard deviation
+  - Quantiles
+  - IQR
+  - Range
+  - Outliers
+  - Boxplot
+  
+* <span style="color: red;">Still need to learn
+  - Frequency table
+  - Histogram </span>
+
+
+
+# Inference
+
+
+## Why Inference?
+
+* Can we analyze/ describe the grades data on the current UWF students?
+  - <span style="color: red;"> Yes, UWF stores all the data.</span>
+  
+* Can we analyze/ describe the data on salary of the past UWF students?
+  - <span style="color: red;"> Unlikely for UWF to have ALL the data.</span>
+
+
+
+## Why Inference?
+
+* Q1: Suppose I tossed a coin 10 times. I got 6 Heads, 4 Tails. Is it fair (equal chance of heads or tails)?
+
+
+* Q2: Now, suppose I tossed it 100 times. I got 62 Heads, 38 Tails. Is it still fair?
+
+
+* Q3: Now, suppose I tossed it 10000 times. I got 6348 Heads, 3652 Tails. Is it still fair?
+
+
+## Why Inference? (contd.)
+* Q1: Suppose I tossed a coin 10 times. I got 6 Heads, 4 Tails. Is it fair (equal chance of heads or tails)?
+  - <span style="color: red;">So far, not enough evidence to say unfair. </span>
+
+
+* Q2: Now, suppose I tossed it 100 times. I got 64 Heads, 36 Tails. Is it still fair?
+  - <span style="color: red;"> Slightly *likely* unfair.</span>
+
+
+* Q3: Now, suppose I tossed it 10000 times. I got 6348 Heads, 3652 Tails. Is it still fair?
+  - <span style="color: red;"> Really *likely* unfair.</span>
+
+
+
+## Population vs Sample
+
+1. **Population** is the entire group of data or objects about which one wishes to draw conclusions.
+2. **Sample** is a subset of the population.
+3. *Example:*  Ecologists collected data on 100 grasshoppers over Pensacola and want to study the properties: 
+  - *Population:* All the grasshoppers in Pensacola.
+  - *Sample:* Only the collected 100 grasshoppers.
+
+
+## Population vs Sample (contd.)
+
+* We usually don't have access to the entire population.
+* Samples are used to draw conclusions about population.
+* This is the basis of statistical inference, where we draw conclusion about the unknown population from the sample.
+
+
+
+
+## Parameter vs Statistic
+
+- **Statistic**: A statistic is an entity that describes a characteristic of a sample.
+  - Example: Sample mean, variance, median.
+  - Given a sample, we typically know this.
+  
+
+## Parameter vs Statistic (cont.)
+
+- **Parameter**: A quantity is called a parameter when it describes or characterizes the entire population.
+  - Example: Population mean, population variance.
+  - Since we don't have access to the entire population, parameter is typically unknown to the statisticans.
+  - We try to **estimate** a parameter with a sample statistic.
+
+
+## Statistical Inference
+
+Things to learn:
+  
+  - Probability
+  - Probability Distribution
+  - Estimation
+  - Confidence intervals
+  - Hypothesis testing
+
+
+
+
+
+## Probability
+
+* A mathematical concept to analyze the chance or likelihood of an event/realization.
+* Probability of an event: $$\mathbb{P}(E) = \frac{\text{Number of times the event can occurr/occurred}}{\text{Total number of possible outcomes}}$$
+* Sample space ($\Omega$): A set of all possible events or realizations.
+
+
+## Properties of Probability
+
+1. $0 \leq \mathbb{P}(E) \leq 1$.
+2. $\mathbb{P}(\Omega) = 1$.
+3. Mutual exclusiveness: Two events $A$ and $B$ are mutually exclusive if $\mathbb{P}(A \text{ or } B) = \mathbb{P}(A) + \mathbb{P}(B)$.
+  - Example: Heads and Tails in a coin toss
+
+
+## Random Variable and Probability Distribution
+
+* Recall random variables - outcomes of an experiment.
+* Suppose we have a variable $X$, with possible realizations (or sample space) $\Omega  = \{x_1, \cdots, x_n\}$.
+* Random variables assigns probability to each of the possible event/ realization as below:
+\begin{align*}
+p_1 &= \mathbb{P}(X = x_1) \\
+&\cdots \\
+p_n &= \mathbb{P}(X = x_n)
+\end{align*}
+
+## Probability Distribution
+
+
+* This is called the <span style="color:blue;">*Probability distribution*</span> of the variable.
+
+* Also we define:
+  - <span style="color:blue;">Expectation or $\mathbb{E}(X)$</span>: Mean of X.
+  - <span style="color:blue;">Variance or $\mathbb{V}(X)$</span>: Variance of X.
+  
+  
+## Example: Coin toss
+
+* *Variable*: $X$ = Outcome of a coin toss
+* *Sample space*: $\Omega = H, T$.
+* *Probability distribution*:
+  \begin{align*}
+  \mathbb{P}(X = H) = p \\
+  \mathbb{P}(X = T) = 1-p \\
+  \end{align*}
+
+  
+## Example: Die roll
+
+
+* *Variable*: $X$ = Outcome of a die roll.
+* *Sample space*: $\Omega = \{1, 2, 3, 4, 5, 6\}$.
+* *Probability distribution*:
+  \begin{align*}
+  \mathbb{P}(X = 1) &=  p_1\\
+  \mathbb{P}(X = 2) &=  p_2\\
+  \mathbb{P}(X = 1) &=  p_3\\
+  \mathbb{P}(X = 2) &=  p_4\\
+  \mathbb{P}(X = 5) &=  p_5\\
+  \mathbb{P}(X = 6) &=  p_6 = 1 - (p_1 + p_2 + p_3 + p_4 + p_5)
+  \end{align*}
+  
+  
+## Binomial Distribution: Coin toss
+
+* Take the coin toss example. Suppose I am tossing it 10000 times and got 6348 Head, 3652 Tails.
+* Each toss has **two** possible outcomes - H and T.
+* Two different tosses are independent of each other, i.e., outcome of a new toss does not depend on the old toss.
+* These are the conditions that are required for Binomial distribution (we will revisit in details later).
+
+
+
+## Coin toss (contd.)
+
+* We want to draw inference on the true probability of head, call it $p$.
+* <span style="color:blue;"> However, we can never know true value of $p$.</span>
+* Can we try to guess from our examples?
+  - Yes, we can reasonably estimate the **population parameter** here with a **sample statistic**.
+  
+  
+## Estimation of $p$: Coin toss examples
+
+1. Case 1: $6$ heads out of $10$ tosses: $$\hat{p} = 6/10 = 0.6$$
+2. Case 2: $64$ heads out of $100$ tosses: $$\hat{p} = 64/100 = 0.64$$
+3. Case 3: $6348$ heads out of $10000$ tosses: $$\hat{p} = 6348/10000 = 0.6348$$
+
+
+## Note
+
+* Our guess or estimation can never be exactly correct, but it may "tell a story" about the chance of head.
+  - <span style="color:red;">"All models are wrong, but some are useful."</span> ~  George E. P. Box
+
+* True $p$ is still never known.
+  - Never write $p = 0.6$ since this is unknown.
+  - Always write $\hat{p} = 0.6$, since you estimate this from the data.
+
+
+## Note (cont.)
+
+
+* If we draw different samples from the same population, the population parameter remains the same. 
+* The sample estimates change with different samples.
+  
+* A good sample and a reasonable estimator together can give us some idea about the truth:
+  - We can estimate the probability of head with $\hat{p} = 5$, but it's not a reasonable one.
+  - We can use a sample of athletes to analyze average blood cholesterol content over the USA, but it is not a good representative sample.
+
+
+
+## Next Class
+
+
+* How can we quantify how good estimates are?
+  - Confidence interval
+* Hypothesis testing
+* Normal distribution - even easier to deal than binomial example.

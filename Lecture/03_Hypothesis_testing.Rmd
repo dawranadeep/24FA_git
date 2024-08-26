@@ -1,0 +1,49 @@
+---
+title: "Inference"
+subtitle: "Confidence Interval and Hypothesis Testing"
+author: "Ranadeep Daw"
+date: "`r Sys.Date()`"
+execute:
+  echo: true
+  eval: true
+  warning: false
+  message: false
+output:
+  revealjs::revealjs_presentation:
+    theme: "simple"
+    self_contained: yes
+    mode: selfcontained
+    keep_md: true
+    center: true
+    widescreen: true
+    slide_number: true
+    width: 1600
+    height: 900
+    df-print: paged
+    html-math-method: katex
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = T, warning = F, message = F)
+```
+
+
+
+## Lecture Outline
+
+* Normal distribution
+* Estimation
+* Confidence interval
+* Hypothesis testing
+
+
+## Probability Distribution
+
+* Defined over the entire real line $(-\infty, \infty)$.
+* The probability density function looks like the following:
+
+```{r echo=F, out.height=400}
+x = seq(-4, 4, , 1000)
+y = dnorm(x)
+plot(x, y, cex = 0.5, xlab="x", ylab = "Density")
+```
