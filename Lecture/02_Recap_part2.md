@@ -2,7 +2,7 @@
 title: "Recap: Part 2"
 subtitle: "Description and Inference"
 author: "Ranadeep Daw"
-date: "2024-08-26"
+date: "2024-08-27"
 execute:
   echo: true
   eval: true
@@ -137,25 +137,6 @@ IQR(<vector_name>)
 ## Example: Quartiles and IQR of lifespan example
 
 
-``` r
-lifespan = c(39, 50, 82, 37, 42, 40, 41, 16, 32)
-# All quartiles
-quantile(lifespan, c(0.25, 0.50, 0.75))
-```
-
-```
-## 25% 50% 75% 
-##  37  40  42
-```
-
-``` r
-#IQR
-IQR(lifespan)
-```
-
-```
-## [1] 5
-```
 
 
 
@@ -407,21 +388,6 @@ IQR(weights_no_outliers) # With outlier
 Range - again heavily affected.
 
 
-``` r
-max(weights) - min(weights) # Without outlier
-```
-
-```
-## [1] 37.93
-```
-
-``` r
-max(weights_no_outliers) - min(weights_no_outliers) # With outlier
-```
-
-```
-## [1] 0.34
-```
 
 
 
