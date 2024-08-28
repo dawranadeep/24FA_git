@@ -2,7 +2,7 @@
 title: "Inference"
 subtitle: "Confidence Interval and Hypothesis Testing"
 author: "Ranadeep Daw"
-date: "2024-08-26"
+date: "2024-08-28"
 execute:
   echo: true
   eval: true
@@ -10,7 +10,7 @@ execute:
   message: false
 output:
   revealjs::revealjs_presentation:
-    theme: "simple"
+    theme: "solar"
     self_contained: yes
     mode: selfcontained
     keep_md: true
@@ -102,7 +102,7 @@ output:
 
 * Even if we have only $3$ observations, we can estimate both $\mu$ and $\sigma^2$.
 * But, are they any good? How confident are we?
-* To analyze our confidence in the estimate, we need to study confidence interval.
+* To analyze the reliability of the estimate, we use confidence interval.
 
 
 ## CI (contd.)
@@ -217,8 +217,279 @@ c(lower, upper)
 
 
 
-## Hypothesis Testing
+## Hypothesis Testing : Motivation
 
-* What is a hypothesis?
-  - 
+* Recall our coin toss example. 
+
+  - 6 H out of 10 tosses: We should not be able to conclude cheating.
+  - 6348 H out of 10000 tosses: We should be able to conclude cheating.
+  
+* Hypothesis testing helps quantify such decision making.
+
+
+
+* A statistical method to draw conclusions or inferences about a population parameter based on sample data and statistics. 
+
+* Recall: Population parameters are unknown; we want to guess them from the samples.
+
+
+## Hypotheses
+
+* **Hypothesis**: A claim about the unknown population parameter.
+  - Example: In the above coin toss example, I suspect that probability of a Head (p) = 0.6
+  - Careful: <span style="color:blue;">Hypothesis is about population parameters; never about the sample statistics.</span>
+
+* We typically test two hypotheses: Null hypothesis ($H_0$) and Alternate hypothesis ($H_A$).
+
+## Null vs Alternate
+
+  - **Null hypothesis** ($H_0$): Starting claim or belief about the population parameter.
+    - It is true until you have proof that it is false.
+  - **Alternate hypothesis** ($H_A$): Another statement about the parameter. It is assumed to be true when we have evidence that $H_0$ is false.
+    - We either reject $H_0$ (enough evidence that it's false) or we <span style = "color:limegreen">fail to reject</span> $H_0$. *We never accept $H_0$.*
+  
+
+
+## Graphical representation
+
+![](03_Hypothesis_testing_files/figure-revealjs/unnamed-chunk-7-1.png)<!-- -->
+
+
+
+
+## Two-sided test
+
+- $H_0$: $\mu$ = $m$, $H_A$: $\mu$ $\neq$ $m$.
+- Critical region is two sided: $\hat{\mu} \leq c_1$ or $\hat{\mu} \geq c_2$.
+
+
+<img src="03_Hypothesis_testing_files/figure-revealjs/unnamed-chunk-8-1.png" width="500" />
+
+##  One-sided test: Case 1
+
+- $H_0$: $\mu$ $\leq$ (or $=$) $m$, $H_A$: $\mu$ $\geq$ $m$.
+- Critical region is one sided: $\hat{\mu} \geq c$.
+
+
+
+<img src="03_Hypothesis_testing_files/figure-revealjs/unnamed-chunk-9-1.png" width="500" />
+
+
+
+##  One-sided test: Case 2
+
+- $H_0$: $\mu$ $\geq$ (or $=$) $m$, $H_A$: $\mu$ $\leq$ $m$.
+- Critical region is one sided: $\hat{\mu} \leq c$.
+
+
+
+<img src="03_Hypothesis_testing_files/figure-revealjs/unnamed-chunk-10-1.png" width="500" />
+
+
+
+## Example 1
+
+1. Recall the mallard duck weights example from last class. I want to test if the average weight of mallard ducks is 4kg or not.
+  - One or two tailed? 
+  - $H_0$: ?
+  - $H_A$: ?
+  - How would the critical region look like? 
+  
+## Example 1 (contd.)
+
+1. Recall the mallard duck weights example from last class. I want to test if the average weight of mallard ducks is 4kg or not.
+  - One or two tailed? <span style="color:red"> Two tailed</span>
+  - $H_0$:  <span style="color:red"> $\mu = 4$.</span>
+  - $H_A$:  <span style="color:red"> $\mu \neq 4$ </span>
+  - How would the critical region look like? <span style="color:red">$\hat{\mu} \leq c_1$  or $\hat{\mu} \geq c_2$</span>.
+
+
+
+## Example 2
+
+2. I believe that the average old car price is Pensacola is **less than** $\$15000.00$.
+
+  - One or two tailed? 
+  - $H_0$: ?
+  - $H_A$: ?
+  - How would the critical region look like? 
+  
+   
+## Example 2
+
+2. I believe that the average old car price is Pensacola is less than $\$15000.00$. How can I do a hypothesis test?
+
+  - One or two tailed? <span style="color:red"> One-tailed.</span>
+  - $H_0$: <span style="color:red"> $\mu \geq 15000.00$.</span>
+  - $H_A$: <span style="color:red"> $\mu \leq 15000.00$.</span>
+  - How would the critical region look like? <span style="color:red">$\hat{\mu} \leq c$</span>.
+  
+
+## Testing Errors
+
+
+Table: Type I and Type II Errors in Hypothesis Testing
+
+|                     |$H_0$ True                                                     |$H_0$ False                                                   |
+|:--------------------|:--------------------------------------------------------------|:-------------------------------------------------------------|
+|Fail to Reject $H_0$ |<span style='color:green;'>Correct Decision</span>             |<span style='color:red;'>Type I Error (False Positive)</span> |
+|Reject $H_0$         |<span style='color:red;'>Type II Error (False Negative)</span> |<span style='color:green;'>Correct Decision</span>            |
+
+
+
+## Details of Hypothesis Testing
+
+* Define the **significance level** $\alpha$ = $\mathbb{P}$(Type I error).
+* Define $\beta$ = $\mathbb{P}$(Type II error).
+* We want to minimize both, but never possible.
+* We first fix $\alpha$, typical values are $0.01, 0.05, 0.10$. 
+* Then we try to minimize $\beta$, or maximize **Power** = $1 - \beta$.
+
+
+## Revisit Example 2.
+
+* I believe that the average old car price is Pensacola is less than $\$15000.00$.
+* I am testing $H_0$: $\mu \geq 15000.00$, vs $\mu \leq 15000.00$.
+  - What is a Type 1 error here?
+  - What is a Type 2 error here?
+  
+## Revisit Example 2.
+
+* I believe that the average old car price is Pensacola is less than $\$15000.00$.
+* I am testing $H_0$: $\mu \geq 15000.00$, vs $\mu \leq 15000.00$.
+  - What is a Type 1 error here?
+    * <span style="color:blue"> When $\mu$, the average old car price, is $\geq 15000.00$, but my hypothesis testing concludes that it is $\leq 15000.00$.
+  - What is a Type 2 error here?
+    * <span style="color:blue"> When $\mu$, the average old car price, is $\leq 15000.00$, but my hypothesis testing concludes that it is $\leq 15000.00$.
+
+
+
+## Test statistic and Critical Region
+* <span style="color:blue"> Step 1: State your hypothesis</span>.
+* <span style="color:blue"> Step 2: Fix significance level $\alpha$</span>.
+* Step 3: Compute the following two numbers:
+  * Construct a statistic from the sample, known as **Test Statistic**. 
+  * **Critical region** is the range of values of the test statistic that will lead to the rejection of the null hypothesis.
+
+
+## Final step
+
+* If statistic lies in the critical region, reject $H_0$.
+* Otherwise, <span style="color:red"> not enough evidence to reject $H_0$.</span>
+
+
+## p-value
+
+
+- **Definition:** The p-value is the probability of obtaining test results at least as extreme as the observed data, assuming the null hypothesis ($H_0$) is true.
+- It quantifies the strength of the evidence against $H_0$.
+- **p-value $\leq \alpha$**: Reject $H_0$ (Evidence suggests against null)
+- **p-value $\geq \alpha$**: Fail to reject $H_0$
+
+
+
+
+## p-value for two-sided test
+
+$H_0$: $\mu$ = $m$, $H_A$: $\mu$ $\neq$ $m$.
+
+<img src="03_Hypothesis_testing_files/figure-revealjs/p_value_plot-1.png" style="display: block; margin: auto;" />
+
+
+
+## p-value for one-sided test
+
+$H_0$: $\mu$ = $m$, $H_A$: $\mu$ $\geq$ $m$.
+
+<img src="03_Hypothesis_testing_files/figure-revealjs/unnamed-chunk-12-1.png" style="display: block; margin: auto;" />
+
+
+
+
+
+
+## p-value for one-sided test
+
+$H_0$: $\mu$ = $m$, $H_A$: $\mu$ $\leq$ $m$.
+
+<img src="03_Hypothesis_testing_files/figure-revealjs/unnamed-chunk-13-1.png" style="display: block; margin: auto;" />
+
+
+
+## $\texttt{R} syntax
+
+
+
+``` r
+t.test(<vector>, alternative = <alternative>, 
+       mu = <your_null_assumption>, conf.level = <1 - alpha>)
+```
+
+* For two-sided test, \<alternative\> = "two.sided".
+* For one-sided test, \<alternative\> = "less" or "greater", depending on your test.
+
+
+
+## Hypothesis Testing: $\texttt{mtcars}$ data
+
+* Let's test that the average mpg is 18.
+* $H_0$: $\mu = 18$ vs $\mu \neq 18$.
+* Use $\alpha = 0.05$.
+* Here \<alternate\> = "two.sided" in the $\texttt{R}$ code.
+
+## Example (contd.)
+
+
+``` r
+data("mtcars")
+MPG = mtcars$mpg
+t.test(MPG, alternative = "two.sided",
+       mu = 18, conf.level = 0.95)
+```
+
+```
+## 
+## 	One Sample t-test
+## 
+## data:  MPG
+## t = 1.9622, df = 31, p-value = 0.05876
+## alternative hypothesis: true mean is not equal to 18
+## 95 percent confidence interval:
+##  17.91768 22.26357
+## sample estimates:
+## mean of x 
+##  20.09062
+```
+
+
+
+## Hypothesis Testing: $\texttt{mtcars}$ data
+
+* Let's test that the average mpg is less than 18.
+* $H_0$: ??
+* Use ??
+* Here \<alternate\> = ?? in the $\texttt{R}$ code.
+
+## Example (contd.)
+
+
+``` r
+data("mtcars")
+MPG = mtcars$mpg
+t.test(MPG, alternative = "two.sided",
+       mu = 18, conf.level = 0.95)
+```
+
+
+
+
+
+## Key Takeaway
+
+* Null hypothesis is assumed true until otherwise proved.
+* Fix $\alpha$ =  $\mathbb{P}$(Type 1 error) = $\mathbb{P}$(Reject $H_0$ when it is true).
+* Minimize $\beta$ = $\mathbb{P}$(Type 2 error) = $\mathbb{P}$(Not reject $H_0$ when it is not true).
+* If p-value < $\alpha$, we have evidence to reject $H_0$. 
+* Otherwise, <span style="color:blue;"> not enough evidence to reject $H_0$. </span>
+
 

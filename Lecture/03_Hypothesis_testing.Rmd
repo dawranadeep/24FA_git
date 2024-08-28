@@ -10,7 +10,7 @@ execute:
   message: false
 output:
   revealjs::revealjs_presentation:
-    theme: "simple"
+    theme: "solar"
     self_contained: yes
     mode: selfcontained
     keep_md: true
@@ -144,7 +144,7 @@ print(p)
 
 * Even if we have only $3$ observations, we can estimate both $\mu$ and $\sigma^2$.
 * But, are they any good? How confident are we?
-* To analyze our confidence in the estimate, we need to study confidence interval.
+* To analyze the reliability of the estimate, we use confidence interval.
 
 
 ## CI (contd.)
@@ -241,8 +241,528 @@ c(lower, upper)
 
 
 
-## Hypothesis Testing
+## Hypothesis Testing : Motivation
 
-* What is a hypothesis?
-  - 
+* Recall our coin toss example. 
+
+  - 6 H out of 10 tosses: We should not be able to conclude cheating.
+  - 6348 H out of 10000 tosses: We should be able to conclude cheating.
+  
+* Hypothesis testing helps quantify such decision making.
+
+
+
+* A statistical method to draw conclusions or inferences about a population parameter based on sample data and statistics. 
+
+* Recall: Population parameters are unknown; we want to guess them from the samples.
+
+
+## Hypotheses
+
+* **Hypothesis**: A claim about the unknown population parameter.
+  - Example: In the above coin toss example, I suspect that probability of a Head (p) = 0.6
+  - Careful: <span style="color:blue;">Hypothesis is about population parameters; never about the sample statistics.</span>
+
+* We typically test two hypotheses: Null hypothesis ($H_0$) and Alternate hypothesis ($H_A$).
+
+## Null vs Alternate
+
+  - **Null hypothesis** ($H_0$): Starting claim or belief about the population parameter.
+    - It is true until you have proof that it is false.
+  - **Alternate hypothesis** ($H_A$): Another statement about the parameter. It is assumed to be true when we have evidence that $H_0$ is false.
+    - We either reject $H_0$ (enough evidence that it's false) or we <span style = "color:limegreen">fail to reject</span> $H_0$. *We never accept $H_0$.*
+  
+
+
+## Graphical representation
+
+```{r echo=F}
+# Set up parameters
+mu0 <- 0  # Null hypothesis mean
+sigma <- 1.5  # Standard deviation
+n <- 10  # Sample size
+alpha <- 0.05  # Significance level (two-tailed)
+
+# Critical values for a two-tailed test
+z_alpha <- qnorm(1 - alpha/2)
+lower_critical_value <- mu0 - z_alpha * sigma / sqrt(n)
+upper_critical_value <- mu0 + z_alpha * sigma / sqrt(n)
+
+# Generate x values for the plot
+x <- seq(-3, 3, length=1000)
+y <- dnorm(x, mean=mu0, sd=sigma/sqrt(n))
+
+# Plot the normal distribution under H0
+plot(x, y, type="l", lwd=2, col="blue", xaxt='n', yaxt='n', 
+     main="Normal Mean Hypothesis Test", 
+     xlab="", ylab="")
+
+# Highlight the critical regions
+abline(v=lower_critical_value, col="red", lwd=2, lty=2)
+abline(v=upper_critical_value, col="red", lwd=2, lty=2)
+polygon(c(x[x<=lower_critical_value], lower_critical_value), 
+        c(y[x<=lower_critical_value], 0), 
+        col=rgb(1, 0, 0, 0.5), border=NA)
+polygon(c(x[x>=upper_critical_value], upper_critical_value), 
+        c(y[x>=upper_critical_value], 0), 
+        col=rgb(1, 0, 0, 0.5), border=NA) 
+
+# Add the observed sample mean
+observed_mean1 <- 1.5  # Example observed mean
+points(observed_mean1, 0, col="green", pch=19, cex=2)
+abline(v=observed_mean1, col="green", lwd=2, lty=2)
+
+
+# Add the observed sample mean
+observed_mean2 <- 0.4  # Example observed mean
+points(observed_mean2, 0, col="purple", pch=19, cex=2)
+abline(v=observed_mean2, col="purple", lwd=2, lty=2)
+
+# Add a legend
+legend("topright", legend=c("Null Distribution", 
+                            "Critical Region", 
+                            "Reject", "Can't reject"), 
+       col=c("blue", "red", "green", "purple"), 
+       lwd=2, lty=c(1, 2, 2, 2), pch=c(NA, NA, 19, 19), bty="n")
+```
+
+
+
+
+## Two-sided test
+
+- $H_0$: $\mu$ = $m$, $H_A$: $\mu$ $\neq$ $m$.
+- Critical region is two sided: $\hat{\mu} \leq c_1$ or $\hat{\mu} \geq c_2$.
+
+
+```{r echo=F, out.width=500}
+# Set up parameters
+mu0 <- 0  # Null hypothesis mean
+sigma <- 1.5  # Standard deviation
+n <- 10  # Sample size
+alpha <- 0.05  # Significance level (two-tailed)
+
+# Critical values for a two-tailed test
+z_alpha <- qnorm(1 - alpha/2)
+lower_critical_value <- mu0 - z_alpha * sigma / sqrt(n)
+upper_critical_value <- mu0 + z_alpha * sigma / sqrt(n)
+
+# Generate x values for the plot
+x <- seq(-3, 3, length=1000)
+y <- dnorm(x, mean=mu0, sd=sigma/sqrt(n))
+
+# Plot the normal distribution under H0
+plot(x, y, type="l", lwd=2, col="blue", xaxt='n', yaxt='n', 
+     main="Normal Mean Hypothesis Test", 
+     xlab="", ylab="")
+axis(side=1, at = c(lower_critical_value, mu0, upper_critical_value), labels = c(expression(c_1), expression(m), expression(c_2)))
+
+# Highlight the critical regions
+abline(v=lower_critical_value, col="red", lwd=2, lty=2)
+abline(v=upper_critical_value, col="red", lwd=2, lty=2)
+polygon(c(x[x<=lower_critical_value], lower_critical_value), 
+        c(y[x<=lower_critical_value], 0), 
+        col=rgb(1, 0, 0, 0.5), border=NA)
+polygon(c(x[x>=upper_critical_value], upper_critical_value), 
+        c(y[x>=upper_critical_value], 0), 
+        col=rgb(1, 0, 0, 0.5), border=NA) 
+
+
+# Add a legend
+legend("topright", legend=c("Null Distribution", 
+                            "Critical Region"), 
+       col=c("blue", "red"), 
+       lwd=2, lty=c(1, 2 ), pch=c(NA, NA), bty="n")
+```
+
+##  One-sided test: Case 1
+
+- $H_0$: $\mu$ $\leq$ (or $=$) $m$, $H_A$: $\mu$ $\geq$ $m$.
+- Critical region is one sided: $\hat{\mu} \geq c$.
+
+
+
+```{r echo=F, out.width=500}
+# Set up parameters
+mu0 <- 0  # Null hypothesis mean
+sigma <- 1.5  # Standard deviation
+n <- 10  # Sample size
+alpha <- 0.05  # Significance level (two-tailed)
+
+# Critical values for a two-tailed test
+z_alpha <- qnorm(1 - alpha)
+critical_value <- mu0 + z_alpha * sigma / sqrt(n)
+
+# Generate x values for the plot
+x <- seq(-3, 3, length=1000)
+y <- dnorm(x, mean=mu0, sd=sigma/sqrt(n))
+
+# Plot the normal distribution under H0
+plot(x, y, type="l", lwd=2, col="blue", xaxt='n', yaxt='n', 
+     main="Normal Mean Hypothesis Test", 
+     xlab="", ylab="")
+axis(side=1, at = c(mu0, critical_value), labels = c(expression(m), expression(c)))
+
+# Highlight the critical regions
+abline(v=critical_value, col="red", lwd=2, lty=2)
+polygon(c(x[x>=critical_value], critical_value), 
+        c(y[x>=critical_value], 0), 
+        col=rgb(1, 0, 0, 0.5), border=NA) 
+
+
+# Add a legend
+legend("topright", legend=c("Null Distribution", 
+                            "Critical Region"), 
+       col=c("blue", "red"), 
+       lwd=2, lty=c(1, 2 ), pch=c(NA, NA), bty="n")
+```
+
+
+
+##  One-sided test: Case 2
+
+- $H_0$: $\mu$ $\geq$ (or $=$) $m$, $H_A$: $\mu$ $\leq$ $m$.
+- Critical region is one sided: $\hat{\mu} \leq c$.
+
+
+
+```{r echo=F, out.width=500}
+# Set up parameters
+mu0 <- 0  # Null hypothesis mean
+sigma <- 1.5  # Standard deviation
+n <- 10  # Sample size
+alpha <- 0.05  # Significance level (two-tailed)
+
+# Critical values for a two-tailed test
+z_alpha <- qnorm(1 - alpha)
+critical_value <- mu0 - z_alpha * sigma / sqrt(n)
+
+# Generate x values for the plot
+x <- seq(-3, 3, length=1000)
+y <- dnorm(x, mean=mu0, sd=sigma/sqrt(n))
+
+# Plot the normal distribution under H0
+plot(x, y, type="l", lwd=2, col="blue", xaxt='n', yaxt='n', 
+     main="Normal Mean Hypothesis Test", 
+     xlab="", ylab="")
+axis(side=1, at = c(mu0, critical_value), labels = c(expression(m), expression(c)))
+
+# Highlight the critical regions
+abline(v=critical_value, col="red", lwd=2, lty=2)
+polygon(c(x[x<=critical_value], critical_value), 
+        c(y[x<=critical_value], 0), 
+        col=rgb(1, 0, 0, 0.5), border=NA)
+
+
+# Add a legend
+legend("topright", legend=c("Null Distribution", 
+                            "Critical Region"), 
+       col=c("blue", "red"), 
+       lwd=2, lty=c(1, 2 ), pch=c(NA, NA), bty="n")
+```
+
+
+
+## Example 1
+
+1. Recall the mallard duck weights example from last class. I want to test if the average weight of mallard ducks is 4kg or not.
+  - One or two tailed? 
+  - $H_0$: ?
+  - $H_A$: ?
+  - How would the critical region look like? 
+  
+## Example 1 (contd.)
+
+1. Recall the mallard duck weights example from last class. I want to test if the average weight of mallard ducks is 4kg or not.
+  - One or two tailed? <span style="color:red"> Two tailed</span>
+  - $H_0$:  <span style="color:red"> $\mu = 4$.</span>
+  - $H_A$:  <span style="color:red"> $\mu \neq 4$ </span>
+  - How would the critical region look like? <span style="color:red">$\hat{\mu} \leq c_1$  or $\hat{\mu} \geq c_2$</span>.
+
+
+
+## Example 2
+
+2. I believe that the average old car price is Pensacola is **less than** $\$15000.00$.
+
+  - One or two tailed? 
+  - $H_0$: ?
+  - $H_A$: ?
+  - How would the critical region look like? 
+  
+   
+## Example 2
+
+2. I believe that the average old car price is Pensacola is less than $\$15000.00$. How can I do a hypothesis test?
+
+  - One or two tailed? <span style="color:red"> One-tailed.</span>
+  - $H_0$: <span style="color:red"> $\mu \geq 15000.00$.</span>
+  - $H_A$: <span style="color:red"> $\mu \leq 15000.00$.</span>
+  - How would the critical region look like? <span style="color:red">$\hat{\mu} \leq c$</span>.
+  
+
+## Testing Errors
+
+```{r, echo=FALSE}
+library(knitr)
+
+# Create a matrix for the table
+error_matrix <- matrix(c("<span style='color:green;'>Correct Decision</span>", "<span style='color:red;'>Type I Error (False Positive)</span>",
+                         "<span style='color:red;'>Type II Error (False Negative)</span>", "<span style='color:green;'>Correct Decision</span>"),
+                       nrow = 2, byrow = TRUE)
+
+# Define row and column names
+rownames(error_matrix) <- c("Fail to Reject $H_0$", "Reject $H_0$")
+colnames(error_matrix) <- c("$H_0$ True", "$H_0$ False")
+
+# Create the table
+kable(error_matrix, caption = "Type I and Type II Errors in Hypothesis Testing")
+
+```
+
+
+
+## Details of Hypothesis Testing
+
+* Define the **significance level** $\alpha$ = $\mathbb{P}$(Type I error).
+* Define $\beta$ = $\mathbb{P}$(Type II error).
+* We want to minimize both, but never possible.
+* We first fix $\alpha$, typical values are $0.01, 0.05, 0.10$. 
+* Then we try to minimize $\beta$, or maximize **Power** = $1 - \beta$.
+
+
+## Revisit Example 2.
+
+* I believe that the average old car price is Pensacola is less than $\$15000.00$.
+* I am testing $H_0$: $\mu \geq 15000.00$, vs $\mu \leq 15000.00$.
+  - What is a Type 1 error here?
+  - What is a Type 2 error here?
+  
+## Revisit Example 2.
+
+* I believe that the average old car price is Pensacola is less than $\$15000.00$.
+* I am testing $H_0$: $\mu \geq 15000.00$, vs $\mu \leq 15000.00$.
+  - What is a Type 1 error here?
+    * <span style="color:blue"> When $\mu$, the average old car price, is $\geq 15000.00$, but my hypothesis testing concludes that it is $\leq 15000.00$.
+  - What is a Type 2 error here?
+    * <span style="color:blue"> When $\mu$, the average old car price, is $\leq 15000.00$, but my hypothesis testing concludes that it is $\leq 15000.00$.
+
+
+
+## Test statistic and Critical Region
+* <span style="color:blue"> Step 1: State your hypothesis</span>.
+* <span style="color:blue"> Step 2: Fix significance level $\alpha$</span>.
+* Step 3: Compute the following two numbers:
+  * Construct a statistic from the sample, known as **Test Statistic**. 
+  * **Critical region** is the range of values of the test statistic that will lead to the rejection of the null hypothesis.
+
+
+## Final step
+
+* If statistic lies in the critical region, reject $H_0$.
+* Otherwise, <span style="color:red"> not enough evidence to reject $H_0$.</span>
+
+
+## p-value
+
+
+- **Definition:** The p-value is the probability of obtaining test results at least as extreme as the observed data, assuming the null hypothesis ($H_0$) is true.
+- It quantifies the strength of the evidence against $H_0$.
+- **p-value $\leq \alpha$**: Reject $H_0$ (Evidence suggests against null)
+- **p-value $\geq \alpha$**: Fail to reject $H_0$
+
+
+
+
+## p-value for two-sided test
+
+$H_0$: $\mu$ = $m$, $H_A$: $\mu$ $\neq$ $m$.
+
+```{r p_value_plot, echo=FALSE, fig.align='center', fig.height=4, fig.width=6}
+# Set up parameters
+mu <- 0       # Mean of the normal distribution
+sigma <- 1    # Standard deviation of the normal distribution
+alpha <- 0.05 # Significance level (for two-tailed test)
+n <- 10       # Sample size
+
+# Generate x values for the plot
+x <- seq(mu - 2*sigma, mu + 2*sigma, length=1000)
+y <- dnorm(x, mean=mu, sd=sigma/sqrt(n))
+
+# Calculate the observed test statistic (z-statistic)
+observed_mean <- 0.15  # Example observed mean
+z_stat <- (observed_mean - mu) / (sigma / sqrt(n))
+p_value <- 2 * (1 - pnorm(abs(z_stat)))
+
+# Plot the normal distribution under H0
+plot(x, y, type="l", lwd=2, col="blue", xaxt="na", 
+     main="p-value for Normal Distribution", 
+     xlab="", ylab=""
+)
+axis(side=1, at = c(-z_stat, z_stat), labels = c("-Test Stat.", "Test Stat."))
+
+# Highlight the p-value area (two-tailed test)
+polygon(c(x[x >= abs(z_stat)], abs(z_stat)), 
+        c(y[x >= abs(z_stat)], 0), 
+        col=rgb(1, 0, 0, 0.5), border=NA)
+polygon(c(-abs(z_stat), x[x <= -abs(z_stat)]), 
+        c(0, y[x <= -abs(z_stat)]), 
+        col=rgb(1, 0, 0, 0.5), border=NA)
+
+# Mark the observed test statistic
+abline(v = z_stat, col = "green", lwd = 2, lty = 2)
+abline(v = -z_stat, col = "green", lwd = 2, lty = 2)
+
+# Add text for the p-value
+text(x = 1.5, y = 0.55, labels = paste("p-value =", round(p_value, 4)), col = "red", cex = 1.2)
+
+```
+
+
+
+## p-value for one-sided test
+
+$H_0$: $\mu$ = $m$, $H_A$: $\mu$ $\geq$ $m$.
+
+```{r echo=F,fig.align='center', fig.height=4, fig.width=6}
+# Set up parameters
+mu <- 0       # Mean of the normal distribution
+sigma <- 1    # Standard deviation of the normal distribution
+alpha <- 0.05 # Significance level (for two-tailed test)
+n <- 10       # Sample size
+
+# Generate x values for the plot
+x <- seq(mu - 2*sigma, mu + 2*sigma, length=1000)
+y <- dnorm(x, mean=mu, sd=sigma/sqrt(n))
+
+# Calculate the observed test statistic (z-statistic)
+observed_mean <- 0.15  # Example observed mean
+z_stat <- (observed_mean - mu) / (sigma / sqrt(n))
+p_value <-  (1 - pnorm(abs(z_stat)))
+
+# Plot the normal distribution under H0
+plot(x, y, type="l", lwd=2, col="blue", xaxt="na", 
+     main="p-value for Normal Distribution", 
+     xlab="", ylab=""
+)
+axis(side=1, at = c( z_stat), labels = c("Test Stat."))
+
+# Highlight the p-value area (two-tailed test)
+polygon(c(x[x >= abs(z_stat)], abs(z_stat)), 
+        c(y[x >= abs(z_stat)], 0), 
+        col=rgb(1, 0, 0, 0.5), border=NA)
+
+# Mark the observed test statistic
+abline(v = z_stat, col = "green", lwd = 2, lty = 2)
+
+# Add text for the p-value
+text(x = 1.5, y = 0.55, labels = paste("p-value =", round(p_value, 4)), col = "red", cex = 1.2)
+
+```
+
+
+
+
+
+
+## p-value for one-sided test
+
+$H_0$: $\mu$ = $m$, $H_A$: $\mu$ $\leq$ $m$.
+
+```{r echo=F,fig.align='center', fig.height=4, fig.width=6}
+# Set up parameters
+mu <- 0       # Mean of the normal distribution
+sigma <- 1    # Standard deviation of the normal distribution
+alpha <- 0.05 # Significance level (for two-tailed test)
+n <- 10       # Sample size
+
+# Generate x values for the plot
+x <- seq(mu - 2*sigma, mu + 2*sigma, length=1000)
+y <- dnorm(x, mean=mu, sd=sigma/sqrt(n))
+
+# Calculate the observed test statistic (z-statistic)
+observed_mean <- 0.15  # Example observed mean
+z_stat <- (observed_mean - mu) / (sigma / sqrt(n))
+p_value <-   pnorm(abs(z_stat))
+
+# Plot the normal distribution under H0
+plot(x, y, type="l", lwd=2, col="blue", xaxt="na", 
+     main="p-value for Normal Distribution", 
+     xlab="", ylab=""
+)
+axis(side=1, at = c( z_stat), labels = c("Test Stat."))
+
+polygon(c(abs(z_stat), x[x <= abs(z_stat)]), 
+        c(0, y[x <= abs(z_stat)]), 
+        col=rgb(1, 0, 0, 0.5), border=NA)
+
+# Mark the observed test statistic
+abline(v = z_stat, col = "green", lwd = 2, lty = 2)
+
+# Add text for the p-value
+text(x = 1.5, y = 0.55, labels = paste("p-value =", round(p_value, 4)), col = "red", cex = 1.2)
+
+```
+
+
+
+## $\texttt{R} syntax
+
+
+```{r eval=F}
+t.test(<vector>, alternative = <alternative>, 
+       mu = <your_null_assumption>, conf.level = <1 - alpha>)
+```
+
+* For two-sided test, \<alternative\> = "two.sided".
+* For one-sided test, \<alternative\> = "less" or "greater", depending on your test.
+
+
+
+## Hypothesis Testing: $\texttt{mtcars}$ data
+
+* Let's test that the average mpg is 18.
+* $H_0$: $\mu = 18$ vs $\mu \neq 18$.
+* Use $\alpha = 0.05$.
+* Here \<alternate\> = "two.sided" in the $\texttt{R}$ code.
+
+## Example (contd.)
+
+```{r}
+data("mtcars")
+MPG = mtcars$mpg
+t.test(MPG, alternative = "two.sided",
+       mu = 18, conf.level = 0.95)
+```
+
+
+
+## Hypothesis Testing: $\texttt{mtcars}$ data
+
+* Let's test that the average mpg is less than 18.
+* $H_0$: ??
+* Use ??
+* Here \<alternate\> = ?? in the $\texttt{R}$ code.
+
+## Example (contd.)
+
+```{r eval=F}
+data("mtcars")
+MPG = mtcars$mpg
+t.test(MPG, alternative = "two.sided",
+       mu = 18, conf.level = 0.95)
+```
+
+
+
+
+
+## Key Takeaway
+
+* Null hypothesis is assumed true until otherwise proved.
+* Fix $\alpha$ =  $\mathbb{P}$(Type 1 error) = $\mathbb{P}$(Reject $H_0$ when it is true).
+* Minimize $\beta$ = $\mathbb{P}$(Type 2 error) = $\mathbb{P}$(Not reject $H_0$ when it is not true).
+* If p-value < $\alpha$, we have evidence to reject $H_0$. 
+* Otherwise, <span style="color:blue;"> not enough evidence to reject $H_0$. </span>
+
 
