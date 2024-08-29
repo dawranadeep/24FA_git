@@ -23,9 +23,11 @@ output:
     html-math-method: katex
 ---
 
-
-
 \newcommand{\X}{\mathrm{X}}
+
+
+
+
 
 
 ## Lecture Outline
@@ -34,7 +36,9 @@ output:
 * Estimation
 * Confidence interval
 * Hypothesis testing
+* p-value
 
+# Normal Distribution
 
 ## Binomial Distribution
 
@@ -56,68 +60,202 @@ output:
 <img src="03_Hypothesis_testing_files/figure-revealjs/unnamed-chunk-1-1.png" height="400" />
 
 
+## Plotting the Probability Distribution
+
+* If I assign $p = 0.5$, the plot of probabilities will look like this:
+
+<img src="03_Hypothesis_testing_files/figure-revealjs/unnamed-chunk-2-1.png" height="400" />
+
+
 
 ## Normal Distribution
 
-* Today, we will discuss normal distribution -- the most common distribution for continuous data.
+* Normal or Gaussian distribution is another probability distribution -- but for continuous data.
+* The most common choice to analyze continuous data.
 * We will discuss estimation, confidence interval, and hypothesis testing.
-* We will start with two sample tests.
+* Computation
 
 
 
 ## Normal Distribution: Definition
 
 * Defined by two parameters: $\mu$ (mean) and $\sigma^2$ (variance).
+* We write: $X \sim N(\mu, \sigma^2)$.
 * Probability density function:
   $$f(x; \mu, \sigma^2) = \frac{1}{\sqrt{2\pi \sigma^2}} \exp{ - \frac{(x - \mu)^2}{2\sigma^2}}$$
+* *Standard* normal distribution: When $\mu$ = 0, $\sigma^2$ = 1.
+  
 
-  
-  
+## Plotting the Probability Distribution
+
+<img src="03_Hypothesis_testing_files/figure-revealjs/unnamed-chunk-3-1.png" height="500" />
+
+
+
+
+
 ## Properties
 
-* Mean($X$) = Median($X$) = $\mu$.
-* var($X$) = $\sigma^2$.
+
+* Mean($X$) or $\mathbb{E}(X)$ = $\mu$.
+* Median($X$) = $\mu$.
+* Variance($X$) or var($X$) = $\sigma^2$.
 * $X$ is symmetric around the mean.
 * Quartiles:
   - $Q_1 \approx \mu − 0.674 * \sigma$
   - $Q_3 \approx \mu + 0.674 * \sigma$
+  - $Q_2 = ??$
+  - IQR = ??
  
 
-## Plotting the Probability Distribution
+## Properties
 
-<img src="03_Hypothesis_testing_files/figure-revealjs/unnamed-chunk-2-1.png" height="500" />
+
+* Mean($X$) or $\mathbb{E}(X)$ = $\mu$.
+* Median($X$) = $\mu$.
+* Variance($X$) or var($X$) = $\sigma^2$.
+* $X$ is symmetric around the mean.
+* Quartiles:
+  - $Q_1 \approx \mu − 0.674 * \sigma$
+  - $Q_3 \approx \mu + 0.674 * \sigma$
+  - $Q_2$ = <span style="color:blue;"> $\mu$ </span>
+  -  IQR  $\approx$ <span style="color:blue;"> $1.35 \sigma$ </span>
+  
+
+
+## Question
+
+* What is the meaning of $Q_1$ here?
+
+
+## Question
+
+* What is the meaning of $Q_1$ here?
+- <span style="color:blue;"> Probability of getting data $\leq Q_1$ = $\frac{1}{4}$.</span>
+
+
+
+<img src="03_Hypothesis_testing_files/figure-revealjs/unnamed-chunk-4-1.png" width="500" />
+
+
+
+
+## Using Normal Distribution
+
+
+* To use normal distribution in data analysis, we assume that <span style="color:blue;">our data is a sample from a population that follows a normal distribution. </span>
+* Recall, we almost always have a sample data, never the entire population.
+* Recall, we never know parameters. Can only guess them from sample statistics.
+* Use data to estimate the parameters $\mu$ and $\sigma^2$.
+* <span style="color:red;"> Careful, nothing in real life exactly follows a statistical model.</span>
+
+# Estimation
 
 
 ## Point Estimates
 
-* Recall, we never know parameters. We try to guess them from a sample.
-* Suppose we have a sample from a $\mathbb{N}(\mu, \sigma^2)$:
-  - $\X = \{x_1, \ldots, x_n\}$.
-* We want to estimate the parameters $\mu$ and  $\sigma^2)$:
+* A single value of a statistic, calculated  from our sample data,  that serves as the best guess of an unknown parameter.
+
+* Example: 
+  - Sample mean is an estimator of population mean.
+  - Sample variance is an estimator of population mean.
+  - You may try to research about BLUP (best linear unbiased predictors).
+  
+
+## Normal Distribution Estimates
+
+* Suppose we have a continuous random variable $\X$; and we have  realizations $\{x_1, \ldots, x_n\}$ from it.
+* We assume it to be a sample from a $\mathbb{N}(\mu, \sigma^2)$ (or $X \sim N(\mu, \sigma^2)$).
+* Estimate the parameters $\mu$ and  $\sigma^2)$ with their sample equivalents:
   - $\hat{\mu} = \bar{x}$ (sample mean).
   - $\hat{\sigma^2} = s^2$ (sample variance).
   
 
+
+## Example
+
+* Question: Assume that from the $\texttt{mtcars}$ data, the gas mileage variable is a sample from a normal distribution. What is your best estimate for it's mean and variance?
+
+
+
+## Example (contd.)
+
+* Question 1: Assume that from the $\texttt{mtcars}$ data, the gas mileage variable is a sample from a normal distribution. What is your best estimate for it's mean and variance?
+
+
+
+``` r
+data("mtcars")
+MPG = mtcars$mpg
+mean(MPG)
+```
+
+```
+## [1] 20.09062
+```
+
+``` r
+var(MPG)
+```
+
+```
+## [1] 36.3241
+```
+
+
+## Example (contd.)
+
+Question 1: Assume that from the $\texttt{mtcars}$ data, the gas mileage variable is a sample from a normal distribution. What is your best estimate for it's mean and variance?
+
+* I Assume that mpg $\sim N(\mu, \sigma^2)$. 
+* From data, the sample mean is $\bar{x} = 20.09$, $s^2 =36.32$.
+* So, my estimates are:
+  - $\hat{\mu} = 20.09, \hat{\sigma}^2 = 36.32$.
+
+
+## Example (contd.)
+
+* Question 2: Under the same assumption and same data, what is the estimated population median?
+
+
+
+## Example (contd.)
+
+* Question 2: Under the same assumption and same data, what is the estimated population median?
+
+  - Since normal mean and median are the same, it is still $\bar{x} =  \hat{\mu} = 20.09$.
+
+
+# Confidence Interval
+
 ## Confidence Interval (CI)
 
-* Even if we have only $3$ observations, we can estimate both $\mu$ and $\sigma^2$.
+* Even if we only have a sample of $3$ observations, we can always estimate both $\mu$ and $\sigma^2$.
+* Recall the coin toss exmple. Is 6 H out of 10 decisive to suspect cheating?
+Is 6348 H out of 10000 decisive enough?
 * But, are they any good? How confident are we?
 * To analyze the reliability of the estimate, we use confidence interval.
 
 
 ## CI (contd.)
 
-* A $100(1 - \alpha)\%$ CI is an interval that is expected to contain the true parameter had we have access to a large number of samples.
+* A $100(1 - \alpha)\%$ CI is an interval that is expected to contain the true parameter $100(1 - \alpha)\%$ time had we have access to a large number of samples.
 
 * Example: Set $\alpha = 0.05$. A $95\%$ CI for the population mean  ($\mu$) means that, if we had 100 random samples from the population, I expect $95$ of the intervals to contain the true $\mu$.
 
 
+## CI: Graphical View
 
-## CI: Key takeaway
+![](03_Hypothesis_testing_files/figure-revealjs/unnamed-chunk-6-1.png)<!-- -->
 
-* A wider interval would increase our confidence level $100(1 - \alpha)\%$, but it also introduces more uncertainty on my point estimate.
-* We fix the confidence level first, usually at $95\%$ (or $\alpha = 0.05$).
-* Given the level, we want a CI as narrow as possible.
+
+
+## Interval Width
+
+* Wider interval are more likely to contain the parameter, thereby increases our confidence level $100(1 - \alpha)\%$.
+* But, wider interval also introduces more uncertainty on my point estimate.
+* Therefore, we want an interval as narrow as possible.
+* We fix the confidence level first, typically at $95\%$ (or $\alpha = 0.05$), $90\%$, $99\%$. Then we try to narrow down the interval.
 
 
 ## CI for Normal Distribution
@@ -128,7 +266,9 @@ output:
     - $\bar{x}$ is the sample mean.
     - $\sigma$ is the standard deviation.
     - $n$ is the number of observations.
-    - $z_{\alpha/2}$ is the **z score**, a value derived from the *standard* normal distribution.
+    - $z_{\alpha/2}$ is the **z score**, a critical value. Same as the negative of $\frac{\alpha}{2}$-th quantile of a *standard* normal distribution.
+    
+    
 
 ## CI for Normal Distribution
 
@@ -138,19 +278,20 @@ output:
   - $100(1-\alpha)\%$ of $\mu$ = $\bar{x} \pm t_{\alpha/2, n-1} * \frac{s}{\sqrt{n}}$.
     - $\bar{x}$ and $s^2$ are the sample mean and variance.
     - $n$ is the number of observations.
-    - $t_{\alpha/2, n-1}$ is the critical value from a **student's t** distribution with degrees of freedom $n-1$.
+    - $t_{\alpha/2, n-1}$ is the **critical value**, same as the negative of $\alpha/2$-th quantile from a **student's t** distribution with degrees of freedom $n-1$.
 
 
 
 
 
-## $\texttt{R}$  syntax (Unknown)
+
+## $\texttt{R}$  syntax (Unknown  Variance)
 
 ``` r
 t.test(vector, conf.level = 1- alpha)$conf.int
 ```
 
-* Example with $\texttt{mtcars}$ data: $95\%$ CI for gas mileage (mpg).
+* Continue the last example with $\texttt{mtcars}$ data: $95\%$ CI for gas mileage (mpg).
 
 
 ``` r
@@ -165,11 +306,63 @@ t.test(mpgs, conf.level = 0.95)$conf.int
 ## [1] 0.95
 ```
 
+* My $95\%$ confidence interval for $\mu$, the unknown population mean of mpg is $(17.92, 22.26)$.
+
+
+## $\texttt{R}$ Example
+
+* Let's find the $90\%$ CI for mpg (or $\alpha$ = 0.1).
+
+
+``` r
+data("mtcars")
+mpgs = mtcars$mpg
+t.test(mpgs, conf.level = 0.90)$conf.int
+```
+
+```
+## [1] 18.28418 21.89707
+## attr(,"conf.level")
+## [1] 0.9
+```
+
+* My $95\%$ confidence interval for $\mu$, the unknown population mean of mpg is $(18.28, 21.90)$.
+
+* Note, smaller interval compared to the earlier.
+
+
+## $\texttt{R}$ Example (contd.)
+
+* Let's find the $99\%$ CI for mpg (or $\alpha$ = 0.01).
+
+
+``` r
+data("mtcars")
+mpgs = mtcars$mpg
+t.test(mpgs, conf.level = 0.99)$conf.int
+```
+
+```
+## [1] 17.16706 23.01419
+## attr(,"conf.level")
+## [1] 0.99
+```
+
+* My $99\%$ confidence interval for $\mu$, the unknown population mean of mpg is $(17.17, 23.01)$.
+
+* Note, much wider interval compared to the earlier.
+
+## Question
+
+* Can I calculate this interval manually in $\texttt{R}$?
+* You need to know two commands:
+  -   $\texttt{qt(<quantile>, <df>)}$: to generate the critical value for $t$-distribution with degrees of freedom $df$.
+  -   $\texttt{qnorm(<quantile>)}$: to generate the critical value for standard normal distribution.
 
 
 
 
-## Example: computation by hand (unknown case)
+## Example: Manual computation of CI (unknown case)
 
 Example with $\texttt{mtcars}$ data: $95\%$ CI for gas mileage (mpg).
 
@@ -193,7 +386,7 @@ c(lower, upper)
 
 
 
-## Example: computation by hand (known case)
+## Example: Manual computation (known case)
 
 Example with $\texttt{mtcars}$ data: $95\%$ CI for gas mileage (mpg). Assume $\sigma = 6$.
 
@@ -217,6 +410,8 @@ c(lower, upper)
 
 
 
+# Hypothesis Testing
+
 ## Hypothesis Testing : Motivation
 
 * Recall our coin toss example. 
@@ -227,16 +422,26 @@ c(lower, upper)
 * Hypothesis testing helps quantify such decision making.
 
 
+## CI vs Testing
+
+* Take the coin toss example. 
+* A confidence interval will generate an interval ($p_1, p_2$), from my estimated $\hat{p}$. I expect the CI to contain the true $p$ $95\%$ of the times if I could resample the data many times.
+
+* In hypothesis testing, one would start with a starting belief (e.g., $p=0.5$). Then try to decide  if my belief is correct or not from the data.
+
+
+## Definition
+
 
 * A statistical method to draw conclusions or inferences about a population parameter based on sample data and statistics. 
 
-* Recall: Population parameters are unknown; we want to guess them from the samples.
+
 
 
 ## Hypotheses
 
 * **Hypothesis**: A claim about the unknown population parameter.
-  - Example: In the above coin toss example, I suspect that probability of a Head (p) = 0.6
+  - Example: In the coin toss example, I suspect that probability of a Head (p) = 0.6
   - Careful: <span style="color:blue;">Hypothesis is about population parameters; never about the sample statistics.</span>
 
 * We typically test two hypotheses: Null hypothesis ($H_0$) and Alternate hypothesis ($H_A$).
@@ -252,38 +457,52 @@ c(lower, upper)
 
 ## Graphical representation
 
-![](03_Hypothesis_testing_files/figure-revealjs/unnamed-chunk-7-1.png)<!-- -->
+![](03_Hypothesis_testing_files/figure-revealjs/unnamed-chunk-13-1.png)<!-- -->
 
 
+
+## One vs Two sided Test
+
+* Depending on the **alternate hypothesis ($H_A$)**, a test can be one sided or two sided.
+
+* If we want to test parameter = some value against parameter $\neq$ the value, the test is two sided.
+  - e.g. Average score is 75 against not 75.
+  - Your starting belief is not true if the sample average is too high or too low.
+
+## One vs two tail Test
+* If we want to test parameter = some value against parameter $\leq$ (or $\geq$) the value, the test is one sided.
+  - e.g., Average score is 75 against $\leq$ 75. Your starting belief is not true if the sample average is too high .
+  - , Average mileage is 75 against $\geq$ 75. Your starting belief is not true if the sample average is too low .
+  
 
 
 ## Two-sided test
 
 - $H_0$: $\mu$ = $m$, $H_A$: $\mu$ $\neq$ $m$.
-- Critical region is two sided: $\hat{\mu} \leq c_1$ or $\hat{\mu} \geq c_2$.
+- Evidence of false starting belief ($H_0$) is two sided: $\hat{\mu} \leq c_1$ or $\hat{\mu} \geq c_2$.
 
 
-<img src="03_Hypothesis_testing_files/figure-revealjs/unnamed-chunk-8-1.png" width="500" />
+<img src="03_Hypothesis_testing_files/figure-revealjs/unnamed-chunk-14-1.png" width="500" />
 
 ##  One-sided test: Case 1
 
 - $H_0$: $\mu$ $\leq$ (or $=$) $m$, $H_A$: $\mu$ $\geq$ $m$.
-- Critical region is one sided: $\hat{\mu} \geq c$.
+- Evidence of false starting belief ($H_0$) is one sided: $\hat{\mu} \geq c$.
 
 
 
-<img src="03_Hypothesis_testing_files/figure-revealjs/unnamed-chunk-9-1.png" width="500" />
+<img src="03_Hypothesis_testing_files/figure-revealjs/unnamed-chunk-15-1.png" width="500" />
 
 
 
 ##  One-sided test: Case 2
 
 - $H_0$: $\mu$ $\geq$ (or $=$) $m$, $H_A$: $\mu$ $\leq$ $m$.
-- Critical region is one sided: $\hat{\mu} \leq c$.
+- Evidence of false starting belief ($H_0$) is one sided: $\hat{\mu} \leq c$.
 
 
 
-<img src="03_Hypothesis_testing_files/figure-revealjs/unnamed-chunk-10-1.png" width="500" />
+<img src="03_Hypothesis_testing_files/figure-revealjs/unnamed-chunk-16-1.png" width="500" />
 
 
 
@@ -293,15 +512,15 @@ c(lower, upper)
   - One or two tailed? 
   - $H_0$: ?
   - $H_A$: ?
-  - How would the critical region look like? 
+  - How will the region with evidence of wrong $H_0$  look like? 
   
 ## Example 1 (contd.)
 
 1. Recall the mallard duck weights example from last class. I want to test if the average weight of mallard ducks is 4kg or not.
   - One or two tailed? <span style="color:red"> Two tailed</span>
-  - $H_0$:  <span style="color:red"> $\mu = 4$.</span>
+  - $H_0$:  <span style="color:red"> $\mu = 4$.</span> ($\mu$ = Population average weight).
   - $H_A$:  <span style="color:red"> $\mu \neq 4$ </span>
-  - How would the critical region look like? <span style="color:red">$\hat{\mu} \leq c_1$  or $\hat{\mu} \geq c_2$</span>.
+  - How will the region with evidence of wrong $H_0$  look like? <span style="color:red">$\hat{\mu} \leq c_1$  or $\hat{\mu} \geq c_2$</span>.
 
 
 
@@ -312,7 +531,7 @@ c(lower, upper)
   - One or two tailed? 
   - $H_0$: ?
   - $H_A$: ?
-  - How would the critical region look like? 
+  - How will the region with evidence of wrong $H_0$  look like? 
   
    
 ## Example 2
@@ -322,7 +541,7 @@ c(lower, upper)
   - One or two tailed? <span style="color:red"> One-tailed.</span>
   - $H_0$: <span style="color:red"> $\mu \geq 15000.00$.</span>
   - $H_A$: <span style="color:red"> $\mu \leq 15000.00$.</span>
-  - How would the critical region look like? <span style="color:red">$\hat{\mu} \leq c$</span>.
+  - How will the region with evidence of wrong $H_0$  look like? <span style="color:red">$\hat{\mu} \leq c$</span>.
   
 
 ## Testing Errors
@@ -330,10 +549,10 @@ c(lower, upper)
 
 Table: Type I and Type II Errors in Hypothesis Testing
 
-|                     |$H_0$ True                                                     |$H_0$ False                                                   |
-|:--------------------|:--------------------------------------------------------------|:-------------------------------------------------------------|
-|Fail to Reject $H_0$ |<span style='color:green;'>Correct Decision</span>             |<span style='color:red;'>Type I Error (False Positive)</span> |
-|Reject $H_0$         |<span style='color:red;'>Type II Error (False Negative)</span> |<span style='color:green;'>Correct Decision</span>            |
+|                     |$H_0$ True                                                    |$H_0$ False                                                    |
+|:--------------------|:-------------------------------------------------------------|:--------------------------------------------------------------|
+|Fail to Reject $H_0$ |<span style='color:green;'>Correct Decision</span>            |<span style='color:red;'>Type II Error (False Positive)</span> |
+|Reject $H_0$         |<span style='color:red;'>Type I Error (False Negative)</span> |<span style='color:green;'>Correct Decision</span>             |
 
 
 
@@ -364,6 +583,11 @@ Table: Type I and Type II Errors in Hypothesis Testing
 
 
 
+## Steps of Hypothesis Testing
+
+* Step 1: State your hypothesis.
+* Step 2: Fix significance level $\alpha$.
+
 ## Test statistic and Critical Region
 * <span style="color:blue"> Step 1: State your hypothesis</span>.
 * <span style="color:blue"> Step 2: Fix significance level $\alpha$</span>.
@@ -376,6 +600,59 @@ Table: Type I and Type II Errors in Hypothesis Testing
 
 * If statistic lies in the critical region, reject $H_0$.
 * Otherwise, <span style="color:red"> not enough evidence to reject $H_0$.</span>
+
+
+## Normal Mean Testing: Known variance
+
+* $H_0:$ $\mu = m$ vs  $H_A:$ $\mu \neq m$.
+* Sample mean: $\bar{x}$.
+* Test statistic: $Z = \frac{\sqrt{n}(\bar{x} - m)}{\sigma}$.
+* Reject if $|Z| > z_{\alpha/2}$
+
+## Example: $\texttt{mtcars}$
+
+* Let’s test that the average mpg is 18. Take $\alpha = 0.05$. Assume $\sigma = 6$.
+* $H_0:$ $\mu = 18$ vs  $H_A:$ $\mu \neq 18$
+* Test statistic: 
+$Z = \frac{\sqrt{n}(\bar{x} - m)}{\sigma} = \frac{\sqrt{32}(20.090 - 18)}{6} = 1.97$.
+* $z_{\alpha/2}$ = 1.96.
+* Decision: Reject $H_0$.
+
+
+
+
+## Normal Mean Testing: Unknown variance
+
+* $H_0:$ $\mu = m$ vs  $H_A:$ $\mu \neq m$.
+* Sample mean: $\bar{x}$, smaple variance: $s^2$.
+* Test statistic: $T = \frac{\sqrt{n}(\bar{x} - m)}{s}$.
+* Reject if $|T| > t_{\alpha/2, n-1}$
+
+
+
+## Example: $\texttt{mtcars}$
+
+* Let’s test that the average mpg is 18. Take $\alpha = 0.05$. Don't know $\sigma$.
+* $H_0:$ $\mu = 18$ vs  $H_A:$ $\mu \neq 18$
+* Test statistic: 
+$T = \frac{\sqrt{n}(\bar{x} - m)}{s} = \frac{\sqrt{32}(20.090 - 18)}{6.03} = 1.96$.
+* $t_{\alpha/2, n-1}$ = $t_{0.025, 31} = 2.04$.
+* Decision: Can't reject $H_0$.
+
+
+
+
+## Example: $\texttt{mtcars}$
+
+* Let’s test that the average mpg is greater than 18. Take $\alpha = 0.05$. Don't know $\sigma$.
+* $H_0:$ $\mu = 18$ vs  $H_A:$ $\mu \geq 18$
+* Test statistic: 
+$T = \frac{\sqrt{n}(\bar{x} - m)}{s} = \frac{\sqrt{32}(20.090 - 18)}{6.03} = 1.96$.
+* $t_{\alpha, n-1}$ = $t_{0.05, 31} = 1.69$.
+* Decision: Reject $H_0$.
+
+
+# p-value
 
 
 ## p-value
@@ -401,7 +678,7 @@ $H_0$: $\mu$ = $m$, $H_A$: $\mu$ $\neq$ $m$.
 
 $H_0$: $\mu$ = $m$, $H_A$: $\mu$ $\geq$ $m$.
 
-<img src="03_Hypothesis_testing_files/figure-revealjs/unnamed-chunk-12-1.png" style="display: block; margin: auto;" />
+<img src="03_Hypothesis_testing_files/figure-revealjs/unnamed-chunk-18-1.png" style="display: block; margin: auto;" />
 
 
 
@@ -412,11 +689,11 @@ $H_0$: $\mu$ = $m$, $H_A$: $\mu$ $\geq$ $m$.
 
 $H_0$: $\mu$ = $m$, $H_A$: $\mu$ $\leq$ $m$.
 
-<img src="03_Hypothesis_testing_files/figure-revealjs/unnamed-chunk-13-1.png" style="display: block; margin: auto;" />
+<img src="03_Hypothesis_testing_files/figure-revealjs/unnamed-chunk-19-1.png" style="display: block; margin: auto;" />
 
 
 
-## $\texttt{R} syntax
+## Testing in $\texttt{R}$
 
 
 
@@ -465,7 +742,7 @@ t.test(MPG, alternative = "two.sided",
 
 ## Hypothesis Testing: $\texttt{mtcars}$ data
 
-* Let's test that the average mpg is less than 18.
+* Let's test that the average mpg is greater than 18.
 * $H_0$: ??
 * Use ??
 * Here \<alternate\> = ?? in the $\texttt{R}$ code.
@@ -476,10 +753,33 @@ t.test(MPG, alternative = "two.sided",
 ``` r
 data("mtcars")
 MPG = mtcars$mpg
-t.test(MPG, alternative = "two.sided",
+t.test(MPG, alternative = "greater",
        mu = 18, conf.level = 0.95)
 ```
 
+```
+## 
+## 	One Sample t-test
+## 
+## data:  MPG
+## t = 1.9622, df = 31, p-value = 0.02938
+## alternative hypothesis: true mean is greater than 18
+## 95 percent confidence interval:
+##  18.28418      Inf
+## sample estimates:
+## mean of x 
+##  20.09062
+```
+
+
+
+## One-Sample Mean Testing
+
+| Test Type      | Alternative Hypothesis (H₁) | Test Statistic              | p-value                                     | Rejection Criterion           |
+|----------------|-----------------------------|-----------------------------|---------------------------------------------|--------------------------------|
+| **Left-Tailed**  | \( $H_A: \mu < \mu_0$ \)        | \( T = \frac{\bar{x} - \mu_0}{s / \sqrt{n}} \) | \( \text{p-value} = P(T \leq t) \)             | Reject H₀ if p-value \( < \alpha \) |
+| **Right-Tailed** | \( $H_A: \mu > \mu_0$ \)        | \( T = \frac{\bar{x} - \mu_0}{s / \sqrt{n}} \) | \( \text{p-value} = P(T \geq t) \)             | Reject H₀ if p-value \( < \alpha \) |
+| **Two-Tailed**   | \( $H_A: \mu \neq \mu_0$ \)     | \( T = \frac{\bar{x} - \mu_0}{s / \sqrt{n}} \) | \( \text{p-value} =  P(T \geq |t|) + P(T \leq -|t|) \) | Reject H₀ if p-value \( < \alpha \) |
 
 
 
