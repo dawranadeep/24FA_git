@@ -1,0 +1,433 @@
+---
+title: "Two-sample $t$ Tests"
+subtitle: "Independent and Dependent Cases"
+author: "Ranadeep Daw"
+date: "`r Sys.Date()`"
+output:
+  slidy_presentation:
+    theme: flatly
+    center: true
+    widescreen: true
+    width: 1600
+    height: 900
+    df_print: kable
+    reveal_options:
+      slideNumber: true
+      previewLinks: true
+---
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = T, warning = F, message = F)
+```
+
+
+## Two Sample Test
+
+\newcommand{\X}{\mathrm{X}}
+
+
+- We only tested one sample so far.
+- We tested for population mean and variance from a sample under normality assumptions.
+- Time to extend  to two samples.
+
+## One-Sample $t$ Test
+
+- Suppose you believe that UWF students, on average, rate Taylor Swift's songs at more than $80%$. You collect a random sample of $100$ students to test your hypothesis.
+  * One-sample $t$ test.
+  * $H_0$: $\mu = 80$ vs  $\mu \geq 80$ 
+  * Reject if $T = \frac{\sqrt{n}(\bar{x} - 80)}{s} \geq t_{\alpha, n-1}$
+
+
+
+## Two-Sample $t$ Test: Paired Case
+
+- Suppose you believe that UWF students, on average, rate Taylor Swift's songs more than Adele's songs. You ask the SAME sample of $100$ students to also provide a rating for Adele's song to test your hypothesis.
+  * Two-sample $t$ test.
+  * $H_0$: $\mu_{\text{TS}} = \mu_{\text{Adele}}$ vs  $\mu_{{\text{TS}}} \geq \mu_{\text{Adele}}$ 
+  
+
+
+
+
+## Two-Sample $t$ Test: Independent Case
+
+- Suppose you believe that Taylor Swift's songs, on average, are rated more by the students than the faculty. You collected another random sample of $50$ faculties' data to test your hypothesis. 
+  * Two-sample $t$ test.
+  * $H_0$: $\mu_{\text{student}} = \mu_{\text{faculty}}$ vs  $\mu_{\text{student}} \geq \mu_{\text{faculty}}$ 
+  * Rejection: ?
+  
+  
+  
+## Independent Samples
+
+* Suppose we are now comparing two independent groups. 
+* Group 1: $\X_1: \{x_{11}, x_{12}, \cdots, x_{1m} \}$. 
+* Group 1: $\X_2: \{x_{21}, x_{22}, \cdots, x_{2n} \}$.
+* Assumptions: 
+
+  1. $\X_1 \sim \mathbb{N}(\mu_1, \sigma_1^2)$.
+  2. $\X_2 \sim \mathbb{N}(\mu_2, \sigma_2^2)$.
+
+* Test: $H_0$: $\mu_1 - \mu_2 = d$ vs  $H_a$: $\mu_1 - \mu_2$ <span style="color:red">$\lesseqgtr$</span> d.
+
+##  Case 1: Equal Variance
+
+
+* **Assumption 3:**   $\sigma_1^2 = \sigma_2^2$.
+* **Sample statistics**:
+  - $\bar{x}_1$, $\bar{x}_2$: Mean of  $\X_1$ and $\X_2$, respectively.
+  - $s_1^2$ and $s_2^2$: Sample variances of  $\X_1$ and $\X_2$, respectively.
+* <span style="color:blue;">Under the equal variance assumption, common estimate of variance:
+     $$s^2  = \frac{(m-1)s_1^2 \,+ \,(n-1)s_2^2 }{m + n - 2}.$$ </span>
+* **Test statistic:** T = $\frac{(\bar{x}_1 - \bar{x}_2) - d}{\sqrt{\frac{s^2}{m} \,+ \, \frac{s^2}{n}}}$.
+* **Degrees of freedom:** $\nu = m + n - 2$.
+
+
+
+## Case 2: Unequal variance
+
+* **Sample statistics**:
+  - $\bar{x}_1$, $\bar{x}_2$: Mean of  $\X_1$ and $\X_2$.
+  - $s_1^2$ and $s_2^2$: Variance of  $\X_1$ and $\X_2$.
+* **Test statistic:** T = $\frac{(\bar{x}_1 - \bar{x}_2) - d}{\sqrt{\frac{s_1^2}{m} + \frac{s_2^2}{n}}}$
+* **Degrees of freedom:** $\nu = \frac{\Big(\frac{s_1^2}{m} + \frac{s_2^2}{n}\Big)^2}{\frac{s_1^2}{m^2(m-1)} + \frac{s_2^2}{n^2(n-1)}}$
+
+
+## Rejection Criterion
+
+| **Alternate Hypothesis**                                  | **Rejection Criterion**     |
+|-------------------------------|--------------------------------------------------------------|
+| \( H_A: \mu_1 - \mu_2 \leq d \)       | Reject \( H_0 \) if \( T \leq -t_{\alpha; \nu} \)           |
+|  \( H_A: \mu_1 -  \mu_2 \geq d\)       | Reject \( H_0 \) if \(T > t_{\alpha; \nu} \)            |
+| \( H_A: \mu_1 - \mu_2 \neq d \)    | Reject \( H_0 \) if \( T \geq t_{\alpha/2; \nu} \text{or}  \leq -t_{\alpha/2; m + n -2}  \)          |
+
+
+
+## Paired $t$-Test
+
+* Data:
+    
+  <table>
+  <tr style="color: blue;">
+    <th style="text-align:left;">Subjects</th>
+    <th style="text-align:left;">$X_1$</th>
+    <th style="text-align:left;">$X_2$</th>
+  </tr>
+  <tr style="color: blue;">
+    <td>1</td>
+    <td>$x_{11}$</td>
+    <td>$x_{21}$</td>
+  </tr>
+  <tr style="color: blue;">
+    <td>2</td>
+    <td>$x_{12}$</td>
+    <td>$x_{22}$</td>
+  </tr>
+  <tr style="color: blue;">
+    <td>$\vdots$</td>
+    <td>$\vdots$</td>
+    <td>$\vdots$</td>
+  </tr>
+  <tr style="color: blue;">
+    <td>n</td>
+    <td>$x_{1n}$</td>
+    <td>$x_{2n}$</td>
+  </tr>
+</table>
+
+
+* **Sample statistics**:
+  - *$\bar{x}_1$ and $\bar{x}_2$:* Mean of  $\X_1$ and $\X_2$.
+  - *$s^2$*: Variance of  $\X_1 -\X_2$.
+* **Test statistic:** T = $\frac{\sqrt{n}(\bar{x}_1 - \bar{x}_2) - d}{s}$
+* **Degrees of freedom:** $\nu = n-1$.
+
+
+
+## Rejection Criterion: 
+
+
+| **Alternate Hypothesis**                                  | **Rejection Criterion**     |
+|-------------------------------|--------------------------------------------------------------|
+| \( H_A: \mu_1 - \mu_2 \leq d \)       | Reject \( H_0 \) if \( T \leq -t_{\alpha; \nu} \)           |
+|  \( H_A: \mu_1 -  \mu_2 \geq d\)       | Reject \( H_0 \) if \(T > t_{\alpha; \nu} \)            |
+| \( H_A: \mu_1 - \mu_2 \neq d \)    | Reject \( H_0 \) if \( T \geq t_{\alpha/2; \nu} \text{or}  \leq -t_{\alpha/2; m + n -2}  \) |
+
+
+
+
+## Example
+
+* I want to test if the hindleg length and foreleg length of deers are the same from the following sample:
+
+```{r echo=F}
+# Load necessary library
+library(knitr)
+library(kableExtra)
+
+# Create a sample data frame with foreleg and hindleg lengths for 10 deers
+deer_data <- data.frame(
+  Deer = 1:10,
+  Foreleg_Length = c(
+142,
+140,
+144,
+144,
+142,
+146,
+149,
+150,
+142,
+148),
+  Hindleg_Length = c(
+138,
+136,
+147,
+139,
+143,
+141,
+143,
+145,
+136,
+146
+  )
+)
+
+# Generate the kable table
+kable(deer_data, col.names = c("Deer", "Foreleg Length (cm)", "Hindleg Length (cm)")) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive")) %>%
+  row_spec(0, bold = TRUE)
+```
+
+* Q1: Paired or independent sample? Why?
+* One/two tailed?
+* Hypotheses?
+
+
+## Example 1 (cont.)
+
+* Q1: Paired or independent sample? Why?
+  - <span style = "color:blue;">Paired, since the pair of the data (Foreleg Length, Hindleg Length) corresponds to a unique subject/deer.
+* One/two tailed?
+  -  <span style = "color:blue;">Two-tailed</span>.
+* Hypotheses?
+  - <span style = "color:blue;">Assume $\mu_1$ = Mean foreleg length, $\mu_2$ = $\ldots$</span> <span style = "color:red;">(fill up the assumptions).</span>  
+  - <span style = "color:blue;">$H_0: \mu_1 = \mu_2$ vs $H_A: \mu_1 \neq \mu_2$</span>
+  
+  
+## Example 1 (cont.)
+
+```{r}
+diff = deer_data$Foreleg_Length - deer_data$Hindleg_Length
+mean(diff)
+var(diff)
+t.test(diff, mu = 0, alternative = "two.sided", conf.level = 0.95)
+```
+
+
+
+## Example 1 (cont.)
+
+
+* **Decision:** 
+  
+  1. Since p-value < 0.05, we reject $H_0$.
+  2. Alternatively, since the $95\%$ CI does not contain $0$, we reject $H_0$.
+  
+* There is enough evidence that the average difference between leg lengths is not $0$.
+
+
+
+## Example 2.
+
+* Consider the same example. I want to test if average foreleg length is at least 1.5 cm **MORE** than average hindleg length.
+  
+  * Q1: Paired or independent sample? Why?
+  * One/two tailed?
+  * Hypotheses?
+
+
+## Example 2 (cont.)
+
+* Consider the same example. I want to test if average foreleg length is at least 1.5 cm **MORE** than average hindleg length.
+  
+  * Q1: Paired or independent sample? Why?
+    - <span style="color:blue"> Paired. </span>
+  * One/two tailed?
+    - <span style="color:blue"> One tailed. </span>
+  * Hypotheses?
+    -   <span style="color:blue"> $H_0: \mu_1 - \mu_2 \leq 1.5$ vs $H_A: \mu_1 - \mu_2 > 1.5$ </span>
+
+## Example 2 (cont)
+
+```{r}
+foreleg = deer_data$Foreleg_Length
+hindleg = deer_data$Hindleg_Length
+t.test(foreleg, hindleg, mu = 1.5, paired = TRUE, alternative = "greater", conf.level = 0.95)
+```
+
+* **Decision:** 
+  
+  1. Since p-value < 0.05, we reject $H_0$.
+  2. The $95\%$ CI does not contain $1.5$, we reject $H_0$.
+  
+* There is enough evidence that the average difference between leg lengths is greater than $1.5$.
+
+
+## Example 3
+
+## Two-Sample t-Test (Independent, Equal Variance)
+
+This table shows an example of heights of plants under two different fertilizers. Test if the new fertilizer is working better. 
+<center> Old fertilizer: 48.2, 54.6, 58.3, 47.8, 51.4, 52.0, 55.2, 49.1, 49.9, 52.6</center>
+<center> New fertilizer: 52.3, 57.4, 55.6, 53.2, 61.3, 58.0, 59.8, 54.8 </center>
+
+
+
+```{r echo =F}
+# Sample data for two groups
+group1 <- c(
+48.2,
+54.6,
+58.3,
+47.8,
+51.4,
+52.0,
+55.2,
+49.1,
+49.9,
+52.6)
+group2 <- c(
+52.3,
+57.4,
+55.6,
+53.2,
+61.3,
+58.0,
+59.8,
+54.8
+)
+
+# Calculating sample statistics
+mean1 <- mean(group1)
+mean2 <- mean(group2)
+var1 <- var(group1)
+var2 <- var(group2)
+n1 <- length(group1)
+n2 <- length(group2)
+
+# Create a data frame for the table
+t_test_table <- data.frame(
+  Statistic = c("Sample Size", "Mean", "Variance"),
+  Group1 = c(round(n1), round(mean1, 2), round(var1, 4)),
+  Group2 = c(round(n2), round(mean2, 2), round(var2, 4))
+)
+
+# Generate the kable table
+library(knitr)
+library(kableExtra)
+
+kable(t_test_table, col.names = c("Statistic", "Group 1", "Group 2")) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive")) %>%
+  row_spec(0, bold = TRUE)
+```
+
+* $H_0$: $\mu_1 \geq \mu_2$ vs $\mu_1 < \mu_2$.
+* Estimate for common variance = $s^2$ = $\frac{(10 - 1) * 11.3588 + (8 - 1) * 9.8857}{10 + 8 - 2} = 10.7143$.
+* Test statistic: $T = \frac{(51.91	- 56.55)}{\sqrt{10.7143/10 + 10.7143/8 }} = -2.988$.
+* Critical value: $ - t_{0.05; 10 + 8 - 2} = -1.75$.
+* Reject since $T <$ critical value.
+
+
+
+## Two-Sample t-Test (Contd.)
+
+```{r}
+height = c(48.2, 54.6, 58.3, 47.8, 51.4, 52.0, 55.2, 49.1, 49.9, 52.6,
+           52.3, 57.4, 55.6, 53.2, 61.3, 58.0, 59.8, 54.8)
+fertilizer = c(rep("Old", 10), rep("New", 8))
+t.test(height ~ fertilizer, conf.level = 0.95, var.equal = TRUE)
+```
+
+* Note: The $t$ statistic is positive, but in our earlier answer, it was negative.
+* This is due to $\texttt{R}$; it groups $\texttt{<var1>} \sim \texttt{<var2>}$ in alphabetical order of $\texttt{<var2>}$.
+  - $\texttt{"New"}$ before $\texttt{"Old"}$.
+* I suggest you always use a prefix:
+  - $\texttt{"1.Old"}$ before $\texttt{"2.New"}$.
+  
+## Two-Sample t-Test (Contd.)
+
+```{r}
+height = c(48.2, 54.6, 58.3, 47.8, 51.4, 52.0, 55.2, 49.1, 49.9, 52.6,
+           52.3, 57.4, 55.6, 53.2, 61.3, 58.0, 59.8, 54.8)
+fertilizer = c(rep("1.Old", 10), rep("2.New", 8))
+t.test(height ~ fertilizer, conf.level = 0.95, var.equal = TRUE)
+```
+
+* **Decision:** Reject since p-value < 0.05; or since confidence interval doesn't contain $0$.
+* **Interpretation:** Enough evidence that new fertilizer leads to higher height of the plants.
+
+
+
+## Example 3: Two-Sample t-Test (Independent, Unequal Variance)
+
+The data are the times for seven cockroach eggs to hatch at one laboratory temperature and for eight eggs to hatch at another temperature. I want to test if the average days needed at $10^{\circ}$ C is 2 or more days greater than the one at $30^{\circ}$ C. Take $\alpha = 0.10$.
+<center> At $30^{\circ}$ C: **40, 38 ,32 ,37 ,39 ,41 ,35**</center>
+<center> At $10^{\circ}$ C: **36, 45 ,32 ,52 ,59 ,41 ,48 ,55** </center>
+
+
+## Example 3: (Cont.)
+
+* $H_0$: $\mu_1 - \mu_2 \leq -2$ vs $\mu_1 - \mu_2 > -2$.
+* One sided test. Independent Sample.
+* However, $s_1^2 = 9.62, s_2^2 = 87.43$.
+* Note the huge difference in sample variances. It indicates in favor of unequal variance case.
+
+
+## Example 3: (Cont.)
+
+
+```{r}
+hatch_time = c(40, 38 ,32 ,37 ,39 ,41 ,35,
+               36, 45 ,32 ,52 ,59 ,41 ,48 ,55)
+temperature = c(rep("1.Temp_30C", 7), rep("2.Temp_10C", 8))
+t.test(hatch_time ~ temperature, mu=-2, alternate="greater", conf.level = 0.9, var.equal = FALSE)
+```
+
+* **Decision**: Reject since p-value < $\alpha$ or $95\%$ CI does not contain $-2$.
+* **Interpretation**: Enough evidence to conclude that average hatching days at $10^{\circ}$C is greater than $2$ days.
+
+
+## Example 3: (Cont.)
+
+* What if we make a mistake and disregard unequal variance?
+
+```{r}
+hatch_time = c(40, 38 ,32 ,37 ,39 ,41 ,35,
+               36, 45 ,32 ,52 ,59 ,41 ,48 ,55)
+temperature = c(rep("1.Temp_30C", 7), rep("2.Temp_10C", 8))
+t.test(hatch_time ~ temperature, mu=-2, alternate="greater", conf.level = 0.9, var.equal = TRUE)
+```
+
+* **Decision**: Can't reject since p-value > $\alpha$ or $95\%$ CI contains $-2$.
+* **Interpretation**: Not enough evidence to reject the $H_0$ that average hatching days at $10^{\circ}$C takes less than or equal to $2$ days.
+
+
+
+
+
+## Overall Instruction
+
+* In  $\texttt{R}$, use $\texttt{t.test(<vector>, alternative = <alt>, mu = <diff>, conf.level = <1-alpha>)}$.
+  - <span style="color:blue"> \<alt\> is "two.sided", "less", or "greater".</span>
+  - \< diff \> = $\mu_1 - \mu_2$.</span>
+* In case of paired $t$ test, also add the option $\texttt{paired = TRUE}$.
+  - <span style="color:blue">By default, $\texttt{paired = FALSE}$ </span>
+* In case of independent $t$ test with equal variance, also add the option $\texttt{var.equal = TRUE}$.
+  - <span style="color:blue">$\texttt{var.equal = FALSE}$</span>
+* <span style="color:red">Try $\texttt{?t.test}$ in $\texttt{R}$ console and read the options.</span>
+
+
+
