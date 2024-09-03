@@ -2,7 +2,7 @@
 title: "Inference"
 subtitle: "Confidence Interval and Hypothesis Testing"
 author: "Ranadeep Daw"
-date: "2024-08-28"
+date: "2024-09-03"
 execute:
   echo: true
   eval: true
@@ -23,7 +23,6 @@ output:
     html-math-method: katex
 ---
 
-\newcommand{\X}{\mathrm{X}}
 
 
 
@@ -31,6 +30,9 @@ output:
 
 
 ## Lecture Outline
+
+\newcommand{\X}{\mathrm{X}}
+
 
 * Normal distribution
 * Estimation
@@ -80,7 +82,7 @@ output:
 ## Normal Distribution: Definition
 
 * Defined by two parameters: $\mu$ (mean) and $\sigma^2$ (variance).
-* We write: $X \sim N(\mu, \sigma^2)$.
+* We write: $X \sim N(\mu, \sigma^2)$
 * Probability density function:
   $$f(x; \mu, \sigma^2) = \frac{1}{\sqrt{2\pi \sigma^2}} \exp{ - \frac{(x - \mu)^2}{2\sigma^2}}$$
 * *Standard* normal distribution: When $\mu$ = 0, $\sigma^2$ = 1.
@@ -158,15 +160,15 @@ output:
 
 * Example: 
   - Sample mean is an estimator of population mean.
-  - Sample variance is an estimator of population mean.
-  - You may try to research about BLUP (best linear unbiased predictors).
+  - Sample variance is an estimator of population variance.
+  - You may try to research about BLUP (best linear unbiased prediction).
   
 
 ## Normal Distribution Estimates
 
 * Suppose we have a continuous random variable $\X$; and we have  realizations $\{x_1, \ldots, x_n\}$ from it.
-* We assume it to be a sample from a $\mathbb{N}(\mu, \sigma^2)$ (or $X \sim N(\mu, \sigma^2)$).
-* Estimate the parameters $\mu$ and  $\sigma^2)$ with their sample equivalents:
+* We assume it to be a sample from a $\mathbb{N}(\mu, \sigma^2)$ (or $X_i \sim N(\mu, \sigma^2)$).
+* Estimate the parameters $\mu$ and  $\sigma^2$ with their sample equivalents:
   - $\hat{\mu} = \bar{x}$ (sample mean).
   - $\hat{\sigma^2} = s^2$ (sample variance).
   
@@ -326,7 +328,7 @@ t.test(mpgs, conf.level = 0.90)$conf.int
 ## [1] 0.9
 ```
 
-* My $95\%$ confidence interval for $\mu$, the unknown population mean of mpg is $(18.28, 21.90)$.
+* My $90\%$ confidence interval for $\mu$, the unknown population mean of mpg is $(18.28, 21.90)$.
 
 * Note, smaller interval compared to the earlier.
 
@@ -466,13 +468,13 @@ c(lower, upper)
 * Depending on the **alternate hypothesis ($H_A$)**, a test can be one sided or two sided.
 
 * If we want to test parameter = some value against parameter $\neq$ the value, the test is two sided.
-  - e.g. Average score is 75 against not 75.
-  - Your starting belief is not true if the sample average is too high or too low.
+  - e.g. $H_0$: Average score = 75 vs $H_A$: Average score $\neq$ 75.
+  - Your starting belief ($H_0$) is not true if the sample average is too high or too low.
 
 ## One vs two tail Test
 * If we want to test parameter = some value against parameter $\leq$ (or $\geq$) the value, the test is one sided.
-  - e.g., Average score is 75 against $\leq$ 75. Your starting belief is not true if the sample average is too high .
-  - , Average mileage is 75 against $\geq$ 75. Your starting belief is not true if the sample average is too low .
+  - e.g., $H_0$: Average score = 75 vs $H_A$: Average score $\leq$ 75. Your starting belief ($H_0$) is not true if the sample average is too high .
+  - $H_0$: Average score = 75 vs $H_A$: Average score $\geq$ 75. Your starting belief ($H_0$) is not true if the sample average is too low.
   
 
 
@@ -579,7 +581,7 @@ Table: Type I and Type II Errors in Hypothesis Testing
   - What is a Type 1 error here?
     * <span style="color:blue"> When $\mu$, the average old car price, is $\geq 15000.00$, but my hypothesis testing concludes that it is $\leq 15000.00$.
   - What is a Type 2 error here?
-    * <span style="color:blue"> When $\mu$, the average old car price, is $\leq 15000.00$, but my hypothesis testing concludes that it is $\leq 15000.00$.
+    * <span style="color:blue"> When $\mu$, the average old car price, is $\leq 15000.00$, but my hypothesis testing concludes that it is $\geq 15000.00$.
 
 
 
@@ -602,21 +604,23 @@ Table: Type I and Type II Errors in Hypothesis Testing
 * Otherwise, <span style="color:red"> not enough evidence to reject $H_0$.</span>
 
 
-## Normal Mean Testing: Known variance
+## Normal Mean Testing: Known variance ($\sigma^2$)
 
 * $H_0:$ $\mu = m$ vs  $H_A:$ $\mu \neq m$.
 * Sample mean: $\bar{x}$.
 * Test statistic: $Z = \frac{\sqrt{n}(\bar{x} - m)}{\sigma}$.
 * Reject if $|Z| > z_{\alpha/2}$
 
-## Example: $\texttt{mtcars}$
+## Example: $\texttt{mtcars}$ data from $\texttt{R}$
 
-* Let’s test that the average mpg is 18. Take $\alpha = 0.05$. Assume $\sigma = 6$.
+**Let’s test that the average mpg is 18. Take $\alpha = 0.05$. Assume $\sigma = 6$.**
+
 * $H_0:$ $\mu = 18$ vs  $H_A:$ $\mu \neq 18$
+* For the $\texttt{mtcars}$ data, $n = 32$, $\bar{x}$ =  $20.09$, $s^2 = 36.32$.
 * Test statistic: 
 $Z = \frac{\sqrt{n}(\bar{x} - m)}{\sigma} = \frac{\sqrt{32}(20.090 - 18)}{6} = 1.97$.
 * $z_{\alpha/2}$ = 1.96.
-* Decision: Reject $H_0$.
+* Decision: Reject $H_0$ since $|Z| > z_{\alpha/2}$.
 
 
 
@@ -624,7 +628,7 @@ $Z = \frac{\sqrt{n}(\bar{x} - m)}{\sigma} = \frac{\sqrt{32}(20.090 - 18)}{6} = 1
 ## Normal Mean Testing: Unknown variance
 
 * $H_0:$ $\mu = m$ vs  $H_A:$ $\mu \neq m$.
-* Sample mean: $\bar{x}$, smaple variance: $s^2$.
+* Sample mean: $\bar{x}$, sample variance: $s^2$.
 * Test statistic: $T = \frac{\sqrt{n}(\bar{x} - m)}{s}$.
 * Reject if $|T| > t_{\alpha/2, n-1}$
 
@@ -632,7 +636,9 @@ $Z = \frac{\sqrt{n}(\bar{x} - m)}{\sigma} = \frac{\sqrt{32}(20.090 - 18)}{6} = 1
 
 ## Example: $\texttt{mtcars}$
 
-* Let’s test that the average mpg is 18. Take $\alpha = 0.05$. Don't know $\sigma$.
+**Let’s test that the average mpg is 18. Take $\alpha = 0.05$. Don't know $\sigma$.**
+
+
 * $H_0:$ $\mu = 18$ vs  $H_A:$ $\mu \neq 18$
 * Test statistic: 
 $T = \frac{\sqrt{n}(\bar{x} - m)}{s} = \frac{\sqrt{32}(20.090 - 18)}{6.03} = 1.96$.
@@ -642,14 +648,45 @@ $T = \frac{\sqrt{n}(\bar{x} - m)}{s} = \frac{\sqrt{32}(20.090 - 18)}{6.03} = 1.9
 
 
 
+
+## Normal Mean Testing: Right-tailed
+
+* $H_0:$ $\mu < m$,  $H_A:$ $\mu \geq m$.
+* Sample mean: $\bar{x}$, sample variance: $s^2$.
+* Test statistic: $T = \frac{\sqrt{n}(\bar{x} - m)}{s}$.
+* Reject if $T \geq t_{\alpha, n-1}$
+
+
+
+## Normal Mean Testing: Left-tailed
+
+* $H_0:$ $\mu > m$,  $H_A:$ $\mu \leq m$.
+* Sample mean: $\bar{x}$, sample variance: $s^2$.
+* Test statistic: $T = \frac{\sqrt{n}(\bar{x} - m)}{s}$.
+* Reject if $T \leq -t_{\alpha, n-1}$
+
+
+
 ## Example: $\texttt{mtcars}$
 
-* Let’s test that the average mpg is greater than 18. Take $\alpha = 0.05$. Don't know $\sigma$.
-* $H_0:$ $\mu = 18$ vs  $H_A:$ $\mu \geq 18$
+**Let’s test that the average mpg is greater than 18. Take $\alpha = 0.05$. Don't know $\sigma$.**
+
+
+* $H_0:$ $\mu < 18$ vs  $H_A:$ $\mu \geq 18$
 * Test statistic: 
 $T = \frac{\sqrt{n}(\bar{x} - m)}{s} = \frac{\sqrt{32}(20.090 - 18)}{6.03} = 1.96$.
 * $t_{\alpha, n-1}$ = $t_{0.05, 31} = 1.69$.
 * Decision: Reject $H_0$.
+
+
+## Example: $\texttt{mtcars}$
+
+* **Let’s test that the average mpg is less than 20. Take $\alpha = 0.05$. Don't know $\sigma$.**
+* $H_0:$ $\mu \geq 20$ vs  $H_A:$ $\mu < 20$.
+* Test statistic: 
+$T = \frac{\sqrt{n}(\bar{x} - m)}{s} = \frac{\sqrt{32}(20.090 - 20)}{6.03} = 0.08$.
+* $-t_{\alpha, n-1}$ = $-t_{0.05, 31} = -1.69$.
+* Decision: Can't reject $H_0$.
 
 
 # p-value
@@ -664,13 +701,6 @@ $T = \frac{\sqrt{n}(\bar{x} - m)}{s} = \frac{\sqrt{32}(20.090 - 18)}{6.03} = 1.9
 - **p-value $\geq \alpha$**: Fail to reject $H_0$
 
 
-
-
-## p-value for two-sided test
-
-$H_0$: $\mu$ = $m$, $H_A$: $\mu$ $\neq$ $m$.
-
-<img src="03_Hypothesis_testing_files/figure-revealjs/p_value_plot-1.png" style="display: block; margin: auto;" />
 
 
 
@@ -690,6 +720,15 @@ $H_0$: $\mu$ = $m$, $H_A$: $\mu$ $\geq$ $m$.
 $H_0$: $\mu$ = $m$, $H_A$: $\mu$ $\leq$ $m$.
 
 <img src="03_Hypothesis_testing_files/figure-revealjs/unnamed-chunk-19-1.png" style="display: block; margin: auto;" />
+
+
+
+
+## p-value for two-sided test
+
+$H_0$: $\mu$ = $m$, $H_A$: $\mu$ $\neq$ $m$.
+
+<img src="03_Hypothesis_testing_files/figure-revealjs/p_value_plot-1.png" style="display: block; margin: auto;" />
 
 
 
@@ -742,10 +781,23 @@ t.test(MPG, alternative = "two.sided",
 
 ## Hypothesis Testing: $\texttt{mtcars}$ data
 
-* Let's test that the average mpg is greater than 18.
+**Let's test that the average mpg is greater than 18. Use $\alpha = 0.05$.**
+
+
 * $H_0$: ??
-* Use ??
+* $H_A$: ??
 * Here \<alternate\> = ?? in the $\texttt{R}$ code.
+
+
+
+
+## Hypothesis Testing: $\texttt{mtcars}$ data
+
+**Let's test that the average mpg is greater than 18. Use $\alpha = 0.05$.**
+
+
+* <span style="color:blue">$H_0$: $\mu \leq 18$; $H_A$: $\mu > 18$.
+* Here \<alternate\> = "greater" in the $\texttt{R}$ code.
 
 ## Example (contd.)
 
@@ -775,11 +827,11 @@ t.test(MPG, alternative = "greater",
 
 ## One-Sample Mean Testing
 
-| Test Type      | Alternative Hypothesis (H₁) | Test Statistic              | p-value                                     | Rejection Criterion           |
+| Test Type      | Alternative Hypothesis (H₁) | Test Statistic              | Rejection Region                                       | Reject H₀ if         |
 |----------------|-----------------------------|-----------------------------|---------------------------------------------|--------------------------------|
-| **Left-Tailed**  | \( $H_A: \mu < \mu_0$ \)        | \( T = \frac{\bar{x} - \mu_0}{s / \sqrt{n}} \) | \( \text{p-value} = P(T \leq t) \)             | Reject H₀ if p-value \( < \alpha \) |
-| **Right-Tailed** | \( $H_A: \mu > \mu_0$ \)        | \( T = \frac{\bar{x} - \mu_0}{s / \sqrt{n}} \) | \( \text{p-value} = P(T \geq t) \)             | Reject H₀ if p-value \( < \alpha \) |
-| **Two-Tailed**   | \( $H_A: \mu \neq \mu_0$ \)     | \( T = \frac{\bar{x} - \mu_0}{s / \sqrt{n}} \) | \( \text{p-value} =  P(T \geq |t|) + P(T \leq -|t|) \) | Reject H₀ if p-value \( < \alpha \) |
+| **Left-Tailed**  |  $H_A: \mu \leq \mu_0$         | \( T = \frac{\bar{x} - \mu_0}{s / \sqrt{n}} \) | \(  T \leq -t_{\alpha; n-1} \)             | p-value \( < \alpha \) |
+| **Right-Tailed** | $H_A: \mu > \mu_0$        | \( T = \frac{\bar{x} - \mu_0}{s / \sqrt{n}} \) | \( T \geq t_{\alpha; n-1} \)             | p-value \( < \alpha \) |
+| **Two-Tailed**   | $H_A: \mu \neq \mu_0$     | \( T = \frac{\bar{x} - \mu_0}{s / \sqrt{n}} \) | \( T \geq t_{\alpha/2; n-1} \text{ or } T \leq -t_{\alpha/2; n-1} \) |  p-value \( < \alpha \) |
 
 
 

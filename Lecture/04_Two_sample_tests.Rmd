@@ -23,40 +23,127 @@ knitr::opts_chunk$set(echo = T, warning = F, message = F)
 ```
 
 
+## Acknowledgement
+
+Examples are from Biostatistical Analysis by Jerrold H. Zar, Prentice Hall, Fifth Edition.
+
+
+## Practice
+
+Following are the weight change of 17 horses given an antibiotic for two weeks (in kg):
+<center> 2.0, 1.1, 4.4, -3.1, -1.3, 3.9, 3.2, -1.6, 3.5, 1.2, 2.5, 2.3, 1.9, 1.8, 2.9, -0.3, -2.4 </center>
+Assume normality and let's test for the true population mean $\mu$ of this sample.
+
+<br>
+
+  1. Test for $H_0: \mu = 0$ vs $H_A: \mu \neq 0$. Take $\alpha = 0.05$.
+  2. Confidence interval for $\mu$. Take $\alpha = 0.10$.
+  3. Test for $\mu \geq 0.5$ at $\alpha = 0.10$. What is the one-sided confidence interval?
+  4. Test for $\mu \leq 2$ at $\alpha = 0.01$. What is the one-sided confidence interval?
+
+
+## Practice Q1
+
+1. **Test for $H_0: \mu = 0$ vs $H_A: \mu \neq 0$. Take $\alpha = 0.05$.**
+```{r}
+horse = c(2.0, 1.1, 4.4, -3.1, -1.3, 3.9, 3.2, -1.6, 3.5, 1.2, 2.5, 2.3, 1.9, 1.8, 2.9, -0.3, -2.4)
+alpha = 0.05
+t.test(horse, alternative = "two.sided", mu = 0, conf.level = 1 - alpha)
+```
+
+
+<span style = "color:blue"> Since p value <$\alpha$, we reject $H_0$ that the population mean $\mu$ is equal to $0$.</span>
+
+## Practice Q2
+
+1. **Confidence interval for $\mu$. Take $\alpha = 0.10$.**
+
+```{r}
+horse = c(2.0, 1.1, 4.4, -3.1, -1.3, 3.9, 3.2, -1.6, 3.5, 1.2, 2.5, 2.3, 1.9, 1.8, 2.9, -0.3, -2.4)
+alpha = 0.10
+t.test(horse, conf.level = 1 - alpha)$conf.int
+```
+
+<span style = "color:blue">The $90\%$ CI for $\mu$ is (0.3369827 2.2512526).</span>
+
+
+## Practice Q3
+
+3. **Test for $\mu \geq 0.5$ at $\alpha = 0.10$. What is the one-sided confidence interval?**
+
+```{r}
+horse = c(2.0, 1.1, 4.4, -3.1, -1.3, 3.9, 3.2, -1.6, 3.5, 1.2, 2.5, 2.3, 1.9, 1.8, 2.9, -0.3, -2.4)
+alpha = 0.10
+t.test(horse, alternative = "greater", mu = 0.5, conf.level = 1 - alpha)
+```
+
+* $H_0: \mu < 0.5, H_A: \mu \geq 0.5$.
+* Reject since p-value  $< \alpha$.
+* CI: $(0.56, -\infty)$.
+* <span style="color:blue">Also, reject since CI does not contain 0.5</span>
+
+
+
+## Practice: Question 4
+
+4. **Test for $\mu \leq 2$ at $\alpha = 0.01$. What is the one-sided confidence interval?**
+
+
+```{r}
+horse = c(2.0, 1.1, 4.4, -3.1, -1.3, 3.9, 3.2, -1.6, 3.5, 1.2, 2.5, 2.3, 1.9, 1.8, 2.9, -0.3, -2.4)
+alpha = 0.01
+t.test(horse, alternative = "less", mu = 2, conf.level = 1 - alpha)
+```
+
+* $H_0: \mu > 2, H_A: \mu \leq 2$.
+* Can't reject since p-value  $> \alpha$.
+* CI: $(-\infty, 2.7)$.
+* <span style="color:blue">Also, can't reject since CI contains 2.</span>
+
 ## Two Sample Test
 
 \newcommand{\X}{\mathrm{X}}
 
 
-- We only tested one sample so far.
-- We tested for population mean and variance from a sample under normality assumptions.
-- Time to extend  to two samples.
+- We learnt hypothesis testing for population mean of **one sample**.
+- We used normality assumptions and considered cases for known and unknown (usual case) variances.
+- *Application*: Given a dataset, test <span style="color:blue">$H_0$: $\mu = m$ vs $H_A: \mu \neq m$ or $H_A: \mu \lessgtr m$</span>.
+  * Both one and two-tailed (sided) tests.
+- Reject if <span style="color:blue">$p$ value < $\alpha$</span> or <span style="color:red">confidence interval does not contain the hypothised mean.</span>
+- Time to extend  to <span style="color:green">two</span> samples.
 
 ## One-Sample $t$ Test
 
-- Suppose you believe that UWF students, on average, rate Taylor Swift's songs at more than $80%$. You collect a random sample of $100$ students to test your hypothesis.
-  * One-sample $t$ test.
-  * $H_0$: $\mu = 80$ vs  $\mu \geq 80$ 
-  * Reject if $T = \frac{\sqrt{n}(\bar{x} - 80)}{s} \geq t_{\alpha, n-1}$
+- Suppose you believe that UWF students, on average, rate Taylor Swift's songs at least at $80\%$. You collect a random sample of $100$ students to test your hypothesis.
+  * One-sample $t$ test. 
+  * <span style="color:blue">One tailed since our interest is $\geq 80\%$ or not.</span>
+  * $H_0$: $\mu < 80$ vs  $\mu \geq 80$ 
+  * Test statistic: $T = \frac{\sqrt{n}(\bar{x} - 80)}{s}$.
+  * Critical value: $c = t_{\alpha, n-1}$.
+  * Reject if $T \geq c$.
 
 
 
-## Two-Sample $t$ Test: Paired Case
+## Two-Sample $t$ Test: Example 1
 
-- Suppose you believe that UWF students, on average, rate Taylor Swift's songs more than Adele's songs. You ask the SAME sample of $100$ students to also provide a rating for Adele's song to test your hypothesis.
+- Suppose you believe that UWF students, on average, rate Taylor Swift's songs better than Adele's songs. You ask the **SAME** sample of $100$ students to also provide a rating for Adele's song to test your hypothesis.
   * Two-sample $t$ test.
-  * $H_0$: $\mu_{\text{TS}} = \mu_{\text{Adele}}$ vs  $\mu_{{\text{TS}}} \geq \mu_{\text{Adele}}$ 
+    * $H_0$: $\mu_{\text{TS}} = \mu_{\text{Adele}}$ vs  $\mu_{{\text{TS}}} \geq \mu_{\text{Adele}}$.
+    * Altermatively, $H_0$: $\mu_{\text{TS}} - \mu_{\text{Adele}} = 0$ vs  $\mu_{{\text{TS}}} - \mu_{\text{Adele}} \geq 0$.
+  * *Note*: One subject/individual corresponds to one pair of data (Rating of TS, Rating of Adele), i.e., data can be paired by a unique ID or subject or individual.
+  
   
 
 
 
 
-## Two-Sample $t$ Test: Independent Case
+## Two-Sample $t$ Test: Example 2
 
-- Suppose you believe that Taylor Swift's songs, on average, are rated more by the students than the faculty. You collected another random sample of $50$ faculties' data to test your hypothesis. 
+- Suppose you believe that Taylor Swift's songs, on average, are rated better by the students than the faculty. You collected another random sample of $50$ faculties' data to test your hypothesis. 
   * Two-sample $t$ test.
   * $H_0$: $\mu_{\text{student}} = \mu_{\text{faculty}}$ vs  $\mu_{\text{student}} \geq \mu_{\text{faculty}}$ 
   * Rejection: ?
+  * Note: Data can not be grouped here by subject.
   
   
   
@@ -70,7 +157,7 @@ knitr::opts_chunk$set(echo = T, warning = F, message = F)
   1. $\X_1 \sim \mathbb{N}(\mu_1, \sigma_1^2)$.
   2. $\X_2 \sim \mathbb{N}(\mu_2, \sigma_2^2)$.
 
-* Test: $H_0$: $\mu_1 - \mu_2 = d$ vs  $H_a$: $\mu_1 - \mu_2$ <span style="color:red">$\lesseqgtr$</span> d.
+* Test: $H_0$: $\mu_1 - \mu_2 = d$ vs  $H_a$: $\mu_1 - \mu_2$ <span style="color:red">$\leq$, $\geq$, or $\neq$</span> d.
 
 ##  Case 1: Equal Variance
 
@@ -97,11 +184,25 @@ knitr::opts_chunk$set(echo = T, warning = F, message = F)
 
 ## Rejection Criterion
 
-| **Alternate Hypothesis**                                  | **Rejection Criterion**     |
-|-------------------------------|--------------------------------------------------------------|
-| \( H_A: \mu_1 - \mu_2 \leq d \)       | Reject \( H_0 \) if \( T \leq -t_{\alpha; \nu} \)           |
-|  \( H_A: \mu_1 -  \mu_2 \geq d\)       | Reject \( H_0 \) if \(T > t_{\alpha; \nu} \)            |
-| \( H_A: \mu_1 - \mu_2 \neq d \)    | Reject \( H_0 \) if \( T \geq t_{\alpha/2; \nu} \text{or}  \leq -t_{\alpha/2; m + n -2}  \)          |
+<table style="width:100%; border-collapse: collapse;">
+  <tr style="background-color:#f2f2f2;">
+    <th style="padding: 8px; border: 1px solid #ddd;"><strong>Alternate Hypothesis</strong></th>
+    <th style="padding: 8px; border: 1px solid #ddd;"><strong>Rejection Criterion</strong></th>
+  </tr>
+  <tr>
+    <td style="padding: 8px; border: 1px solid #ddd;">\( H_A: \mu_1 - \mu_2 \leq d \)</td>
+    <td style="padding: 8px; border: 1px solid #ddd;">Reject \( H_0 \) if \( T \leq -t_{\alpha; \nu} \)</td>
+  </tr>
+  <tr>
+    <td style="padding: 8px; border: 1px solid #ddd;">\( H_A: \mu_1 - \mu_2 \geq d \)</td>
+    <td style="padding: 8px; border: 1px solid #ddd;">Reject \( H_0 \) if \( T \geq t_{\alpha; \nu} \)</td>
+  </tr>
+  <tr>
+    <td style="padding: 8px; border: 1px solid #ddd;">\( H_A: \mu_1 - \mu_2 \neq d \)</td>
+    <td style="padding: 8px; border: 1px solid #ddd;">Reject \( H_0 \) if \( T \geq t_{\alpha/2; \nu} \text{ or } T \leq -t_{\alpha/2; \nu} \)</td>
+  </tr>
+</table>
+
 
 
 
@@ -149,11 +250,24 @@ knitr::opts_chunk$set(echo = T, warning = F, message = F)
 ## Rejection Criterion: 
 
 
-| **Alternate Hypothesis**                                  | **Rejection Criterion**     |
-|-------------------------------|--------------------------------------------------------------|
-| \( H_A: \mu_1 - \mu_2 \leq d \)       | Reject \( H_0 \) if \( T \leq -t_{\alpha; \nu} \)           |
-|  \( H_A: \mu_1 -  \mu_2 \geq d\)       | Reject \( H_0 \) if \(T > t_{\alpha; \nu} \)            |
-| \( H_A: \mu_1 - \mu_2 \neq d \)    | Reject \( H_0 \) if \( T \geq t_{\alpha/2; \nu} \text{or}  \leq -t_{\alpha/2; m + n -2}  \) |
+<table style="width:100%; border-collapse: collapse;">
+  <tr style="background-color:#f2f2f2;">
+    <th style="padding: 8px; border: 1px solid #ddd;"><strong>Alternate Hypothesis</strong></th>
+    <th style="padding: 8px; border: 1px solid #ddd;"><strong>Rejection Criterion</strong></th>
+  </tr>
+  <tr>
+    <td style="padding: 8px; border: 1px solid #ddd;">\( H_A: \mu_1 - \mu_2 \leq d \)</td>
+    <td style="padding: 8px; border: 1px solid #ddd;">Reject \( H_0 \) if \( T \leq -t_{\alpha; \nu} \)</td>
+  </tr>
+  <tr>
+    <td style="padding: 8px; border: 1px solid #ddd;">\( H_A: \mu_1 - \mu_2 \geq d \)</td>
+    <td style="padding: 8px; border: 1px solid #ddd;">Reject \( H_0 \) if \( T \geq t_{\alpha; \nu} \)</td>
+  </tr>
+  <tr>
+    <td style="padding: 8px; border: 1px solid #ddd;">\( H_A: \mu_1 - \mu_2 \neq d \)</td>
+    <td style="padding: 8px; border: 1px solid #ddd;">Reject \( H_0 \) if \( T \geq t_{\alpha/2; \nu} \text{ or } T \leq -t_{\alpha/2; \nu} \)</td>
+  </tr>
+</table>
 
 
 
@@ -219,13 +333,20 @@ kable(deer_data, col.names = c("Deer", "Foreleg Length (cm)", "Hindleg Length (c
   
 ## Example 1 (cont.)
 
-```{r}
+```{r echo=F, eval=F}
 diff = deer_data$Foreleg_Length - deer_data$Hindleg_Length
 mean(diff)
 var(diff)
 t.test(diff, mu = 0, alternative = "two.sided", conf.level = 0.95)
 ```
 
+
+
+```{r}
+foreleg = deer_data$Foreleg_Length
+hindleg = deer_data$Hindleg_Length
+t.test(foreleg, hindleg, mu = 0, paired = TRUE, alternative = "two.sided", conf.level = 0.95)
+```
 
 
 ## Example 1 (cont.)
@@ -239,6 +360,15 @@ t.test(diff, mu = 0, alternative = "two.sided", conf.level = 0.95)
 * There is enough evidence that the average difference between leg lengths is not $0$.
 
 
+## Example 1: Calculation by hand
+
+* Statistics:
+  
+  1. N = 10, $\bar{X}_1$ (Mean of Foreleg): 144.7, $\bar{X}_2$ (Mean Hindleg): 141.4.
+  2. Variance of the difference: $s^2 = 9.34$.
+  3. $T =\frac{\sqrt{n}(\bar{X}_1 - \bar{X}_2) - d}{s}$ = $\frac{\sqrt{10}(144.7 - 141.4) - 0}{\sqrt{9.34}}$ = 3.413.
+  4. Critical value: c = $t_{\alpha/2, n-1} = t_{0.025, 10-1} = 2.26$.
+  5. Reject $H_0$ since T > critical value.
 
 ## Example 2.
 
@@ -276,14 +406,16 @@ t.test(foreleg, hindleg, mu = 1.5, paired = TRUE, alternative = "greater", conf.
 * There is enough evidence that the average difference between leg lengths is greater than $1.5$.
 
 
-## Example 3
 
-## Two-Sample t-Test (Independent, Equal Variance)
 
-This table shows an example of heights of plants under two different fertilizers. Test if the new fertilizer is working better. 
-<center> Old fertilizer: 48.2, 54.6, 58.3, 47.8, 51.4, 52.0, 55.2, 49.1, 49.9, 52.6</center>
-<center> New fertilizer: 52.3, 57.4, 55.6, 53.2, 61.3, 58.0, 59.8, 54.8 </center>
+## Example 3: (Independent, Equal Variance)
 
+This table shows an example of heights of plants under two different fertilizers. Test if the new fertilizer is working better, i.e., average height under the new fertilizer is more than the earlier one. <br><br>
+<center> Old fertilizer: **<span style = "color:red">48.2, 54.6, 58.3, 47.8, 51.4, 52.0, 55.2, 49.1, 49.9, 52.6</span>**</center>
+<center> New fertilizer: **<span style = "color:red">52.3, 57.4, 55.6, 53.2, 61.3, 58.0, 59.8, 54.8</span>** </center>
+
+
+## Example 3: (cont.)
 
 
 ```{r echo =F}
@@ -337,12 +469,13 @@ kable(t_test_table, col.names = c("Statistic", "Group 1", "Group 2")) %>%
 * $H_0$: $\mu_1 \geq \mu_2$ vs $\mu_1 < \mu_2$.
 * Estimate for common variance = $s^2$ = $\frac{(10 - 1) * 11.3588 + (8 - 1) * 9.8857}{10 + 8 - 2} = 10.7143$.
 * Test statistic: $T = \frac{(51.91	- 56.55)}{\sqrt{10.7143/10 + 10.7143/8 }} = -2.988$.
-* Critical value: $ - t_{0.05; 10 + 8 - 2} = -1.75$.
+* Critical value: $-t_{0.05; 10 + 8 - 2} = -1.75$.
 * Reject since $T <$ critical value.
 
 
 
-## Two-Sample t-Test (Contd.)
+## Example 3: (cont.)
+
 
 ```{r}
 height = c(48.2, 54.6, 58.3, 47.8, 51.4, 52.0, 55.2, 49.1, 49.9, 52.6,
@@ -357,7 +490,8 @@ t.test(height ~ fertilizer, conf.level = 0.95, var.equal = TRUE)
 * I suggest you always use a prefix:
   - $\texttt{"1.Old"}$ before $\texttt{"2.New"}$.
   
-## Two-Sample t-Test (Contd.)
+## Example 3: (cont.)
+
 
 ```{r}
 height = c(48.2, 54.6, 58.3, 47.8, 51.4, 52.0, 55.2, 49.1, 49.9, 52.6,
@@ -373,16 +507,19 @@ t.test(height ~ fertilizer, conf.level = 0.95, var.equal = TRUE)
 
 ## Example 3: Two-Sample t-Test (Independent, Unequal Variance)
 
-The data are the times for seven cockroach eggs to hatch at one laboratory temperature and for eight eggs to hatch at another temperature. I want to test if the average days needed at $10^{\circ}$ C is 2 or more days greater than the one at $30^{\circ}$ C. Take $\alpha = 0.10$.
-<center> At $30^{\circ}$ C: **40, 38 ,32 ,37 ,39 ,41 ,35**</center>
-<center> At $10^{\circ}$ C: **36, 45 ,32 ,52 ,59 ,41 ,48 ,55** </center>
+The data are the times for seven cockroach eggs to hatch at one laboratory temperature and for eight eggs to hatch at another temperature. I want to test if the average hatching days at $10^{\circ}$C is at least 2 days greater than that at $30^{\circ}$C. Take $\alpha = 0.10$. <br> <br>
+
+<center> At $30^{\circ}$C: **<span style = "color:red">40, 38, 32, 37, 39, 41,35</span>**</center>
+<center> At $10^{\circ}$C: **<span style = "color:red">36, 45, 32, 52, 59, 41, 48, 55</span>** </center>
 
 
 ## Example 3: (Cont.)
 
+* $\mu_1$: True population mean at average hatching days at $30^{\circ}$C, $\mu_2 \cdots$ at $10^{\circ}$C. 
 * $H_0$: $\mu_1 - \mu_2 \leq -2$ vs $\mu_1 - \mu_2 > -2$.
 * One sided test. Independent Sample.
-* However, $s_1^2 = 9.62, s_2^2 = 87.43$.
+* $\bar{X}_1 = 37.43, \bar{X}_2 = 46$. 
+* However, <span style = "color:red">$s_1^2 = 9.62, s_2^2 = 87.43$ </span>.
 * Note the huge difference in sample variances. It indicates in favor of unequal variance case.
 
 
@@ -396,8 +533,8 @@ temperature = c(rep("1.Temp_30C", 7), rep("2.Temp_10C", 8))
 t.test(hatch_time ~ temperature, mu=-2, alternate="greater", conf.level = 0.9, var.equal = FALSE)
 ```
 
-* **Decision**: Reject since p-value < $\alpha$ or $95\%$ CI does not contain $-2$.
-* **Interpretation**: Enough evidence to conclude that average hatching days at $10^{\circ}$C is greater than $2$ days.
+* **Decision**: Reject since p-value < $\alpha$ or $90\%$ CI does not contain $-2$.
+* **Interpretation**: Enough evidence to conclude that average hatching days at $10^{\circ}$C is greater than at least $2$ days.
 
 
 ## Example 3: (Cont.)
@@ -422,7 +559,7 @@ t.test(hatch_time ~ temperature, mu=-2, alternate="greater", conf.level = 0.9, v
 
 * In  $\texttt{R}$, use $\texttt{t.test(<vector>, alternative = <alt>, mu = <diff>, conf.level = <1-alpha>)}$.
   - <span style="color:blue"> \<alt\> is "two.sided", "less", or "greater".</span>
-  - \< diff \> = $\mu_1 - \mu_2$.</span>
+  - \< diff \> = Hypothised value of $\mu_1 - \mu_2$.</span>
 * In case of paired $t$ test, also add the option $\texttt{paired = TRUE}$.
   - <span style="color:blue">By default, $\texttt{paired = FALSE}$ </span>
 * In case of independent $t$ test with equal variance, also add the option $\texttt{var.equal = TRUE}$.

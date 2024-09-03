@@ -1,0 +1,149 @@
+---
+title: "Nonparametric Tests"
+subtitle: "One and Two Sample Tests"
+author: "Ranadeep Daw"
+date: "`r Sys.Date()`"
+output:
+  slidy_presentation:
+    theme: flatly
+    center: true
+    widescreen: true
+    width: 1600
+    height: 900
+    df_print: kable
+    reveal_options:
+      slideNumber: true
+      previewLinks: true
+---
+
+
+
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = T, warning = F, message = F)
+```
+
+
+## Normality Assumptions
+
+\newcommand{\X}{\mathrm{X}}
+
+
+
+- **Departure from Normality**: Occurs when data does not follow a normal distribution.
+- **Consequences**:
+  - Can affect the validity of statistical tests (e.g., t-tests).
+  - May lead to incorrect conclusions.
+- **Common Causes of Departure:**
+  - **Skewness**: Asymmetry in the data distribution.
+  - **Kurtosis**: Peakedness or flatness compared to a normal distribution.
+
+
+## Skewness
+
+  - **Definition**: A measure of the asymmetry of the probability distribution.
+    - **Positive Skew**: Tail on the right side is longer.
+    - **Negative Skew**: Tail on the left side is longer.
+
+  - **Interpretation**:
+    - **Skewness = 0**: Symmetric distribution (normal).
+    - **Skewness > 0**: Right-skewed (positively skewed).
+    - **Skewness < 0**: Left-skewed (negatively skewed).
+
+  - **Visual Detection:** 
+    - **Histogram:** Visualizes the probability distribution of the data.
+    - **Look for**: Bell shape for normality, skewness for asymmetry.
+
+## Example
+
+* $\texttt{R}$ syntax: $\texttt{skewness}(<vector>)$ or $\texttt{kurtosis}(<vector>)$.
+```{r}
+# I am simulating some data
+library(e1071)
+set.seed(123)
+data <- rnorm(5000, mean = 0, sd = 1)
+#data <- data[data > 0]
+skewness(data)
+skewness(data[data > 0]) # Skewness from only positive data
+skewness(data[data < 0]) # Skewness from only negative data
+```
+
+
+
+## Example
+```{r out.width=700}
+par(mfrow = c(1, 2))
+# Example R code to plot histogram
+hist(data, main = "Example of Normality", xlab = "Values", ylab = "Density", col = "skyblue", border = "black", bins = 30, freq = F)
+hist(data[data > 0], main = "Departure from Normality", xlab = "Values", ylab = "Density", col = "skyblue", border = "black", bins = 30, freq = F)
+```
+
+
+
+## QQ Plot
+
+* **Definition:** Plots observed data quantiles against theoretical quantiles of a normal distribution.
+* **Interpretation:** If the points approximately lie on a straight line, the data is normally distributed.
+
+
+```{r out.width=700}
+par(mfrow=c(1,2))
+# Example R code to plot Q-Q plot
+qqnorm(data)
+qqline(data, col = "red", main = "Normal QQ plot")
+qqnorm(data[data > 0])
+qqline(data[data > 0], col = "red", main = "Departure of Normality")
+```
+
+
+
+
+## Non parametric Tests
+
+
+- **Definition**: Statistical methods that do not assume a specific distribution for the data.
+- **Contrast with Parametric Methods**:
+  - **Parametric**: Assumes data follows a known distribution (e.g., normal distribution).
+  - **Nonparametric**: Makes no such assumptions about the underlying data distribution. <span style="color:green">It still has parameters.</span>
+
+## Examples of Usage of Nonparametric Methods
+
+- **Small Sample Sizes**: When the sample size is too small to reliably estimate parameters.
+- **Non-Normal Data**: When data significantly departs from normality.
+- **Ordinal Data**: When dealing with ordinal data or ranks rather than interval data.
+
+## One Sample Nonparametric Test: Sign Test
+
+- **Sign Test**: A nonparametric test used to evaluate if the median of a single sample differs from a hypothesized value.
+- **Purpose**: Test if the population median of a sample $\X = \{x_1, \ldots, x_n \}$ is $\mu_0$.
+- ** Procedure**: Assign  a "plus" (+) to numbers $\geq$ $\mu_0$, a "minus" otherwise.
+  i. If $x_i > \mu_0$, it's a +.
+  ii. If $x_i < \mu_0$, it's a -.
+  iii. Under $H_0$, the number of **+** and **-** should be roughly equal, following a binomial distribution with $p = 0.5$.
+
+## Example: Median MPG in `mtcars` Dataset
+
+- $H_0$: Median mpg = 22 vs $H_A$: Median mpg $\neq$ 22. Test at $\alpha = 0.05$.
+
+```{r}
+data(mtcars)
+hypothised_median = 22
+positives_count   = sum(mtcars$mpg > hypothised_median)
+negatives_count   = sum(mtcars$mpg < hypothised_median)
+
+sign_test <- binom.test(positives_count, positives_count + negatives_count, 
+                               p = 0.5, alternative = "two.sided")
+sign_test
+```
+
+* Decision: Since $p$ value < $\alpha$, enough evidence to reject $H_0$.
+
+
+
+
+## Wilcoxon Sign-Rank Test
+
+* Can be generalized to one or two sample tests.
+* 
