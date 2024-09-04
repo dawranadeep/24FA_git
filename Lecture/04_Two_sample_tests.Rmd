@@ -30,8 +30,8 @@ Examples are from Biostatistical Analysis by Jerrold H. Zar, Prentice Hall, Fift
 
 ## Practice
 
-Following are the weight change of 17 horses given an antibiotic for two weeks (in kg):
-<center> 2.0, 1.1, 4.4, -3.1, -1.3, 3.9, 3.2, -1.6, 3.5, 1.2, 2.5, 2.3, 1.9, 1.8, 2.9, -0.3, -2.4 </center>
+Following are the weight change of 17 horses given an antibiotic for two weeks (in kg): <br> <br>
+<center> <span style = "color:red">2.0, 1.1, 4.4, -3.1, -1.3, 3.9, 3.2, -1.6, 3.5, 1.2, 2.5, 2.3, 1.9, 1.8, 2.9, -0.3, -2.4 </span></center> <br><br>
 Assume normality and let's test for the true population mean $\mu$ of this sample.
 
 <br>
@@ -117,8 +117,8 @@ t.test(horse, alternative = "less", mu = 2, conf.level = 1 - alpha)
 - Suppose you believe that UWF students, on average, rate Taylor Swift's songs at least at $80\%$. You collect a random sample of $100$ students to test your hypothesis.
   * One-sample $t$ test. 
   * <span style="color:blue">One tailed since our interest is $\geq 80\%$ or not.</span>
-  * $H_0$: $\mu < 80$ vs  $\mu \geq 80$ 
-  * Test statistic: $T = \frac{\sqrt{n}(\bar{x} - 80)}{s}$.
+  * $H_0$: $\mu < 0.80$ vs  $\mu \geq 0.80$ 
+  * Test statistic: $T = \frac{\sqrt{n}(\bar{x} - 0.80)}{s}$.
   * Critical value: $c = t_{\alpha, n-1}$.
   * Reject if $T \geq c$.
 
