@@ -4,8 +4,8 @@ subtitle: "One and Two Sample Tests"
 author: "Ranadeep Daw"
 date: "`r Sys.Date()`"
 output:
-  slidy_presentation:
-    theme: flatly
+  revealjs::revealjs_presentation:
+    theme: solar
     center: true
     widescreen: true
     width: 1600
@@ -17,67 +17,123 @@ output:
 ---
 
 
-
-
-
-
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = T, warning = F, message = F)
 ```
 
+## Recap
+
+1. Calculation of descriptive statistics, e.g., mean, median, quantiles, IQR.
+2. Estimation under normality assumption.
+3. Confidence intervals and hypothesis testing.
+  - One sample $t$ test: Two-sided and one-sided
+  - Two sample $t$ test: Two-sided and one-sided
+    * Paired sample
+    * Independent sample
+      - Equal Variance
+      - Unequal Variance
+      
+      
+## Recap: $\texttt{R}$ Syntaxes
+
+1. <span style = "color:blue;">Descriptive: </span> $\texttt{mean}(...)$, $\texttt{median}(...)$, $\texttt{quantile}(...)$, $\texttt{boxplot}(...)$.
+2. <span style = "color:blue;">T-test and CI:</span> $$\texttt{t.test(..., alternate=..., mu=..., conf.level = ...)}$$
+3. <span style = "color:blue;">Two sample T-test and CI:</span> $$\texttt{t.test(vec1, vec2, alternate=..., mu=..., conf.level = ...)}$$
+  * <span style = "color:limegreen;">For paired sample, </span> add **$\texttt{paired=TRUE}$**.
+  * <span style = "color:limegreen;">For independent sample, </span> **$\texttt{paired=FALSE}$** (by default).
+    - <span style = "color:purple;">Equal variance:</span> add **$\texttt{v𝚊𝚛.𝚎𝚚𝚞𝚊𝚕 = FALSE}$**.
+    - <span style = "color:purple;">Unequal variance:</span> **$\texttt{𝚟𝚊𝚛.𝚎𝚚𝚞𝚊𝚕 = TRUE}$** (by default).
+
+
 
 ## Normality Assumptions
+
+* Recall, we assumed that our sample is from a population that follows a normal distribution $\mathbb{N}( \mu, \sigma^2)$.
+
+  - Symmetric around it's mean, population mean = population median = $\mu$.
+  - High probabilities near the center, lower probabilities near the tails.
+  
+* What if our assumptions are wrong?
+
+## Probability Distribution
+
+```{r echo=F}
+# Define mean and standard deviation
+mu <- 0
+sigma <- 1
+
+# Generate a sequence of x values
+x <- seq(mu - 4 * sigma, mu + 4 * sigma, length = 1000)
+
+# Calculate the normal density
+y <- dnorm(x, mean = mu, sd = sigma)
+
+# Plot the normal distribution curve
+plot(x, y, type = "l", lwd = 2, col = "blue", xaxt = "na",
+     xlab = "x",
+     ylab = "Density",
+     main = "Normal Probabilities")
+
+# Shade regions and add vertical lines
+regions <- list(
+  list(from = mu - 4*sigma, to = mu - 3 * sigma, col = "lightblue", label = "0.0015"),
+  list(from = mu - 3 * sigma, to = mu - 2 * sigma, col = "lightblue", label = "0.02"),
+  list(from = mu - 2 * sigma, to = mu - sigma, col = "lightgreen", label = "0.14"),
+  list(from = mu - sigma, to = mu, col = "lightpink", label = "0.34"),
+  list(from = mu + sigma, to = mu, col = "lightpink", label = "0.34"),
+  list(from = mu + 2 * sigma, to = mu + sigma, col = "lightgreen", label = "0.14"),
+  list(from = mu + 3 * sigma, to = mu + 2 * sigma, col = "lightblue", label = "0.02"),
+  list(from = mu + 4 * sigma, to = mu + 3 * sigma, col = "lightblue", label = "0.0015")
+)
+  
+
+
+# Add shaded regions and labels
+for (region in regions) {
+  rect(region$from, 0, region$to, dnorm(region$from), border = NA)
+  text(mean(c(region$from, region$to)), dnorm(mu) * 0.1, labels = region$label, col = "black")
+}
+
+# Add vertical lines
+abline(v = mu, lty = 2)
+abline(v = c(mu - sigma, mu + sigma), lty = 2)
+abline(v = c(mu - 2 * sigma, mu + 2 * sigma), lty = 2)
+abline(v = c(mu - 3 * sigma, mu + 3 * sigma), lty = 2)
+
+# Add axis labels using Greek letters
+axis(1, at = c(mu - 4 * sigma, mu - 3 * sigma, mu - 2 * sigma, mu - sigma, mu, mu + sigma, mu + 2 * sigma, mu + 3 * sigma, mu + 4 * sigma),
+     labels = expression(-infinity, mu - 3 * sigma, mu - 2 * sigma, mu - sigma, mu, mu + sigma, mu + 2 * sigma, mu + 3 * sigma, infinity)
+     )
+
+
+```
+
+
+
+## Departure from Normality Assumptions
 
 \newcommand{\X}{\mathrm{X}}
 
 
 
-- **Departure from Normality**: Occurs when data does not follow a normal distribution.
+- **Departure from Normality**: Occurs when the sample suggests that the population does not follow a normal distribution.
 - **Consequences**:
   - Can affect the validity of statistical tests (e.g., t-tests).
   - May lead to incorrect conclusions.
 - **Common Causes of Departure:**
-  - **Skewness**: Asymmetry in the data distribution.
+  - **Skewness**: Asymmetry in the distribution.
   - **Kurtosis**: Peakedness or flatness compared to a normal distribution.
 
 
-## Skewness
-
-  - **Definition**: A measure of the asymmetry of the probability distribution.
-    - **Positive Skew**: Tail on the right side is longer.
-    - **Negative Skew**: Tail on the left side is longer.
-
-  - **Interpretation**:
-    - **Skewness = 0**: Symmetric distribution (normal).
-    - **Skewness > 0**: Right-skewed (positively skewed).
-    - **Skewness < 0**: Left-skewed (negatively skewed).
-
-  - **Visual Detection:** 
-    - **Histogram:** Visualizes the probability distribution of the data.
-    - **Look for**: Bell shape for normality, skewness for asymmetry.
 
 ## Example
 
-* $\texttt{R}$ syntax: $\texttt{skewness}(<vector>)$ or $\texttt{kurtosis}(<vector>)$.
-```{r}
-# I am simulating some data
-library(e1071)
-set.seed(123)
-data <- rnorm(5000, mean = 0, sd = 1)
-#data <- data[data > 0]
-skewness(data)
-skewness(data[data > 0]) # Skewness from only positive data
-skewness(data[data < 0]) # Skewness from only negative data
-```
-
-
-
-## Example
-```{r out.width=700}
+```{r echo=F, out.width=700}
+data = rnorm(5000, 0, 1)
 par(mfrow = c(1, 2))
 # Example R code to plot histogram
-hist(data, main = "Example of Normality", xlab = "Values", ylab = "Density", col = "skyblue", border = "black", bins = 30, freq = F)
-hist(data[data > 0], main = "Departure from Normality", xlab = "Values", ylab = "Density", col = "skyblue", border = "black", bins = 30, freq = F)
+hist(data, main = "Example of Normality", xlab = "x", ylab = "Count", col = "skyblue", border = "black", breaks = 100)
+hist(data[data > 0], main = "Departure from Normality", xlab = "x", ylab = "Count", col = "skyblue", border = "black", breaks = 100)
 ```
 
 
@@ -87,18 +143,35 @@ hist(data[data > 0], main = "Departure from Normality", xlab = "Values", ylab = 
 * **Definition:** Plots observed data quantiles against theoretical quantiles of a normal distribution.
 * **Interpretation:** If the points approximately lie on a straight line, the data is normally distributed.
 
+  - **Look for**: Departure from normality if points are not on a straight line.
+* $\texttt{R}$ Syntax: 
 
-```{r out.width=700}
-par(mfrow=c(1,2))
+```{r eval=F, out.width=500}
+qqnorm(<vector>)
+qqline(<vector>)
+```
+
+## Example: Evidence of normality
+
+```{r echo=T, out.width=500}
 # Example R code to plot Q-Q plot
+data = rnorm(5000, 0, 1)
 qqnorm(data)
-qqline(data, col = "red", main = "Normal QQ plot")
-qqnorm(data[data > 0])
-qqline(data[data > 0], col = "red", main = "Departure of Normality")
+qqline(data, col = "red")
+
+
 ```
 
 
 
+## Example: Evidence of Departure from normality
+
+
+```{r echo=T, out.width=500}
+data2 = data[data < 0]
+qqnorm(data2)
+qqline(data2, col = "red")
+```
 
 ## Non parametric Tests
 
