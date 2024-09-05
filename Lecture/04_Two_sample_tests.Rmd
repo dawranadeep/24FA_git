@@ -481,8 +481,10 @@ kable(t_test_table, col.names = c("Statistic", "Group 1", "Group 2")) %>%
 height = c(48.2, 54.6, 58.3, 47.8, 51.4, 52.0, 55.2, 49.1, 49.9, 52.6,
            52.3, 57.4, 55.6, 53.2, 61.3, 58.0, 59.8, 54.8)
 fertilizer = c(rep("Old", 10), rep("New", 8))
-t.test(height ~ fertilizer, conf.level = 0.95, var.equal = TRUE)
+t.test(height ~ fertilizer, conf.level = 0.95, mu=0, var.equal = TRUE, alternative = "less")
 ```
+
+## Example 3: Cont.
 
 * Note: The $t$ statistic is positive, but in our earlier answer, it was negative.
 * This is due to $\texttt{R}$; it groups $\texttt{<var1>} \sim \texttt{<var2>}$ in alphabetical order of $\texttt{<var2>}$.
@@ -497,7 +499,7 @@ t.test(height ~ fertilizer, conf.level = 0.95, var.equal = TRUE)
 height = c(48.2, 54.6, 58.3, 47.8, 51.4, 52.0, 55.2, 49.1, 49.9, 52.6,
            52.3, 57.4, 55.6, 53.2, 61.3, 58.0, 59.8, 54.8)
 fertilizer = c(rep("1.Old", 10), rep("2.New", 8))
-t.test(height ~ fertilizer, conf.level = 0.95, var.equal = TRUE)
+t.test(height ~ fertilizer, conf.level = 0.95, mu=0, var.equal = TRUE, alternative = "less")
 ```
 
 * **Decision:** Reject since p-value < 0.05; or since confidence interval doesn't contain $0$.
@@ -505,51 +507,50 @@ t.test(height ~ fertilizer, conf.level = 0.95, var.equal = TRUE)
 
 
 
-## Example 3: Two-Sample t-Test (Independent, Unequal Variance)
+## Example 4: Two-Sample t-Test (Independent, Unequal Variance)
 
-The data are the times for seven cockroach eggs to hatch at one laboratory temperature and for eight eggs to hatch at another temperature. I want to test if the average hatching days at $10^{\circ}$C is at least 2 days greater than that at $30^{\circ}$C. Take $\alpha = 0.10$. <br> <br>
+The data are the times for seven cockroach eggs to hatch at one laboratory temperature and for eight eggs to hatch at another temperature. Define $\mu_1$ as the true population mean at average hatching days at $30^{\circ}$C; and $\mu_2$ the same at $10^{\circ}$C. I want to test if $\mu_1 - \mu_2 > -13.5$. Take $\alpha = 0.10$. <br> <br>
 
 <center> At $30^{\circ}$C: **<span style = "color:red">40, 38, 32, 37, 39, 41,35</span>**</center>
 <center> At $10^{\circ}$C: **<span style = "color:red">36, 45, 32, 52, 59, 41, 48, 55</span>** </center>
 
 
-## Example 3: (Cont.)
+## Example 4: (Cont.)
 
-* $\mu_1$: True population mean at average hatching days at $30^{\circ}$C, $\mu_2 \cdots$ at $10^{\circ}$C. 
-* $H_0$: $\mu_1 - \mu_2 \leq -2$ vs $\mu_1 - \mu_2 > -2$.
+ 
+* $H_0$: $\mu_1 - \mu_2 \leq -13.5$ vs $\mu_1 - \mu_2 > -13.5$.
 * One sided test. Independent Sample.
 * $\bar{X}_1 = 37.43, \bar{X}_2 = 46$. 
 * However, <span style = "color:red">$s_1^2 = 9.62, s_2^2 = 87.43$ </span>.
 * Note the huge difference in sample variances. It indicates in favor of unequal variance case.
 
 
-## Example 3: (Cont.)
+## Example 4: (Cont.)
 
 
 ```{r}
 hatch_time = c(40, 38 ,32 ,37 ,39 ,41 ,35,
                36, 45 ,32 ,52 ,59 ,41 ,48 ,55)
 temperature = c(rep("1.Temp_30C", 7), rep("2.Temp_10C", 8))
-t.test(hatch_time ~ temperature, mu=-2, alternate="greater", conf.level = 0.9, var.equal = FALSE)
+t.test(hatch_time ~ temperature, mu=-13.5, alternative="greater", conf.level = 0.9, var.equal = FALSE)
 ```
 
-* **Decision**: Reject since p-value < $\alpha$ or $90\%$ CI does not contain $-2$.
-* **Interpretation**: Enough evidence to conclude that average hatching days at $10^{\circ}$C is greater than at least $2$ days.
+* **Decision**: Reject since p-value < $\alpha$ or $90\%$ CI does not contain $-13.5$.
 
 
-## Example 3: (Cont.)
+## Example 4: (Cont.)
 
-* What if we make a mistake and disregard unequal variance?
+* What if we disregard unequal variance?
 
 ```{r}
 hatch_time = c(40, 38 ,32 ,37 ,39 ,41 ,35,
                36, 45 ,32 ,52 ,59 ,41 ,48 ,55)
 temperature = c(rep("1.Temp_30C", 7), rep("2.Temp_10C", 8))
-t.test(hatch_time ~ temperature, mu=-2, alternate="greater", conf.level = 0.9, var.equal = TRUE)
+t.test(hatch_time ~ temperature, mu=-13.5, alternative="greater", conf.level = 0.9, var.equal = TRUE)
 ```
 
-* **Decision**: Can't reject since p-value > $\alpha$ or $95\%$ CI contains $-2$.
-* **Interpretation**: Not enough evidence to reject the $H_0$ that average hatching days at $10^{\circ}$C takes less than or equal to $2$ days.
+* **Decision**: Can't reject since p-value > $\alpha$ or CI contains $-13.5$.
+
 
 
 

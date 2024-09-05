@@ -6,7 +6,7 @@
   <meta http-equiv="Content-Style-Type" content="text/css" />
   <meta name="generator" content="pandoc" />
   <meta name="author" content="Ranadeep Daw" />
-  <meta name="date" content="2024-09-04" />
+  <meta name="date" content="2024-09-05" />
   <title>Two-sample t Tests</title>
   <style type="text/css">
 code{white-space: pre-wrap;}
@@ -1614,7 +1614,7 @@ Tests</h1>
   <p class="author">
 Ranadeep Daw
   </p>
-  <p class="date">2024-09-04</p>
+  <p class="date">2024-09-05</p>
 </div>
 <div id="acknowledgement" class="slide section level2">
 <h1>Acknowledgement</h1>
@@ -2377,18 +2377,21 @@ value.</li>
 <div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a>height <span class="ot">=</span> <span class="fu">c</span>(<span class="fl">48.2</span>, <span class="fl">54.6</span>, <span class="fl">58.3</span>, <span class="fl">47.8</span>, <span class="fl">51.4</span>, <span class="fl">52.0</span>, <span class="fl">55.2</span>, <span class="fl">49.1</span>, <span class="fl">49.9</span>, <span class="fl">52.6</span>,</span>
 <span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a>           <span class="fl">52.3</span>, <span class="fl">57.4</span>, <span class="fl">55.6</span>, <span class="fl">53.2</span>, <span class="fl">61.3</span>, <span class="fl">58.0</span>, <span class="fl">59.8</span>, <span class="fl">54.8</span>)</span>
 <span id="cb13-3"><a href="#cb13-3" tabindex="-1"></a>fertilizer <span class="ot">=</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="st">&quot;Old&quot;</span>, <span class="dv">10</span>), <span class="fu">rep</span>(<span class="st">&quot;New&quot;</span>, <span class="dv">8</span>))</span>
-<span id="cb13-4"><a href="#cb13-4" tabindex="-1"></a><span class="fu">t.test</span>(height <span class="sc">~</span> fertilizer, <span class="at">conf.level =</span> <span class="fl">0.95</span>, <span class="at">var.equal =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<span id="cb13-4"><a href="#cb13-4" tabindex="-1"></a><span class="fu">t.test</span>(height <span class="sc">~</span> fertilizer, <span class="at">conf.level =</span> <span class="fl">0.95</span>, <span class="at">mu=</span><span class="dv">0</span>, <span class="at">var.equal =</span> <span class="cn">TRUE</span>, <span class="at">alternative =</span> <span class="st">&quot;less&quot;</span>)</span></code></pre></div>
 <pre><code>## 
 ##  Two Sample t-test
 ## 
 ## data:  height by fertilizer
-## t = 2.9884, df = 16, p-value = 0.008686
-## alternative hypothesis: true difference in means between group New and group Old is not equal to 0
+## t = 2.9884, df = 16, p-value = 0.9957
+## alternative hypothesis: true difference in means between group New and group Old is less than 0
 ## 95 percent confidence interval:
-##  1.34853 7.93147
+##      -Inf 7.350745
 ## sample estimates:
 ## mean in group New mean in group Old 
 ##             56.55             51.91</code></pre>
+</div>
+<div id="example-3-cont.-2" class="slide section level2">
+<h1>Example 3: Cont.</h1>
 <ul>
 <li>Note: The <span class="math inline">\(t\)</span> statistic is
 positive, but in our earlier answer, it was negative.</li>
@@ -2406,20 +2409,20 @@ before <span class="math inline">\(\texttt{&quot;2.New&quot;}\)</span>.</li>
 </ul></li>
 </ul>
 </div>
-<div id="example-3-cont.-2" class="slide section level2">
+<div id="example-3-cont.-3" class="slide section level2">
 <h1>Example 3: (cont.)</h1>
 <div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a>height <span class="ot">=</span> <span class="fu">c</span>(<span class="fl">48.2</span>, <span class="fl">54.6</span>, <span class="fl">58.3</span>, <span class="fl">47.8</span>, <span class="fl">51.4</span>, <span class="fl">52.0</span>, <span class="fl">55.2</span>, <span class="fl">49.1</span>, <span class="fl">49.9</span>, <span class="fl">52.6</span>,</span>
 <span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a>           <span class="fl">52.3</span>, <span class="fl">57.4</span>, <span class="fl">55.6</span>, <span class="fl">53.2</span>, <span class="fl">61.3</span>, <span class="fl">58.0</span>, <span class="fl">59.8</span>, <span class="fl">54.8</span>)</span>
 <span id="cb15-3"><a href="#cb15-3" tabindex="-1"></a>fertilizer <span class="ot">=</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="st">&quot;1.Old&quot;</span>, <span class="dv">10</span>), <span class="fu">rep</span>(<span class="st">&quot;2.New&quot;</span>, <span class="dv">8</span>))</span>
-<span id="cb15-4"><a href="#cb15-4" tabindex="-1"></a><span class="fu">t.test</span>(height <span class="sc">~</span> fertilizer, <span class="at">conf.level =</span> <span class="fl">0.95</span>, <span class="at">var.equal =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<span id="cb15-4"><a href="#cb15-4" tabindex="-1"></a><span class="fu">t.test</span>(height <span class="sc">~</span> fertilizer, <span class="at">conf.level =</span> <span class="fl">0.95</span>, <span class="at">mu=</span><span class="dv">0</span>, <span class="at">var.equal =</span> <span class="cn">TRUE</span>, <span class="at">alternative =</span> <span class="st">&quot;less&quot;</span>)</span></code></pre></div>
 <pre><code>## 
 ##  Two Sample t-test
 ## 
 ## data:  height by fertilizer
-## t = -2.9884, df = 16, p-value = 0.008686
-## alternative hypothesis: true difference in means between group 1.Old and group 2.New is not equal to 0
+## t = -2.9884, df = 16, p-value = 0.004343
+## alternative hypothesis: true difference in means between group 1.Old and group 2.New is less than 0
 ## 95 percent confidence interval:
-##  -7.93147 -1.34853
+##       -Inf -1.929255
 ## sample estimates:
 ## mean in group 1.Old mean in group 2.New 
 ##               51.91               56.55</code></pre>
@@ -2430,13 +2433,12 @@ confidence interval doesn’t contain <span class="math inline">\(0\)</span>.</l
 leads to higher height of the plants.</li>
 </ul>
 </div>
-<div id="example-3-two-sample-t-test-independent-unequal-variance" class="slide section level2">
-<h1>Example 3: Two-Sample t-Test (Independent, Unequal Variance)</h1>
+<div id="example-4-two-sample-t-test-independent-unequal-variance" class="slide section level2">
+<h1>Example 4: Two-Sample t-Test (Independent, Unequal Variance)</h1>
 <p>The data are the times for seven cockroach eggs to hatch at one
 laboratory temperature and for eight eggs to hatch at another
-temperature. I want to test if the average hatching days at <span class="math inline">\(10^{\circ}\)</span>C is at least 2 days greater
-than that at <span class="math inline">\(30^{\circ}\)</span>C. Take
-<span class="math inline">\(\alpha = 0.10\)</span>. <br> <br></p>
+temperature. Define <span class="math inline">\(\mu_1\)</span> as the
+true population mean at average hatching days at <span class="math inline">\(30^{\circ}\)</span>C; and <span class="math inline">\(\mu_2\)</span> the same at <span class="math inline">\(10^{\circ}\)</span>C. I want to test if <span class="math inline">\(\mu_1 - \mu_2 &gt; -13.5\)</span>. Take <span class="math inline">\(\alpha = 0.10\)</span>. <br> <br></p>
 <center>
 At <span class="math inline">\(30^{\circ}\)</span>C: <strong><span style="color:red">40, 38, 32, 37, 39, 41,35</span></strong>
 </center>
@@ -2444,12 +2446,10 @@ At <span class="math inline">\(30^{\circ}\)</span>C: <strong><span style="color:
 At <span class="math inline">\(10^{\circ}\)</span>C: <strong><span style="color:red">36, 45, 32, 52, 59, 41, 48, 55</span></strong>
 </center>
 </div>
-<div id="example-3-cont.-3" class="slide section level2">
-<h1>Example 3: (Cont.)</h1>
+<div id="example-4-cont." class="slide section level2">
+<h1>Example 4: (Cont.)</h1>
 <ul>
-<li><span class="math inline">\(\mu_1\)</span>: True population mean at
-average hatching days at <span class="math inline">\(30^{\circ}\)</span>C, <span class="math inline">\(\mu_2 \cdots\)</span> at <span class="math inline">\(10^{\circ}\)</span>C.</li>
-<li><span class="math inline">\(H_0\)</span>: <span class="math inline">\(\mu_1 - \mu_2 \leq -2\)</span> vs <span class="math inline">\(\mu_1 - \mu_2 &gt; -2\)</span>.</li>
+<li><span class="math inline">\(H_0\)</span>: <span class="math inline">\(\mu_1 - \mu_2 \leq -13.5\)</span> vs <span class="math inline">\(\mu_1 - \mu_2 &gt; -13.5\)</span>.</li>
 <li>One sided test. Independent Sample.</li>
 <li><span class="math inline">\(\bar{X}_1 = 37.43, \bar{X}_2 =
 46\)</span>.</li>
@@ -2459,56 +2459,49 @@ average hatching days at <span class="math inline">\(30^{\circ}\)</span>C, <span
 of unequal variance case.</li>
 </ul>
 </div>
-<div id="example-3-cont.-4" class="slide section level2">
-<h1>Example 3: (Cont.)</h1>
+<div id="example-4-cont.-1" class="slide section level2">
+<h1>Example 4: (Cont.)</h1>
 <div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a>hatch_time <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">40</span>, <span class="dv">38</span> ,<span class="dv">32</span> ,<span class="dv">37</span> ,<span class="dv">39</span> ,<span class="dv">41</span> ,<span class="dv">35</span>,</span>
 <span id="cb17-2"><a href="#cb17-2" tabindex="-1"></a>               <span class="dv">36</span>, <span class="dv">45</span> ,<span class="dv">32</span> ,<span class="dv">52</span> ,<span class="dv">59</span> ,<span class="dv">41</span> ,<span class="dv">48</span> ,<span class="dv">55</span>)</span>
 <span id="cb17-3"><a href="#cb17-3" tabindex="-1"></a>temperature <span class="ot">=</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="st">&quot;1.Temp_30C&quot;</span>, <span class="dv">7</span>), <span class="fu">rep</span>(<span class="st">&quot;2.Temp_10C&quot;</span>, <span class="dv">8</span>))</span>
-<span id="cb17-4"><a href="#cb17-4" tabindex="-1"></a><span class="fu">t.test</span>(hatch_time <span class="sc">~</span> temperature, <span class="at">mu=</span><span class="sc">-</span><span class="dv">2</span>, <span class="at">alternate=</span><span class="st">&quot;greater&quot;</span>, <span class="at">conf.level =</span> <span class="fl">0.9</span>, <span class="at">var.equal =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
+<span id="cb17-4"><a href="#cb17-4" tabindex="-1"></a><span class="fu">t.test</span>(hatch_time <span class="sc">~</span> temperature, <span class="at">mu=</span><span class="sc">-</span><span class="fl">13.5</span>, <span class="at">alternative=</span><span class="st">&quot;greater&quot;</span>, <span class="at">conf.level =</span> <span class="fl">0.9</span>, <span class="at">var.equal =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
 <pre><code>## 
 ##  Welch Two Sample t-test
 ## 
 ## data:  hatch_time by temperature
-## t = -1.8735, df = 8.7104, p-value = 0.09486
-## alternative hypothesis: true difference in means between group 1.Temp_30C and group 2.Temp_10C is not equal to -2
+## t = 1.4051, df = 8.7104, p-value = 0.09731
+## alternative hypothesis: true difference in means between group 1.Temp_30C and group 2.Temp_10C is greater than -13.5
 ## 90 percent confidence interval:
-##  -15.025543  -2.117314
+##  -13.43521       Inf
 ## sample estimates:
 ## mean in group 1.Temp_30C mean in group 2.Temp_10C 
 ##                 37.42857                 46.00000</code></pre>
 <ul>
-<li><strong>Decision</strong>: Reject since p-value &lt; <span class="math inline">\(\alpha\)</span> or <span class="math inline">\(90\%\)</span> CI does not contain <span class="math inline">\(-2\)</span>.</li>
-<li><strong>Interpretation</strong>: Enough evidence to conclude that
-average hatching days at <span class="math inline">\(10^{\circ}\)</span>C is greater than at least
-<span class="math inline">\(2\)</span> days.</li>
+<li><strong>Decision</strong>: Reject since p-value &lt; <span class="math inline">\(\alpha\)</span> or <span class="math inline">\(90\%\)</span> CI does not contain <span class="math inline">\(-13.5\)</span>.</li>
 </ul>
 </div>
-<div id="example-3-cont.-5" class="slide section level2">
-<h1>Example 3: (Cont.)</h1>
+<div id="example-4-cont.-2" class="slide section level2">
+<h1>Example 4: (Cont.)</h1>
 <ul>
-<li>What if we make a mistake and disregard unequal variance?</li>
+<li>What if we disregard unequal variance?</li>
 </ul>
 <div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" tabindex="-1"></a>hatch_time <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">40</span>, <span class="dv">38</span> ,<span class="dv">32</span> ,<span class="dv">37</span> ,<span class="dv">39</span> ,<span class="dv">41</span> ,<span class="dv">35</span>,</span>
 <span id="cb19-2"><a href="#cb19-2" tabindex="-1"></a>               <span class="dv">36</span>, <span class="dv">45</span> ,<span class="dv">32</span> ,<span class="dv">52</span> ,<span class="dv">59</span> ,<span class="dv">41</span> ,<span class="dv">48</span> ,<span class="dv">55</span>)</span>
 <span id="cb19-3"><a href="#cb19-3" tabindex="-1"></a>temperature <span class="ot">=</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="st">&quot;1.Temp_30C&quot;</span>, <span class="dv">7</span>), <span class="fu">rep</span>(<span class="st">&quot;2.Temp_10C&quot;</span>, <span class="dv">8</span>))</span>
-<span id="cb19-4"><a href="#cb19-4" tabindex="-1"></a><span class="fu">t.test</span>(hatch_time <span class="sc">~</span> temperature, <span class="at">mu=</span><span class="sc">-</span><span class="dv">2</span>, <span class="at">alternate=</span><span class="st">&quot;greater&quot;</span>, <span class="at">conf.level =</span> <span class="fl">0.9</span>, <span class="at">var.equal =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<span id="cb19-4"><a href="#cb19-4" tabindex="-1"></a><span class="fu">t.test</span>(hatch_time <span class="sc">~</span> temperature, <span class="at">mu=</span><span class="sc">-</span><span class="fl">13.5</span>, <span class="at">alternative=</span><span class="st">&quot;greater&quot;</span>, <span class="at">conf.level =</span> <span class="fl">0.9</span>, <span class="at">var.equal =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
 <pre><code>## 
 ##  Two Sample t-test
 ## 
 ## data:  hatch_time by temperature
-## t = -1.769, df = 13, p-value = 0.1003
-## alternative hypothesis: true difference in means between group 1.Temp_30C and group 2.Temp_10C is not equal to -2
+## t = 1.3268, df = 13, p-value = 0.1037
+## alternative hypothesis: true difference in means between group 1.Temp_30C and group 2.Temp_10C is greater than -13.5
 ## 90 percent confidence interval:
-##  -15.149930  -1.992928
+##  -13.58692       Inf
 ## sample estimates:
 ## mean in group 1.Temp_30C mean in group 2.Temp_10C 
 ##                 37.42857                 46.00000</code></pre>
 <ul>
-<li><strong>Decision</strong>: Can’t reject since p-value &gt; <span class="math inline">\(\alpha\)</span> or <span class="math inline">\(95\%\)</span> CI contains <span class="math inline">\(-2\)</span>.</li>
-<li><strong>Interpretation</strong>: Not enough evidence to reject the
-<span class="math inline">\(H_0\)</span> that average hatching days at
-<span class="math inline">\(10^{\circ}\)</span>C takes less than or
-equal to <span class="math inline">\(2\)</span> days.</li>
+<li><strong>Decision</strong>: Can’t reject since p-value &gt; <span class="math inline">\(\alpha\)</span> or CI contains <span class="math inline">\(-13.5\)</span>.</li>
 </ul>
 </div>
 <div id="overall-instruction" class="slide section level2">
