@@ -1,0 +1,76 @@
+---
+title: "Practice Materials for Exam 1"
+author: "Ranadeep Daw"
+date: "2024-09-07"
+output: 
+  html_document:
+    toc: true
+    toc_depth: 2
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, error = T, eval = T)
+```
+
+## Data summarization
+
+### Here is a data on mean arterial pressure (MAP) by sex:
+
+```{r echo=F}
+library(knitr)
+kable(t(data.frame(
+  MAP = c(82, 84 , 85, 88 , 92 , 93, 94 , 95 , 98 , 100 , 102 , 107 , 110 , 116 , 116),
+  Sex = c("M" , "F" , "F" , "M" , "M" , "F" , "F" , "M" , "M" , "F" , "M" , "F" , "M" , "F" , "M" )
+)))
+```
+
+1. **Calculate the mean, median, variance, standard deviation, and range of MAP.**
+
+2. **Calculate the quartiles and the IQR of MAP. Draw a boxplot of MAP.**
+
+
+
+3. **Calculate the upper and lower fence values for MAP. Checking by the fence values, are there evidence of outliers?**
+
+
+## Questions from Distributions
+
+1. **Suppose that for a normal distribution, the first and third quartiles are $10$ and $25$. What are the mean, variance, median, and IQR?**
+
+2. **Define the *mode* of a distribution = $\{$ x such that Density/probability at x is the maximum $\}$. For a $\mathbb{N}(\mu, \sigma^2)$, what is the mode of the distribution?**
+
+3. **What is the difference in assumptions between nonparametric and parametric statistical methods?**
+
+4. **For a t test $H_0: \mu \geq \mu_0$ vs $H_A: \mu \leq \mu_0$, define T as the test statistic and $t_{\alpha; n-1}$ follows the usual notation for the critical value as discussed in class.** 
+
+  
+    
+  A. **If there are $25$ observations in the sample, the degrees of freedom is** _____.
+  
+  B. **The rejection region would look like:**
+
+    a. $T \leq t_{\alpha/2, n-1}$ and  $T \geq t_{\alpha/2, n-1}$. 
+    b. $T \leq t_{\alpha/2, n-1}$.
+    c. $T \leq -t_{\alpha/2, n-1}$.
+    d. $T \leq -t_{\alpha, n-1}$.
+    e. $T \geq t_{\alpha, n-1}$.
+
+
+5. **Pick the correct answer. Suppose I am performing a t-test of the form $H_0: \mu \geq \mu_0$ vs $H_A: \mu \leq \mu_0$ (under the regular assumptions). The associated $95\%$ confidence interval would look like: (Here $c_1$ and $c_2$ are real numbers)**
+  
+  a. $(c_1, c_2)$.
+  b. $(c_1, \infty)$.
+  c. $(-\infty, c_2)$.
+  
+
+
+## Estimation
+
+### Use the mtcars data from $\texttt{R}$. 
+
+
+1. Can you estimate the population mean, median, variance, and the first quartile of the $\texttt{wt}$ variable under normality assumption? Please justify your answer.
+
+2. What are your reasonable estimates for the same under nonparametric method (or without a parametric assumption)? Please justify your answer.
+
+3. Perform a one sample $t$ test to test
