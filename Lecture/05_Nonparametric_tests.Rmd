@@ -8,6 +8,7 @@ output:
     theme: "flatly"
     center: true
     widescreen: true
+    self_contained: true
     width: 1600
     height: 900
     df_print: kable
@@ -366,7 +367,7 @@ binom.test(positives_count, positives_count + negatives_count,
 
 
 
-## Mann-Whitney Test
+## Mann-Whitney Test / Wilcoxon Rank-Sum Test
 
 * Equivalent of two sample independent $t$ test.
   - Group 1: $\X_1: \{x_{11}, x_{12}, \cdots, x_{1m} \}$. 
@@ -378,9 +379,9 @@ binom.test(positives_count, positives_count + negatives_count,
 
 1. Combine both the samples together.
 2. Rank them together. Smallest = Rank 1, largest = Rank (m + n).
-3. Test statistic: S = Sum of ranks of sample 1.
+3. S = Sum of ranks of sample 1.
 4. For large samples, under $H_0$, S follows normal distirbution with mean $\mu_S = \frac{m(m+n+1)}{2}$,  variance $\sigma^2_S = \frac{mn(m+n+1)}{12}$. 
-5. Test statistic: W = $\frac{S - \mu_S}{\sigma_S}$.
+5. Test statistic 2: W = $\frac{S - \mu_S}{\sigma_S}$.
 6. Reject if:
   
   - $|W| > z_{\alpha/2}$ if $H_A: M_1 \neq M_2$
@@ -389,7 +390,7 @@ binom.test(positives_count, positives_count + negatives_count,
 
 
 
-## Example: Ranking
+## Example: Method of Ranking
 
 * Group 1: $\{15, 20, 22, 21, 18 \}$.
 * Group 2: $\{9, 16, 25, 12, 10, 11, 17, 8 \}$.
@@ -421,6 +422,13 @@ This table shows an example of heights of plants under two different fertilizers
 
 ## $\texttt{R}$ syntax
 
+Syntax:
+```{r eval=F}
+wilcox.test(<values> ~ <group>, conf.level = 1- <alpha>, 
+            mu = 0, alternative="less", exact=FALSE)
+```
+
+Example:
 ```{r}
 height = c(48.2, 54.6, 58.3, 47.8, 51.4, 52.0, 55.2, 49.1, 49.9, 52.6,
            52.3, 57.4, 55.6, 53.2, 61.3, 58.0, 59.8, 54.8)
@@ -431,6 +439,97 @@ wilcox.test(height ~ fertilizer, conf.level = 1-0.05, mu = 0,
 
 
 
+## Wilcoxon Signed-Rank Test 
+
+
+* Equivalent of two sample paired $t$ test.
+  -   |           | Subject 1 | Subject 2 | $\ldots$ | Subject n | 
+|-----------|-----------|-----------|-----------|-----------|
+| **Variable 1** |     $x_{11}$    |     $x_{12}$    |     $\ldots$    |    $x_{1n}$  |
+| **Variable 2** |     $x_{21}$    |     $x_{22}$    |     $\ldots$    |     $x_{2n}$    |   
+
+  - $H_0$: $M_1$ (Median of variable 1) = $M_2$ (Median of variable 2)
+  - $H_A$: $M_1$ $\neq, \leq, or \geq$ $M_2$.
+
+
+## Procedure
+
+1. Form the differences and signs:
+
+|           | Subject 1 | Subject 2 | $\ldots$ | Subject n | 
+|   -----------|   -----------|   -----------|   -----------|   -----------|
+| **Variable 1** |     $x_{11}$                     |     $x_{12}$                   |     $\ldots$    |    $x_{1n}$  |
+| **Variable 2** |     $x_{21}$                     |     $x_{22}$                   |     $\ldots$    |     $x_{2n}$    | 
+| **Difference** |     $d_1 = (x_{11} - x_{21}$)    |     $d_2 = (x_{12} - x_{22})$    |     $\ldots$    |     $d_n = (x_{1n} - x_{2n})$    | 
+| **Signs** |     $S_1 = +1$ if $d_1 > 0$, -1 ow.    |     $S_2 = +1$ if $d_2 > 0$, -1 ow.    |     $\ldots$    |     $S_n = +1$ if $d_n > 0$, -1 ow.    | 
+
+2. Rank the absolute differences $|d_i|$ in increasing order (lowest = 1 to highest = (m+n)).
+
+## Procedure (cont.)
+
+3. $T = S_1 d_1 + S_2d_2 + \ldots + S_nd_n$.
+4. For large sample size, under $H_0$: $\mathbb{E}(T) = 0$;  var$(T) = \sigma_T^2 = \frac{n(n+1)(2n+1)}{6}$.
+5. Test statistic: Z = $\frac{T - 0}{\sigma_T}$.
+6. Reject if:
+  
+  - $|Z| > z_{\alpha/2}$ if $H_A: M_1 \neq M_2$
+  - $Z \geq z_{\alpha}$ if $H_A: M_1 \geq M_2$
+  - $Z \leq z_{\alpha}$ if $H_A: M_1 \leq M_2$
+
+
+
+## Example from last class: Deer leg lengths
+
+
+* I want to test if the median hindleg length and foreleg length of deers are the same from the following sample:
+
+```{r}
+Foreleg_Length = c(142, 140, 144, 144, 142, 146, 149, 150, 142, 148)
+Hindleg_Length = c(138, 136, 147, 139, 143, 141, 143, 145, 136, 146)
+```
+
+
+* Note: paired data, two-sided test.
+* $H_0$: $M_1 = M_2$ vs $H_A$: $M_1 \neq M_2$.
+
+
+
+## Cont.
+
+*Step 1:* Calculate the differences and signs.
+
+```{r}
+diffs = Foreleg_Length - Hindleg_Length
+signs = sign(diffs) # sign function calculates sign
+diffs
+signs
+```
+
+
+*Step 2:* Calculate the signed-rank sum
+```{r}
+T = sum(diffs * signs)
+T
+```
+
+Remaining code will use the $\texttt{wilcox.test}$ function.
+
+
+## $\texttt{R}$ Syntax
+
+Syntax:
+```{r eval=F}
+wilcox.test(<var1>, <var2>, alternative = <"greater", "less", or "two.sided">,
+            mu = 0, paired = TRUE, exact = FALSE, conf.level =  1 - <alpha>)
+```
+
+Example:
+```{r}
+wilcox.test(Foreleg_Length, Hindleg_Length, alternative = "two.sided",
+            mu = 0, paired = TRUE, exact = FALSE, conf.level = 0.95)
+```
+
+Reject $H_0$ since $p$-value <$\alpha$.
 
 
 
