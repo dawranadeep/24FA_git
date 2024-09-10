@@ -22,6 +22,7 @@ knitr::opts_chunk$set(echo = TRUE, error = T, eval = T)
 
 
 
+## Output Analyzing
 
 #### 1. Look at the following output of a test in $\texttt{R}$.
 
@@ -44,8 +45,13 @@ knitr::opts_chunk$set(echo = TRUE, error = T, eval = T)
 
 
 
+<br><br>
 
+#### 2.  Now do the same for the following test. Also can you tell what the confidence interval is about?
 
+![](https://raw.githubusercontent.com/dawranadeep/24FA_git/main/Practice_qns/img/binom_2.png)
+
+<br><br>
 
 ## Conceptual Questions
 
@@ -119,6 +125,7 @@ kable(t(data.frame(
 
 
 
+<br><br>
 
 ## Estimation and one sample test
 
@@ -129,7 +136,7 @@ bodyfat_data = read.csv(url("https://hbiostat.org/data/repo/bodyfat.csv"))
 ```
 
 
-#### 1. Can you reasonably estimate the population mean, variance, and the first quartile of the $\texttt{wt}$ variable under normality assumption? Please justify your answer.
+#### 1. Can you reasonably estimate the population mean, variance, and the first quartile of the $\texttt{Density}$ (column name = *Density*)variable under normality assumption? Please justify your answer.
 
 #### 2. What are your reasonable estimates for the same under nonparametric method (or without a parametric assumption)? Please justify your answer.
 

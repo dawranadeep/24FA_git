@@ -386,7 +386,7 @@ binom.test(positives_count, positives_count + negatives_count,
   
   - $|W| > z_{\alpha/2}$ if $H_A: M_1 \neq M_2$
   - $W \geq z_{\alpha}$ if $H_A: M_1 \geq M_2$
-  - $W \leq z_{\alpha}$ if $H_A: M_1 \leq M_2$
+  - $W \leq -z_{\alpha}$ if $H_A: M_1 \leq M_2$
 
 
 
@@ -478,7 +478,7 @@ wilcox.test(height ~ fertilizer, conf.level = 1-0.05, mu = 0,
   
   - $|Z| > z_{\alpha/2}$ if $H_A: M_1 \neq M_2$
   - $Z \geq z_{\alpha}$ if $H_A: M_1 \geq M_2$
-  - $Z \leq z_{\alpha}$ if $H_A: M_1 \leq M_2$
+  - $Z \leq -z_{\alpha}$ if $H_A: M_1 \leq M_2$
 
 
 
