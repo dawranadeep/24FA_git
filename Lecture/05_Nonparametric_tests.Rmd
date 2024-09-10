@@ -50,8 +50,8 @@ knitr::opts_chunk$set(echo = T, warning = F, message = F)
 
 Test that male and female turtles have the same mean serum cholesterol concentrations. Take $\alpha = 0.05$.
 
-Male: 220.1 , 218.6 , 229.6 , 228.8 , 222.0 , 224.1 , 226.5
-Female: 223.4, 221.5, 230.2, 224.3, 223.8, 230.8.
+<center> Male: <span style = "color:red">220.1 , 218.6 , 229.6 , 228.8 , 222.0 , 224.1 , 226.5 </span> </center>
+<center>Female: <span style = "color:red"> 223.4, 221.5, 230.2, 224.3, 223.8, 230.8. </span></center>
 
 * $H_0$: $\mu_1 - \mu_2 = 0$, $H_A$: $\mu_1 - \mu_2 \neq 0$ 
 * Two sided test, two sample.
@@ -66,7 +66,7 @@ t.test(cholesterol ~ gender, conf.level = 1-0.05,
         mu = 0, alternative = "two.sided", var.equal=TRUE)
 ```
 
-* $p$ value > $\alpha$. Hence reject $H_0$.
+* $p$ value > $\alpha$. Hence can't reject $H_0$.
 
 
 
@@ -74,10 +74,10 @@ t.test(cholesterol ~ gender, conf.level = 1-0.05,
 
 From the following wing-legnth data (in mm), test if the population mean for birds from south is $\geq$ 5mm than the population mean for birds from north. Take $\alpha = 0.05$.
 
-South birds: 116, 117, 121, 114, 116, 118, 123
+<center> <span style = "color:red"> South birds: 116, 117, 121, 114, 116, 118, 123 </span> </center>
 
 
-North birds: 120, 113, 125, 118, 116, 114, 119, 120
+<center> <span style = "color:red"> North birds: 120, 113, 125, 118, 116, 114, 119, 120 </span> </center>
 
 * $H_0$: $\mu_S$ (Mean of south) - $\mu_N$ (north) $\leq 5$
 * $H_A$: $\mu_S$ (Mean of south) - $\mu_N$ (north)  > 5
@@ -425,7 +425,7 @@ This table shows an example of heights of plants under two different fertilizers
 Syntax:
 ```{r eval=F}
 wilcox.test(<values> ~ <group>, conf.level = 1- <alpha>, 
-            mu = 0, alternative="less", exact=FALSE)
+            mu = 0, alternative=<either of "two.sided", "less", or "greater">, exact=FALSE)
 ```
 
 Example:
@@ -461,16 +461,20 @@ wilcox.test(height ~ fertilizer, conf.level = 1-0.05, mu = 0,
 | **Variable 1** |     $x_{11}$                     |     $x_{12}$                   |     $\ldots$    |    $x_{1n}$  |
 | **Variable 2** |     $x_{21}$                     |     $x_{22}$                   |     $\ldots$    |     $x_{2n}$    | 
 | **Difference** |     $d_1 = (x_{11} - x_{21}$)    |     $d_2 = (x_{12} - x_{22})$    |     $\ldots$    |     $d_n = (x_{1n} - x_{2n})$    | 
+| **Ranks** |     $R_{1}$                     |     $R_{2}$                   |     $\ldots$    |     $R_{n}$    | 
 | **Signs** |     $S_1 = +1$ if $d_1 > 0$, -1 ow.    |     $S_2 = +1$ if $d_2 > 0$, -1 ow.    |     $\ldots$    |     $S_n = +1$ if $d_n > 0$, -1 ow.    | 
 
-2. Rank the absolute differences $|d_i|$ in increasing order (lowest = 1 to highest = (m+n)).
+2. Define $R_i$: Rank of the **absolute differences** $|d_i|$ in increasing order (lowest = 1 to highest = n). 
+
+3. Define $S_i$ = +1 if $d_i > 0$, -1 if $d_i < 0$.
+
 
 ## Procedure (cont.)
 
-3. $T = S_1 d_1 + S_2d_2 + \ldots + S_nd_n$.
-4. For large sample size, under $H_0$: $\mathbb{E}(T) = 0$;  var$(T) = \sigma_T^2 = \frac{n(n+1)(2n+1)}{6}$.
-5. Test statistic: Z = $\frac{T - 0}{\sigma_T}$.
-6. Reject if:
+4. $T = S_1 R_1 + S_2 R_2 + \ldots + S_n R_n$.
+5. For large sample size, under $H_0$: $\mathbb{E}(T) = 0$;  var$(T) = \sigma_T^2 = \frac{n(n+1)(2n+1)}{6}$.
+6. Test statistic: Z = $\frac{T - 0}{\sigma_T}$.
+7. Reject if:
   
   - $|Z| > z_{\alpha/2}$ if $H_A: M_1 \neq M_2$
   - $Z \geq z_{\alpha}$ if $H_A: M_1 \geq M_2$
@@ -496,24 +500,21 @@ Hindleg_Length = c(138, 136, 147, 139, 143, 141, 143, 145, 136, 146)
 
 ## Cont.
 
-*Step 1:* Calculate the differences and signs.
-
-```{r}
-diffs = Foreleg_Length - Hindleg_Length
-signs = sign(diffs) # sign function calculates sign
-diffs
-signs
+```{r echo=F}
+Foreleg_Length = c(142, 140, 144, 144, 142, 146, 149, 150, 142, 148)
+Hindleg_Length = c(138, 136, 147, 139, 143, 141, 143, 145, 136, 146)
+diff = Foreleg_Length - Hindleg_Length
+abs_diff = abs(diff)
+signs = sign(diff)
+ranks = rank(abs(diff))
+library(knitr)
+kable( data.frame(Foreleg_Length, Hindleg_Length, diff, abs_diff, signs, ranks))
 ```
 
-
-*Step 2:* Calculate the signed-rank sum
+Test statistic: 
 ```{r}
-T = sum(diffs * signs)
-T
+sum(ranks * signs)
 ```
-
-Remaining code will use the $\texttt{wilcox.test}$ function.
-
 
 ## $\texttt{R}$ Syntax
 

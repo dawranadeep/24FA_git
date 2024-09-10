@@ -1,0 +1,102 @@
+---
+title: "Practice Materials for Exam 1"
+subtitle: "Up to one sample tests"
+author: "Ranadeep Daw"
+date: "2024-09-07"
+output: 
+  html_document:
+    toc: true
+    toc_depth: 2
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, error = T, eval = T)
+```
+
+## Note
+
+### **<span style = "color:purple"> I am not filling in the hypotheses and other text details. You must do it in your exams.</span>**
+
+<br><br>
+
+
+
+## Questions from Distributions
+
+#### 1. For a normal distribution with mean $10$ and variance $25$, what are the 3 quartiles and IQR?
+
+
+
+#### 2. Suppose that for a normal distribution, the first and third quartiles are $10$ and $25$. What are the mean, variance, median, and IQR?
+
+
+
+#### 4. For a one-sample t-test $H_0: \mu > \mu_0$ vs $H_A: \mu \leq \mu_0$, define T as the test statistic and $t_{\alpha; n-1}$ follows the usual notation for the critical value as discussed in class.
+
+  
+    
+#####  A. If there are $25$ observations in the sample, what is the degrees of freedom?
+  
+  B. **The rejection region would look like:**
+
+    a. $T \leq t_{\alpha/2, n-1}$ and  $T \geq t_{\alpha/2, n-1}$. 
+    b. $T \leq t_{\alpha/2, n-1}$.
+    c. $T \leq -t_{\alpha/2, n-1}$.
+    d. $T \leq -t_{\alpha, n-1}$.
+    e. $T \geq t_{\alpha, n-1}$.
+
+
+5. **Pick the correct answer. Suppose I am performing a t-test of the form $H_0: \mu \geq \mu_0$ vs $H_A: \mu \leq \mu_0$ (under the regular assumptions). The associated $95\%$ confidence interval would look like: (Here $c_1$ and $c_2$ are real numbers)**
+  
+  a. $(c_1, c_2)$.
+  b. $(c_1, \infty)$.
+  c. $(-\infty, c_2)$.
+  
+
+<br><br>
+
+## Data summarization
+
+### Here is a data on mean arterial pressure (MAP) by sex:
+
+```{r echo=F}
+library(knitr)
+kable(t(data.frame(
+  MAP = c(82, 84 , 85, 88 , 92 , 93, 94 , 95 , 98 , 100 , 102 , 107 , 110 , 116 , 116),
+  Sex = c("M" , "F" , "F" , "M" , "M" , "F" , "F" , "M" , "M" , "F" , "M" , "F" , "M" , "F" , "M" )
+)))
+```
+
+#### 1. Calculate the mean, median, variance, standard deviation, and range of MAP.
+
+
+
+#### 2. Calculate the quartiles and the IQR of MAP. Draw a boxplot of MAP.
+
+
+#### 3. Calculate the upper and lower fence values for MAP. Checking by the fence values, are there evidence of outliers?
+
+#### 4. <span style="color:red">Calculate the mean and variance only for $\texttt{Sex = M}$.</span>.
+
+
+
+
+
+## Estimation
+
+### Use the $\texttt{BodyFat}$ data^[https://hbiostat.org/data/] data from HW1. Download it using:
+
+```{r}
+bodyfat_data = read.csv(url("https://hbiostat.org/data/repo/bodyfat.csv"))
+```
+
+
+1. **Can you estimate the population mean, median, variance, and the first quartile of the $\texttt{wt}$ variable under normality assumption? Please justify your answer.**
+
+2. **What are your reasonable estimates for the same under nonparametric method (or without a parametric assumption)? Please justify your answer.**
+
+3. **Perform a one sample $t$ test to test if the average biceps circumference (column name = *Biceps*) is less than 30.**
+
+4. **We are interested in median biceps circumference and we want to test if it is greater than $33.8$. How would you test?**
+
+
