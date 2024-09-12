@@ -1,0 +1,411 @@
+---
+title: "Practice Materials for Exam 1"
+subtitle: "Up to one sample tests"
+author: "Ranadeep Daw"
+date: "2024-09-07"
+output: 
+  html_document:
+    toc: true
+    toc_depth: 2
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, error = T, eval = T)
+```
+
+## Note
+
+### **<span style = "color:purple"> I am not filling in the hypotheses and other text details. You must do it in your exams.</span>**
+
+<br><br>
+
+
+
+
+## Output Analyzing
+
+#### 1. Look at the following output of a test in $\texttt{R}$.
+
+![](https://raw.githubusercontent.com/dawranadeep/24FA_git/main/Practice_qns/img/samp1_t.png)
+
+##### A. What test am I performing here?
+
+One sample t test. (Hint: Check the top line)
+
+##### B. How many observations are there in the data?
+
+Since in one sample t test with n observations, the degrees of freedom is (n-1). Here, n=252.
+
+##### C. What is the significance ($\alpha$) of the test?
+
+$\alpha = 0.01$. Hint: Check the output that says (99 percent confidence interval).
+
+##### D. Write down the null and alternate hypotheses.
+
+
+$H_0: $\mu \leq 23$ vs $H_A: \mu$ > 23.
+
+(Hint: Check the line: "alternative hypothesis: true mean is greater than 23". So, we are testing for the hypothised mean as 23 and our alternative is "$\geq$".)
+
+
+##### E. What is the sample estimate of the parameter being tested here?
+
+23.10 (Hint: Check the last line)
+
+##### F. What is the conclusion of the test?
+
+Since $p$-value (0.1693) > $\alpha = 0.01$, we can not reject $H_0$.
+
+##### G. What is the associated confidence interval for the population parameter that is being tested?
+
+99% CI = (22.85, $\infty$).
+
+
+
+
+<br><br>
+
+#### 2.  Now do the same for the following test. Also can you tell what the confidence interval is about?
+
+![](https://raw.githubusercontent.com/dawranadeep/24FA_git/main/Practice_qns/img/binom_2.png)
+
+
+Here, we are performing the sign test, i.e., $H_0$: median (M) = some number vs $H_A$: median $\neq$ some number.
+
+(Hint: binomial test will show you number of successes, number of trials, and the line "alternative hypotheses: .... not equal to" tells you that my alternative hypothesis is two sided).
+
+
+
+
+The confidence interval (0.455, 0.587) is for the probability of success $p$. Since 0.5 is within the interval, we can not reject $H_0$. Alternatively, $p$ value < $\alpha$ also shows the failure to reject $H_0$.
+
+
+<br><br>
+
+## Conceptual Questions
+
+#### 1. For a normal distribution with mean $10$ and variance $25$, what are the 3 quartiles and IQR?
+
+
+Check the notes 03_Hypothesis_testing_updated.html, under normal distribution. The expression for first, second, and third quartile for a $\mathbb{N}(\mu, \sigma^2)$ variable are:
+
+$Q_1 = \mu - 0.674 * \sigma$
+$Q_2$ (median) $ = \mu$
+$Q_3 = \mu + 0.674 * \sigma$.
+
+
+Here $\mu$ = 10; $\sigma^2$ = 25 => $\sigma = 5$.
+
+So, $Q_1 = 10 - 0.674 * 5$ = 6.65
+$Q_2$ = 10.
+$Q_3 = 10 + 0.674 * 5$ = 13.35
+
+```{r}
+10 - 0.67 * 5
+10 + 0.67 * 5
+```
+
+#### 2. Suppose that for a normal distribution, the first and third quartiles are $10$ and $25$. What are the mean, variance, median, and IQR?
+
+
+Flipping the above problem. Here you know the following:
+
+$$Q_1 = \mu - 0.674 * \sigma = 10$$
+$$Q_3 = \mu + 0.674 * \sigma = 25$$
+
+First find the IQR. Recall, IQR = $Q_3 - Q_1$ = $25 - 10$ = 15.
+
+Second, find the mean $\mu$. From the above two formulas, $\mu = 1/2 * (Q_1 + Q_3) = 1/2 * (10 + 25) = 17.5$.
+
+```{r}
+1/2 * (10 + 25)
+```
+
+
+Now, median = $\mu$ = 17.5.
+Lastly, from the same notes under Normal distribution, you will find the formula:
+
+$$IQR = 1.35 \sigma$$
+
+Plug in all the values. 
+
+$$15 = 1.35 * \sigma$$ => $\sigma = 15/1.35 = 11.11$.
+
+=> $\sigma^2$ = 123.4321.
+
+
+
+
+
+#### 3. For a one-sample t-test, match the alternate hypotheses, rejection regions, and confidence intervals. Here $T$ is the usual statistic for a one sample $t$-test for mean, and $t_{\alpha; \nu}$ is the usual notation  for critical score from a student's $t$ distribution.
+
+
+| Alternate Hypothesis                  | Rejection Region                                    | Confidence Interval                           |
+|------------------------------------------|-------------------------------------------------------|--------------------------------------------------|
+| <span style="color:blue"> 1. \( H_1: \mu > \mu_0 \)                | <span style="color:blue">A. \( |T| > t_{\alpha/2, n-1} \)                       | <span style="color:blue"> I. \( \left(-\infty, \bar{x} - t_{\alpha, n-1} \cdot \frac{s}{\sqrt{n}} \right) \) |
+| <span style="color:blue"> 2. \( H_1: \mu < \mu_0 \)                | <span style="color:blue"> B. \( T > t_{\alpha, n-1} \)                           | <span style="color:blue"> II. \( \left(\bar{x} - t_{\alpha/2, n-1} \cdot \frac{s}{\sqrt{n}}, \bar{x} + t_{\alpha/2, n-1} \cdot \frac{s}{\sqrt{n}} \right) \) |
+| <span style="color:blue">3. \( H_1: \mu \neq \mu_0 \)             | <span style="color:blue"> C. \( T < -t_{\alpha, n-1} \)                          | <span style="color:blue">III. \( \left(\bar{x} + t_{\alpha, n-1} \cdot \frac{s}{\sqrt{n}}, \infty \right) \) </span>|
+
+
+Hint: 
+  
+  i. Check the symbol of the alternate hypothesis. Rejection region should have the same sign.
+  ii. For one sided CI, if the alternate is $\geq$, you will see a $\inf$ in the right side of the CI. If alternate is $\leq$, you will see a $-\inf$ in the left side of the CI. For $\neq$, you will see two numbers like $(c_1, c_2)$.
+  
+Answer: 
+  
+  i. 1 - B - III
+  ii. 2 - C - I
+  iii. 3 - A - II
+
+
+
+#### 4. What is the difference between a parametric estimation method and a nonparametric statistical method?
+  
+  
+Parametric: We assume a distribution function and estimate the parameters within it. Example: under normality assumption, we estimate $\mu$ and $\sigma^2$.
+
+Non-parametric: We don't assume any distribution function or parametric form of the shape of the distribution. It still has parameters to estimate.
+
+
+#### 5. Is it a population or sample?
+
+1. **A survey of 200 households' monthly electricity usage over Pensacola.**
+
+This looks like a sample.
+
+2. **I want to study UWF students' average blood pressure. I collect data on all the students from UWF.**
+
+Since I am studying only the UWF students and I have their entire data, it is a population.
+
+
+3. **I want to study the  average blood pressure of the Florida state university students. I collect data on all the students from UWF.**
+
+I only have data from a subset (only UWF) from the entire population (all Florida state university students). Therefore, this is a sample.
+
+4. **The annual median income over the counties from American Community survey data.**
+
+
+Sample.
+
+5. **Daily temperature data over the  Gulf of Mexico for 3 years.**
+
+Depending on the context, there is no wrong answer. If I am interested in the ecology and environmental variables over the Gulf of Mexico and look at this $3$ years of temperature data, it is a population. If we are interested in the biodiversity data over the Atlantic and only collect samples from the Gulf of Mexico, this is an example of a sample.
+
+
+
+
+
+<br><br>
+
+## Data summarization
+
+### Here is a data on mean arterial pressure (MAP) by sex:
+
+```{r echo=F}
+library(knitr)
+kable(t(data.frame(
+  MAP = c(82, 84 , 85, 88 , 92 , 93, 94 , 95 , 98 , 100 , 102 , 107 , 110 , 116 , 116),
+  Sex = c("M" , "F" , "F" , "M" , "M" , "F" , "F" , "M" , "M" , "F" , "M" , "F" , "M" , "F" , "M" )
+)))
+```
+
+#### 1. Calculate the mean, median, variance, standard deviation, and range of MAP.
+
+
+```{r}
+MAP = c(82, 84 , 85, 88 , 92 , 93, 94 , 95 , 98 , 100 , 102 , 107 , 110 , 116 , 116)
+mean(MAP)
+median(MAP)
+var(MAP)
+sd(MAP)
+max(MAP) - min(MAP)
+```
+
+
+#### 2. Calculate the quartiles and the IQR of MAP. Draw a boxplot of MAP.
+
+```{r}
+quantile(MAP, c(0.25, 0.5, 0.75))
+IQR(MAP)
+```
+
+#### 3. Calculate the upper and lower fence values for MAP. Checking by the fence values, are there evidence of outliers?
+
+```{r}
+#Q3 + 1.5 IQR
+quantile(MAP, 0.75) + 1.5 * IQR(MAP)
+quantile(MAP, 0.25) - 1.5 * IQR(MAP)
+```
+
+#### 4. <span style="color:red">Calculate the mean and variance only for $\texttt{Sex = M}$</span>.
+
+```{r}
+MAP = c(82, 84 , 85, 88 , 92 , 93, 94 , 95 , 98 , 100 , 102 , 107 , 110 , 116 , 116)
+Sex = c("M" , "F" , "F" , "M" , "M" , "F" , "F" , "M" , "M" , "F" , "M" , "F" , "M" , "F" , "M" )
+
+MAP_male = MAP[Sex =="M"]
+mean(MAP_male)
+var(MAP_male)
+```
+
+
+
+
+
+
+
+
+<br><br>
+
+## Estimation and one sample test
+
+### Use the $\texttt{BodyFat}$ data^[https://hbiostat.org/data/] data from HW1. Download it using:
+
+```{r}
+bodyfat_data = read.csv(url("https://hbiostat.org/data/repo/bodyfat.csv"))
+```
+
+
+#### 1. Can you reasonably estimate the population mean, variance, and the first quartile of the $\texttt{Density}$ (column name = *Density*) variable under normality assumption? Please justify your answer.
+
+```{r}
+dnsty = bodyfat_data$Density
+mu = mean(dnsty)
+sigsq = var(dnsty)
+sig = sd(dnsty)
+Q1 = mu - 0.674 * sig
+cat("Mean=", mu, "\n",
+    "Var=", sigsq, "\n",
+    "First Quartile=", Q1)
+```
+
+
+#### 2. What are your reasonable estimates for the same under nonparametric method (or without a parametric assumption)? Please justify your answer.
+
+Under nonparametric method, estimates of mean and variance will be the same.
+
+The population first quartile would be estimated by the sample first quartile, given by the following:
+
+```{r}
+quantile(dnsty, 0.25)
+```
+
+#### 3. Perform a one sample $t$ test to test if the average biceps circumference (column name = *Biceps*) is less than 30. Take $\alpha = 0.05$.
+
+$H_0$: ... $H_A$: ...
+
+```{r}
+biceps = bodyfat_data$Biceps
+t.test(biceps, alternative = "less",
+      conf.level = 1 -0.05, mu = 30)
+```
+
+<span style="color:red"> Fill the details in exam and HW </span>
+
+#### 4. We are interested in median biceps circumference and we want to test if it is greater than $33.8$. How would you test? Take $\alpha = 0.05$.
+
+
+$H_0$: Median bicep = 33.8 $H_A$: Median bicep > 33.8
+
+We have to do the sign test here.
+
+
+```{r}
+positive_count = sum(biceps > 33.8)
+negative_count = sum(biceps < 33.8)
+binom.test(positive_count, positive_count + negative_count,
+           alternative = "greater", conf.level = 1-0.05)
+```
+
+
+
+
+
+## Two sample test
+
+### Load the following data about pulse rates before and after excercize from http://www.statsci.org/data/oz/ms212.txt
+
+
+```{r}
+pulse_data = read.table(url("http://www.statsci.org/data/oz/ms212.txt"), skip = 1)
+colnames(pulse_data) =   c("Height","Weight"	  ,"Age"    ,"Gender"	  ,"Smokes"	  ,"Alcohol"	  ,"Exercise"  ,"Ran"  ,"Pulse1"	 ,"Pulse2"	  ,"Year"	)
+pulse_data = pulse_data[complete.cases(pulse_data), ]
+```
+
+
+
+#### 1. Do a parametric test if there is a difference on the average pulse rate (column name = **Pulse1**) based on gender  (column name = **Gender**). Take $\alpha = 0.05$.
+
+
+Two sample independent t test.
+
+$H_0$: $\mu_1$ (Mean for Gender = 1) - $\mu_2$ = 0 vs $H_A$: $\mu_1 - \mu_2 \neq 0$.
+
+
+```{r}
+gender = pulse_data$Gender
+pulse = pulse_data$Pulse1
+
+t.test(pulse ~ gender, alternative = "two.sided",
+       mu = 0, conf.level = 1-0.05)
+```
+
+<span style="color:red"> Fill in the conclusion and other details </span>
+
+#### 2. Do a non-parametric test if there is a difference on the average pulse rate (column name = **Pulse1**) based on gender  (column name = **Gender**). Take $\alpha = 0.05$.
+
+
+Wilcoxon rank sum test. $H_0$: $M_1$ (Median for Gender = 1) - $M_2$ = 0 vs $H_A$: $M_1 - M_2 \neq 0$.
+
+```{r}
+gender = pulse_data$Gender
+pulse = pulse_data$Pulse1
+
+wilcox.test(pulse ~ gender, alternative = "two.sided", mu = 0, conf.level = 1-0.05, exact=FALSE)
+```
+
+
+#### 3. Do a parametric test on the assumption that pulse rate after excercize (column name = **Pulse2**) is higher than pulse rate before excercize (column name = **Pulse1**). Take $\alpha = 0.05$.
+
+Paired t test.
+
+
+$H_0$:  $\mu_1 - \mu_2 \geq$  0.
+$H_A$: $\mu_2 > \mu_1$ or $\mu_1 - \mu_2$ < 0.
+
+```{r}
+pulse1 = pulse_data$Pulse1
+pulse2 = pulse_data$Pulse2
+
+t.test(pulse1, pulse2, alternative = "less",
+       mu = 0, paired=TRUE, conf.level = 1-0.05)
+```
+
+
+
+#### 4. Do a non-parametric test on the assumption that pulse rate after excercize (column name = **Pulse2**) is higher than pulse rate before excercize (column name = **Pulse1**). Take $\alpha = 0.05$.
+
+
+Wilcoxon signed rank.
+
+$H_0$:  $M_1 - M_2 \geq$  0.
+$H_A$: $M_2 > M_1$ or $M_1 - M_2$ < 0.
+
+
+```{r}
+pulse1 = pulse_data$Pulse1
+pulse2 = pulse_data$Pulse2
+
+wilcox.test(pulse1, pulse2, alternative = "less",
+       mu = 0, paired=TRUE, conf.level = 1-0.05, exact = FALSE)
+```
+
+
+
+## Some resources
+
+1. One and two sample tests <https://intro2r.com/one-and-two-sample-tests.html>
+2. Nonparametric statistics: <https://bookdown.org/thomas_pernet/Tuto/non-parametric-tests.html>
+3. Hypothesis testing and basic R: <https://bookdown.org/speegled/foundations-of-statistics/HTCI.html>
+

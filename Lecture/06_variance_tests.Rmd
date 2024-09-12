@@ -1,0 +1,229 @@
+---
+title: "Test for Variance"
+subtitle: "Chi square and F tests"
+author: "Ranadeep Daw"
+date: "`r Sys.Date()`"
+output:
+  revealjs::revealjs_presentation:
+    theme: "solar"
+    center: true
+    widescreen: true
+    self_contained: true
+    width: 1600
+    height: 900
+    df_print: kable
+    reveal_options:
+      slideNumber: true
+      previewLinks: true
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = T, warning = F, message = F)
+```
+
+
+## One sample Variance Test
+
+* **Data**: $x_1, x_2, \ldots, x_n$.
+* **Assumptions**: $X \sim \mathbb{N}(\mu, \sigma^2)$.
+* $H_0: \sigma^2 = \sigma_0^2$ vs $H_A: \sigma^2 \neq, \leq, \geq  \sigma_0^2$.
+* Sample variance: $s^2 = \frac{1}{n-1} \sum_{i=1}^{n} (x_i - \bar{x})^2$. 
+
+
+## Procedure
+
+* Test statistic: $T = \frac{(n-1) s^2}{ \sigma_0^2}$ 
+* Reject $H_0$ if: 
+  -  $T < \chi^2_{\alpha, n-1}$ if $H_A: \sigma^2 < \sigma_0^2$.
+  -  $T > \chi^2_{1-\alpha, n-1}$ if $H_A: \sigma^2 > \sigma_0^2$.
+  -  $T > \chi^2_{1-\alpha/2, n-1}$ and $T < \chi^2_{\alpha/2, n-1}$ if $H_A: \sigma^2 \neq \sigma_0^2$.
+  
+
+## Graphical Representation
+
+```{r echo=F}
+# Load necessary libraries
+library(ggplot2)
+
+# Chi-square distribution parameters
+df <- 10  # degrees of freedom
+alpha <- 0.05  # significance level
+
+# Critical values for the three tests
+left_critical <- qchisq(alpha, df)
+right_critical <- qchisq(1 - alpha, df)
+two_tail_lower <- qchisq(alpha / 2, df)
+two_tail_upper <- qchisq(1 - alpha / 2, df)
+
+# Create a sequence of x values (chi-square values)
+x_vals <- seq(0, 30, length.out = 1000)
+
+# Chi-square density values
+y_vals <- dchisq(x_vals, df)
+
+# Create the base plot
+plot_base <- ggplot(data.frame(x = x_vals, y = y_vals), aes(x, y)) +
+  geom_line(color = "blue") +
+  theme_minimal() +
+  labs(x = "Chi-Square Statistic", y = "Density", title = "Rejection Regions for Chi-Square Test")
+
+# Left-tailed rejection region
+left_tail_plot <- plot_base +
+  geom_area(data = subset(data.frame(x = x_vals, y = y_vals), x < left_critical), aes(x = x, y = y), fill = "red", alpha = 0.5) +
+  geom_vline(xintercept = left_critical, linetype = "dashed", color = "red") +
+  annotate("text", x = left_critical - 2, y = 0.02, label = paste("Critical Value"), color = "red") +
+  ggtitle("Left-Tailed Test: Rejection Region")
+
+# Right-tailed rejection region
+right_tail_plot <- plot_base +
+  geom_area(data = subset(data.frame(x = x_vals, y = y_vals), x > right_critical), aes(x = x, y = y), fill = "red", alpha = 0.5) +
+  geom_vline(xintercept = right_critical, linetype = "dashed", color = "red") +
+  annotate("text", x = right_critical + 2, y = 0.02, label = paste("Critical Value"), color = "red") +
+  ggtitle("Right-Tailed Test: Rejection Region")
+
+# Two-tailed rejection region
+two_tail_plot <- plot_base +
+  geom_area(data = subset(data.frame(x = x_vals, y = y_vals), x < two_tail_lower), aes(x = x, y = y), fill = "red", alpha = 0.5) +
+  geom_area(data = subset(data.frame(x = x_vals, y = y_vals), x > two_tail_upper), aes(x = x, y = y), fill = "red", alpha = 0.5) +
+  geom_vline(xintercept = two_tail_lower, linetype = "dashed", color = "red") +
+  geom_vline(xintercept = two_tail_upper, linetype = "dashed", color = "red") +
+  annotate("text", x = two_tail_lower - 1.5, y = 0.02, label = paste("Lower Critical Value"), color = "red") +
+  annotate("text", x = two_tail_upper + 2, y = 0.02, label = paste("Upper Critical Value"), color = "red") +
+  ggtitle("Two-Tailed Test: Rejection Region")
+
+# Display the plots
+library(gridExtra)
+grid.arrange(left_tail_plot, right_tail_plot, two_tail_plot, ncol = 1)
+
+```
+
+
+
+## Example for $\texttt{mpg}$ from $\texttt{mtcars}$
+
+* You will need to install the package $\texttt{EnvStats}$.
+
+```{r eval=F}
+install.packages("EnvStats")
+```
+
+* Let's do the test if variance of mpg is = 36 against less than 36.
+* Syntax:
+
+```{r eval=F}
+varTest(x, alternative = "two.sided/less/greater", conf.level = ..., 
+    sigma.squared = <value_of_the_hypotheses>)
+```
+
+
+## Example
+
+```{r}
+library("EnvStats")
+data("mtcars")
+MPG = mtcars$mpg
+varTest(MPG, alternative = "less", conf.level = 0.95,  sigma.squared = 36, data.name = NULL)
+```
+
+
+
+
+## Two-sample equality of variance
+
+* Data: 
+  - $\mathbb{X}_1: \{x_{11}, x_{12}, \ldots, x_{1m} \}$
+  - $\mathbb{X}_2: \{x_{21}, x_{22}, \ldots, x_{2n} \}$
+  
+* Assumption: $\mathbb{X}_1 \sim \mathbb{N}(\mu_1, \sigma^2_1)$, $\mathbb{X}_2 \sim \mathbb{N}(\mu_2, \sigma^2_2)$.
+* Hypotheses: $H_0: \sigma_1^2 = \sigma_2^2$ vs $H_A: \sigma_1^2 \leq, \neq, \geq \sigma_2^2$.
+
+
+## Procedure
+
+* **Test Statistic:** $F = \frac{s_1^2}{s_2^2}$;  where \(s_1^2\) and \(s_2^2\) are the sample variances.
+* Reject if:
+  -  $F < F_{\alpha, m-1, n-1}$ if $H_A: \sigma_1^2 < \sigma_2^2$.
+  -  $F > F_{1-\alpha, m-1, n-1}$ if $H_A: \sigma_1^2 > \sigma_2^2$.
+  -  $F > F_{1-\alpha/2, m-1, n-1}$ or $F < F_{\alpha/2, m-1, n-1}$ if two sided test.
+
+
+## $\texttt{R}$ Syntax
+
+* Let's test if there is a difference in the variances of $\texttt{mpg}$ in the $\texttt{mtcars}$ data based on the transmission (Variable = $\texttt{am}$).
+
+* Syntax:
+
+```{r eval=F}
+var.test(<var1> ~ <var2>, 
+         alternative = "two.sided / less / greater", 
+         conf.level = ...)
+```
+
+## Example
+
+```{r}
+data("mtcars")
+MPG = mtcars$mpg
+Automatic = mtcars$am
+var.test(MPG ~ Automatic, alternative = "two.sided", conf.level = 0.95)
+```
+
+
+## Graphical Representation
+
+```{r echo=F}
+# Load necessary libraries
+library(ggplot2)
+library(gridExtra)
+
+# Parameters for the F-distribution
+df1 <- 10  # degrees of freedom for the numerator (group 1)
+df2 <- 15  # degrees of freedom for the denominator (group 2)
+alpha <- 0.05  # significance level
+
+# Critical values for upper-tailed, lower-tailed, and two-tailed tests
+upper_critical <- qf(1 - alpha, df1, df2)
+lower_critical <- qf(alpha, df1, df2)
+two_tail_lower <- qf(alpha / 2, df1, df2)
+two_tail_upper <- qf(1 - alpha / 2, df1, df2)
+
+# Create a sequence of F values for plotting
+x_vals <- seq(0, 5, length.out = 1000)
+y_vals <- df(x_vals, df1, df2)
+
+# Base plot setup
+plot_base <- ggplot(data.frame(x = x_vals, y = y_vals), aes(x, y)) +
+  geom_line(color = "blue") +
+  theme_minimal() +
+  labs(x = "F Statistic", y = "Density", title = "Rejection Regions for F-Test")
+
+# Upper-tailed rejection region
+upper_tail_plot <- plot_base +
+  geom_area(data = subset(data.frame(x = x_vals, y = y_vals), x > upper_critical), aes(x = x, y = y), fill = "red", alpha = 0.5) +
+  geom_vline(xintercept = upper_critical, linetype = "dashed", color = "red") +
+  annotate("text", x = upper_critical + 0.1, y = 0.02, label = paste("Critical Value"), color = "red") +
+  ggtitle("Upper-Tailed Test: Rejection Region")
+
+# Lower-tailed rejection region
+lower_tail_plot <- plot_base +
+  geom_area(data = subset(data.frame(x = x_vals, y = y_vals), x < lower_critical), aes(x = x, y = y), fill = "red", alpha = 0.5) +
+  geom_vline(xintercept = lower_critical, linetype = "dashed", color = "red") +
+  annotate("text", x = lower_critical - 0.2, y = 0.02, label = paste("Critical Value"), color = "red") +
+  ggtitle("Lower-Tailed Test: Rejection Region")
+
+# Two-tailed rejection region
+two_tail_plot <- plot_base +
+  geom_area(data = subset(data.frame(x = x_vals, y = y_vals), x < two_tail_lower), aes(x = x, y = y), fill = "red", alpha = 0.5) +
+  geom_area(data = subset(data.frame(x = x_vals, y = y_vals), x > two_tail_upper), aes(x = x, y = y), fill = "red", alpha = 0.5) +
+  geom_vline(xintercept = two_tail_lower, linetype = "dashed", color = "red") +
+  geom_vline(xintercept = two_tail_upper, linetype = "dashed", color = "red") +
+  annotate("text", x = two_tail_lower - 0.2, y = 0.02, label = paste("Lower Critical"), color = "red") +
+  annotate("text", x = two_tail_upper + 0.1, y = 0.02, label = paste("Upper Critical"), color = "red") +
+  ggtitle("Two-Tailed Test: Rejection Region")
+
+# Display the plots
+grid.arrange(upper_tail_plot, lower_tail_plot, two_tail_plot, ncol = 1)
+
+```
+
