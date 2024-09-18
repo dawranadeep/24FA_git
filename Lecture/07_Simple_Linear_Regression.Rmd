@@ -1,0 +1,444 @@
+---
+title: "Simple Linear Regression"
+subtitle: " Scatterplot, Correlation, Regression"
+author: "Ranadeep Daw"
+date: "`r Sys.Date()`"
+output:
+  revealjs::revealjs_presentation:
+    theme: "solar"
+    center: true
+    widescreen: true
+    self_contained: true
+    width: 1600
+    height: 900
+    df_print: kable
+    reveal_options:
+      slideNumber: true
+      previewLinks: true
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = T, warning = F, message = F)
+```
+
+
+## Bivariate Data
+
+* So far, you have mostly dealt with univariate data.
+* Given one random variable, you calculated the summary statistics -- **mean, median**, **quantile**, **variance**, **IQR**, etc.
+* You have done some inference -- **estimation**, **hypothesis testing**, **confidence interval**.
+* Some introduction to two-sample data -- **independent** and **paired** cases.
+
+
+
+## Bivariate Data
+
+
+
+- Now we extend our analysis to bivariate data, i.e., two random variables.
+- Like the paired t-test case, we have twos sets of data about $n$ subjects:
+
+| Subject   | X   | Y   |
+|-----------|------|------|
+| Subject 1 | $x_1$   | $y_1$   |
+| Subject 2 | $x_2$   | $y_2$   |
+| $\ldots$       | $\ldots$  | $\ldots$  |
+| Subject n | $x_n$   | $y_n$   |
+
+
+
+## Separate Univariate Analysis
+
+* Following our univariate lectures, we can analyze each variable X and Y separately.
+  
+  - Can calculate $\bar{x}$, $\bar{y}$, $s^2_{X}$, $s^2_{Y}$.
+
+* Is that enough to complete even a basic-level analysis?
+  
+  - <span style="color:red;"> No </span>
+
+* What are we missing?
+
+
+## Case study
+
+* <span style="color:blue;">  **Case 1:** </span>  |  |  |  |  |  |  | 
+|---------|----|----|----|----|----|
+| X       | -2  | -1  | 0  | 1  | 2  |
+| Y       | -2  | -1  | 0  | 1  | 2  | 
+
+
+              
+* <span style="color:red;"> **Case 2:** </span>  |  |  |  |  |  |  | 
+|---------|----|----|----|----|----|
+| X       | -2  | -1  | 0  | 1  | 2  |
+| Y       | 2  | 1  | 0  | -1  | -2  | 
+
+* In each case, $\bar{X}$ = 0; $\bar{Y}$ = 0; $s^2_X$ = 2.5; $s^2_Y$ = 2.5.
+
+* So, what are we missing so far?
+
+
+## Goals for Analysis
+
+- We want to explore the **relationship** between these two variables.
+- Specifically, we will look at **linear relationship** for now.
+- **Question**: If there is a relation, can we predict one variable based on the other?
+
+
+## Scatterplot
+
+* *Definition*: A graphical representation that helps visualize the relationship between two quantitative variables. Each point on the plot represents an observation in the dataset.
+
+
+* Plot one variable against the other one.
+
+* One variable (say X) on the $X$ axis, the other (say Y) is on the $Y$ axis. The points on the plot are the coordinates $(x_1, y_1), (x_2, y_2) , \ldots, (x_n, y_n)$.
+
+
+
+
+## Syntax
+
+* $\texttt{R}$ Syntax: 
+plot(\<vector_x\>, \<vector_y\>)
+
+```{r out.width=400}
+X = c(-2, -1, 0, 1, 2)
+Y = c(-2, -1, 0, 1, 2)
+plot(X, Y)
+```
+
+
+## Example from $\texttt{mtcars}$ Data
+
+
+* Scatterplot between the displacement (column name = **disp**) and mpg (column name = **mpg**) from $\texttt{mtcars}$ data.
+
+```{r   out.width=400}
+data("mtcars")
+Disp = mtcars$disp
+MPG = mtcars$mpg
+plot(Disp, MPG)
+```
+
+
+## Case study: Contd.
+
+```{r echo=F}
+par(mfrow = c(1,2))
+plot(c(-2, -1, 0, 1, 2), c(-2, -1, 0, 1, 2), xlab="X", ylab = "Y", main="Case 1", col="blue")
+plot(c(-2, -1, 0, 1, 2), c(2, 1, 0, -1, -2), xlab="X", ylab = "Y", main="Case 2", col="red")
+```
+
+
+## Relationships
+
+
+- Do you see the difference in relationships now in the two plots?
+- Case 1: **Positive/Increasing pattern**: As one variable increases, the other tends to increase.
+- Case 2: **Negative/Decreasing pattern**: As one variable increases, the other tends to decrease.
+- A further case can also arise where no pattern may show in the data, i.e., no apparent relationship between X and Y.
+
+
+## Covarinace
+
+* *Definition*: $$\text{cov}(X, Y) = \frac{1}{n-1} \sum_{i=1}^n (x_i - \bar{x})  (y_i - \bar{y}) $$
+* Can only measure **linear relationship**.
+* Positive value indicates a positive linear relationship.
+* Negative value indicates a negative linear relationship.
+* Covariance near 0 indicates either no linear relationship.
+
+
+
+## Examples
+* Example of Case 1:  cov(X, Y) = 2.5.
+  - *Positive relationship:* X increasing indicates Y increasing.
+* Example of Case 2:  cov(X, Y) = -2.5.
+  - *Negative relationship:* X increasing indicates Y decreasing.
+
+
+
+## Case 3
+
+* <span style="color:greeen;"> **Case 3:** </span>  |  |  |  |  |  |  | 
+|---------|----|----|----|----|----|
+| X       | -2  | -1  | 0  | 1  | 2  | 
+| Y       | -1  | 0  | 2  | 0  | -1  |
+
+* $\bar{X}$ = 0; $\bar{Y}$ = 0; $s^2_X$ = 2.5; $s^2_Y$ = 1.5.
+
+* cov($X, Y$) = 0.
+
+## Cont.
+
+* 
+```{r echo=F, out.width=500}
+plot(c(2,1,0,-1,-2), c(-1,0,2,0, -1), xlab="X", ylab = "Y", main="Case 2", col="black", cex = 2)
+```
+
+* It looks like there is a relationship between $X$ and $Y$; but covariance can't find it.
+
+* Covariance can only measure **linear relationship**.
+
+
+
+
+
+## Correlation/ Pearson's Correlation
+
+* *Definition*: $$\text{cor}(X, Y) = \frac{1}{n-1} \sum_{i=1}^n \Big(\frac{x_i - \bar{x}}{s_X}\Big)  \Big(\frac{y_i - \bar{y}}{s_Y}\Big) = \frac{\text{cov}(X, Y)} { s_X \,s_Y  } $$
+* Correlation is unit free 
+* <span style="color:blue">$-1 \leq \text{cor}(X, Y) \leq 1$. </span>
+* Again, can only measure **linear relationship**.
+  - Positive values <=> Increasing trend.
+  - Negative values <=> Decreasing trend.
+  - Values near $0$ <=> No linear relationship.
+
+
+
+## $\texttt{R}$ Syntax:
+
+```{r eval=F}
+cov(<vector_x>, <vector_y>)  # For covariance
+cor(<vector_x>, <vector_y>)  # For correlationship
+```
+
+* Example:
+
+```{r}
+X = c(-2, -1, 0, 1, 2)
+Y = c(-2, -1, 0, 1, 2)
+cov(X, Y)
+cor(X, Y)
+```
+
+
+## Example from $\texttt{mtcars}$ data
+
+* Calculate covariance and correlation between displacement (column name = **disp**) and mpg (column name = **mpg**) from $\texttt{mtcars}$ data.
+
+```{r}
+data("mtcars")
+Disp = mtcars$disp
+MPG = mtcars$mpg
+cov(Disp, MPG)
+cor(Disp, MPG)
+```
+
+
+
+## Example from $\texttt{mtcars}$ data
+
+* Calculate covariance and correlation between Rear axle ratio (column name = **drat**) and mpg (column name = **mpg**) from $\texttt{mtcars}$ data.
+
+```{r}
+data("mtcars")
+Drat = mtcars$drat
+MPG = mtcars$mpg
+cov(Drat, MPG)
+cor(Drat, MPG)
+```
+
+
+
+## Difference between covariance and correlation
+
+* Covariance can be any value between $-\infty$ and $\infty$. 
+* So, covariance can't measure the strength of linear relationship. Only when it's near 0, you know that there is no strong linear relationship.
+* However, correlation is bound between $-1$ and $+1$.
+* Values near +1 and -1 shows strong linear relationship.
+
+
+
+## Spearman's Rank Correlation Coefficient
+
+* An alternate choice of Pearson's correlation coefficient.
+* A better choice if the data has outliers, ordinal data, or has nonlinear monotonicity.
+* Also has a range between $-1$  and $+1$.
+
+## Definition
+
+* From sample X and Y, it first creates two sets of ranks.
+
+  - $R_X = \{r_{x1}, r_{x2}, \ldots, r_{xn} \}$
+  - $R_Y = \{r_{y1}, r_{y2}, \ldots, r_{yn} \}$
+
+* The Spearman's rank correlation coefficient is defined by:
+
+  $$ \rho_{s} = \text{cor} (R_X, R_Y)$$
+
+
+## Contd.
+
+* Let's calculate the differences between the ranks:
+
+  - $R_X = \{r_{x1}, r_{x2}, \ldots, r_{xn}  \}$
+  - $R_Y = \{r_{y1}, r_{y2}, \ldots, r_{yn}  \}$
+  - $d_1 =  r_{x1} - r_{y1}; \ldots; d_n = r_{xn} - r_{yn}$.
+
+* We can show that:
+
+  - $$ \rho_{s} = 1  - \frac{6 \sum_{i=1}^n d_i^2}{n(n^2 - 1)}$$
+
+
+## Example:
+
+Take the following data:
+
+|  |  |  |  |  |  | 
+|---------|----|----|----|----|----|
+| X       | 85  | 90  | 78  | 65  | 70  |
+| Y       | 80  | 78  | 65  | 50  | 55  | 
+
+First, rank them and calculate the difference.
+
+|  |  |  |  |  |  | 
+|---------|----|----|----|----|----|
+| X       | 85  | 90  | 78  | 65  | 70  |
+| $R_X$   | 4   |  5  | 3   |  1  | 2  |
+| Y       | 80  | 78  | 65  | 50  | 55  | 
+| $R_Y$   |  5  |  4  | 3  |  1  |   2 |
+| $D$     |  1  |  1  |  0  |   0  |  0   |
+
+
+## Contd.
+
+* Now, use the formula. 
+* Note: n = 5.
+* Also, $\sum_{i=1}^n d_i^2$ = 2.
+* So, $\rho_{s} = 1  - \frac{6 \sum_{i=1}^n d_i^2}{n(n^2 - 1)} = 1 - \frac{6 * 2}{5(5^2-1)} = 0.9$.
+
+
+## $\texttt{R}$ Syntax: 
+
+* Syntax: cor(\<vector_x\>, \<vector_y\>,  method = "spearman").
+
+```{r}
+x = c(85, 90, 78, 65, 70 )
+y = c(80, 78, 65, 50, 55)
+cor(x, y, method = "spearman")
+```
+
+
+
+
+
+## Regression
+
+* The most commonly used statistical model.
+  - **Model?**: A mathematical framework to impose some structure on any data or realtionship between data. Helps us analyze the data and make prediction.
+  - Example: I can model next year's temperature from this year's temperature.
+  - Example: I can model a population distribution with normal($\mu, \sigma^2)$. 
+  
+* When there is a good linear relationship, we can use a simple linear regression model to predict one variable using the other.
+
+
+## Dependent vs Independent variable
+
+
+* The variable we want to predict is called the **dependent variable** or **response variable**. 
+
+* The variable that helps us in this prediction job is the **independent variable** or **feature** or **covariates**.
+
+* We typically use $X$ for the independent variable; $Y$ for the dependent one.
+
+
+## Linear relationship
+
+* A line in two dinmension is represented by the set of points $(x,y)$ satisfying an equation: $y = mx + c$; 
+
+* Similarly, a perfect relationship will have a similar form: $y = \beta_0 + \beta_1 x$.
+
+* You saw two examples of that already -- case 1 and case 2 from before.
+
+
+
+## Examples
+
+
+
+```{r echo=F}
+par(mfrow = c(1,2))
+plot(c(-2, -1, 0, 1, 2), c(-2, -1, 0, 1, 2), xlab="X", ylab = "Y", main="Case 1", col="blue", type="l")
+points(c(-2, -1, 0, 1, 2), c(-2, -1, 0, 1, 2))
+plot(c(-2, -1, 0, 1, 2), c(2, 1, 0, -1, -2), xlab="X", ylab = "Y", main="Case 2", col="red", type="l")
+points(c(-2, -1, 0, 1, 2), c(2, 1, 0, -1, -2))
+```
+
+
+
+## Linear relationship (cont.)
+
+* In reality, you will never find a perfect linear relationship.
+
+* Instead, if you are lucky, you will find data that will show you the positive or negative trend.
+
+* Example? Check the plots from $\texttt{mtcars}$.
+
+
+## Example: X = weight (column $\texttt{wt}$); Y = mpg from $\texttt{mtcars}$ data
+
+```{r echo=F}
+
+# Set seed for reproducibility
+set.seed(123)
+
+# Generate data for x
+x <- mtcars$wt #seq(1, 20, by = 1)
+
+# Generate corresponding y values with a linear relationship and added noise (error)
+y <- mtcars$mpg #2 * x + rnorm(length(x), mean = 0, sd = 5)
+
+# Calculate the fitted values from the linear regression model
+model <- lm(y ~ x)
+fitted_values <- model$fitted.values
+
+# Calculate errors (residuals)
+errors <- y - fitted_values
+
+# Plot scatter plot with linear relationship and errors
+plot(x, y, main = "Scatter Plot with Linear Relationship and Error Bars",
+     xlab = "Weight", ylab = "MPG", pch = 19, col = "black", ylim = c(min(y, fitted_values), max(y, fitted_values)   )  )
+
+# Add the linear regression line
+abline(model, col = "deeppink", lwd = 2)
+
+# Add vertical error bars to represent the residuals
+iii = errors < 0
+arrows(x[iii], fitted_values[iii], x[iii], y[iii], angle = 90, code = 3, length = 0.1, col = "chartreuse1")
+
+
+# Add vertical error bars to represent the residuals
+iii = errors > 0
+arrows(x[iii], fitted_values[iii], x[iii], y[iii], angle = 90, code = 3, length = 0.1, col = "blue")
+
+
+legend("topright", legend = c(expression(paste("y = ", beta[0], " + ", beta[1], "x")), "Negative errors", "Positive errors"),
+       col = c("deeppink", "blue", "chartreuse1"), lwd = 2, pch = c(NA, NA, NA), bty = "n", lty = 1, seg.len = 2)
+
+# Add grid for better visualization
+grid()
+
+
+
+```
+
+
+## Simple Linear Regression Model
+
+
+* Model: $$y = \beta_0 + \beta_1 x + \epsilon_i$$
+
+* $\epsilon_i$-s are called the **error** terms. 
+
+* We make an assumption that $\mathbb{E}(\epsilon_i) = 0$; var$(\epsilon_i) = \sigma^2$.
+
+## What are the parameters here?
+
+* $\beta_0$, $\beta_1$, $\sigma^2$.
+* Next class: We will estimate $\beta_0$, $\beta_1$, and $\sigma^2$ based on the data $\mathbb{X} = \{X_1, \ldots, X_n\}; \mathbb{Y} = \{Y_1, \ldots, Y_n\}$.
+
+
+
