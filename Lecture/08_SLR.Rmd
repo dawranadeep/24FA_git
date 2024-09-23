@@ -1,0 +1,454 @@
+---
+title: "Simple Linear Regression"
+subtitle: "Part 2"
+author: "Ranadeep Daw"
+date: "`r Sys.Date()`"
+output:
+  revealjs::revealjs_presentation:
+    theme: "solar"
+    center: true
+    widescreen: true
+    self_contained: true
+    width: 1600
+    height: 900
+    df_print: kable
+    reveal_options:
+      slideNumber: 'c/t'
+      previewLinks: true
+---
+  
+  
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = T, warning = F, message = F)
+```
+
+## Simple Linear Regression (SLR Model)
+
+1. **Problem Statement**: We have $n$ pair of observations - independent variables/ covariates $\{x_1, x_2 , \ldots, x_n\}$ and dependent variables/ response variables $\{y_1, y_2 , \ldots, y_n\}$.
+
+2. **Model**: We want to <span style="color:blue">model</span> $Y$ as a linear function of $x$ as in:
+
+$$ y_i = \beta_0 + x_i \beta_1  + \epsilon_i $$
+
+
+
+## Typical SLR Plot
+
+```{r echo=F}
+
+# Set seed for reproducibility
+set.seed(123)
+
+# Generate data for x
+x <- mtcars$wt #seq(1, 20, by = 1)
+
+# Generate corresponding y values with a linear relationship and added noise (error)
+y <- mtcars$mpg #2 * x + rnorm(length(x), mean = 0, sd = 5)
+
+# Calculate the fitted values from the linear regression model
+model <- lm(y ~ x)
+fitted_values <- model$fitted.values
+
+# Calculate errors (residuals)
+errors <- y - fitted_values
+
+# Plot scatter plot with linear relationship and errors
+plot(x, y, main = "Scatter Plot with Linear Relationship and Error Bars",
+     xlab = "Weight", ylab = "MPG", pch = 19, col = "black", ylim = c(min(y, fitted_values), max(y, fitted_values)   )  )
+
+# Add the linear regression line
+abline(model, col = "deeppink", lwd = 2)
+
+# Add vertical error bars to represent the residuals
+iii = errors < 0
+arrows(x[iii], fitted_values[iii], x[iii], y[iii], angle = 90, code = 3, length = 0.1, col = "chartreuse1")
+
+
+# Add vertical error bars to represent the residuals
+iii = errors > 0
+arrows(x[iii], fitted_values[iii], x[iii], y[iii], angle = 90, code = 3, length = 0.1, col = "blue")
+
+
+legend("topright", legend = c(expression(paste("y = ", beta[0], " + ", beta[1], "x")), "Negative errors", "Positive errors"),
+       col = c("deeppink", "blue", "chartreuse1"), lwd = 2, pch = c(NA, NA, NA), bty = "n", lty = 1, seg.len = 2)
+
+# Add grid for better visualization
+grid()
+
+
+
+```
+
+
+
+## Example problem
+
+
+```{r echo=F}
+# Install the kableExtra package if you haven't already
+# install.packages("kableExtra")
+
+# Load necessary libraries
+library(knitr)
+library(kableExtra)
+
+# Create the data frame (using the modified numbers from the previous example)
+mortgage_data <- data.frame(
+  Year = c(2009:2024),
+  `Interest Rate (%)` = c(10.20, 10.10, 9.90, 9.10, 8.30, 7.20, 8.20, 7.80, 7.50, 7.50, 6.80, 7.30, 8.00, 6.90, 6.40, 5.70),
+  `Median Home Price` = c(185000, 184500, 176000, 174000, 173500, 174000, 173500, 170500, 175000, 178000, 188500, 204500, 232000, 260000, 310500, 331000)
+)
+
+# Create the kable table with scroll box
+kable(mortgage_data, format = "html", col.names = c("Year", "30-year Mortgage Interest Rate (%)", "Median Home Price")) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE) %>%
+  scroll_box(width = "100%", height = "300px")  # This adds a scrollable slider with a set height
+
+```
+
+* Using the above data, I want to predict $\texttt{Price}$ ($Y$ here) using  $\texttt{Interest Rate}$ as $x$.
+
+
+
+
+## SLR Assumptions
+
+* $\epsilon_i$-s are called the **error terms** or **residuals**.
+* **Modeling assumptions**: We make the following assumptions on $\epsilon_i$ :
+<br>
+  * $\mathbb{E}(\epsilon_i) = 0$;
+  * var$(\epsilon_i) = \sigma^2$; <span style="color:red"> (Homoscadasticity assumption) </span> 
+
+## SLR: Least square method
+
+
+* How many parameters do we have?
+  - $\beta_0$, $\beta_1$, and $\sigma^2$.
+* We <span style="color:limegreen">estimate</span> the parameters using the **least square method**.
+* In least square, we do the following:
+    
+    - Calculate the sum of squares of errors.
+    - Try to minimize it.
+    
+## Least square (cont.)
+
+\begin{align*}
+y_i &= \beta_0 + x_i \beta_1 + \epsilon_i \\
+\Rightarrow \epsilon_i &= y_i - \beta_0 - x_i \beta_1 \\
+\Rightarrow \epsilon_i^2 &= (y_i - \beta_0 - x_i \beta_1)^2 \\
+\Rightarrow \sum_{i=1}^n \epsilon_i^2 &= \sum_{i=1}^n  (y_i - \beta_0 - x_i \beta_1)^2 \\
+\end{align*}
+
+
+* **Goal**: Find values of $\beta_0$, $\beta_1$, and $\sigma^2$ that  minimizes the last expression $\sum_{i=1}^n \epsilon_i^2$.
+
+
+
+## Normal Equations
+
+
+* To minimize $\sum_{i=1}^n \epsilon_i^2$, we take derivatives of the expression with respect to $\beta_0$ and $\beta_1$ and equal it to $0$. We get the following two <span style="color:blue">normal equations:
+
+
+
+\begin{align*}
+\text{1.} \qquad \Big(\sum_{i=1}^n y_i \Big) &=  n \widehat{\beta}_0 + \Big(\sum_{i=1}^n x_i\Big) \widehat{\beta}_1.\\
+\text{2.} \qquad \Big( \sum_{i=1}^n x_i y_i \Big) &=  \Big(\sum_{i=1}^n x_i \Big) \widehat{\beta}_0 + \Big(\sum_{i=1}^n x_i^2 \Big) \widehat{\beta}_1.\\
+\end{align*}
+
+* Note: from the data, you can calculate $\sum_{i=1}^n y_i$, $\sum_{i=1}^n x_i$,  $\sum_{i=1}^n x_i y_i$, and $\sum_{i=1}^n x_i^2$.
+
+
+
+
+## Solving the normal equation
+
+
+* Define: 
+  \begin{align*}
+  S_{xy} &= \sum_{1=1}^n (x_i - \bar{x}) (y_i - \bar{y}) \\
+  &= \sum_{1=1}^n x_i y_i -  \frac{\Big(\sum_{1=1}^n x_i \Big) \Big(\sum_{1=1}^n y_i \Big)}{n} \\
+  S_{xx} &= \sum_{1=1}^n (x_i - \bar{x})^2 \\
+  &= \sum_{1=1}^n x_i^2 - \frac{\Big(\sum_{1=1}^n x_i \Big)^2}{n}.
+  \end{align*}
+  
+
+
+
+## Solving (Contd.)
+
+* Then you can solve for  $\widehat{\beta}_0$ and $\widehat{\beta}_1$ as below:
+
+
+\begin{align*}
+\widehat{\beta}_1 &= \frac{S_{xy}}{S_{xx}}. \\
+\widehat{\beta}_0 &= \bar{y} - \bar{x} \widehat{\beta}_1. \\
+\end{align*}
+
+
+## Fitted SLR
+
+* We <span style="color:maroon">estimated</span> the two unknown parameters in the regression line.
+
+* Our estimated <span style="color:maroon">sample regression line</span> is:
+  
+  \begin{align*}
+  \widehat{y}_i = \widehat{\beta}_0 + x_i \widehat{\beta}_1
+  \end{align*}
+
+* 
+
+
+## Example (Contd.)
+
+
+```{r echo=F}
+# Load necessary libraries
+library(knitr)
+library(kableExtra)
+
+Income <- c(35, 45, 55, 65, 75)
+Expenditure <- c(5.2, 6.0, 7.1, 7.8, 8.5)
+# Create a data frame with the values
+data <- data.frame(
+  `Income (in 1000)`= Income,
+  `Food Expenditure (in 1000)` = Expenditure,
+  `Income^2` = Income^2,
+  `Expenditure^2` = Expenditure^2,
+  `Income * Expenditure` = Income * Expenditure
+)
+
+# Calculate the sums
+sum_xi <- sum(data[,1])
+sum_yi <- sum(data[,2])
+sum_xi_sq <- sum(data[,3])
+sum_yi_sq <- sum(data[,4])
+sum_xi_yi <- sum(data[,5])
+
+# Add a row of sums to the data frame
+data <- rbind(data, c(sum_xi, sum_yi, sum_xi_sq, sum_yi_sq, sum_xi_yi))
+
+
+# Create the kable table
+kable(data, format = "html", escape = FALSE,
+      col.names = c("$x_i$", "$y_i$", "$x_i^2$", "$y_i^2$", "$x_i y_i$")) %>%
+  kable_styling(bootstrap_options = "striped", full_width = F) %>%
+  row_spec(nrow(data), bold = TRUE) %>%  # Bold the last row
+  row_spec(nrow(data) - 1, hline_after = TRUE) %>%
+  footnote(general = "The last row contains the sums for each column.") # Add a double line before the last row
+```
+
+## Cont.
+
+* Here, $n = 5$.
+<br>
+* $\sum_{i=1}^n x_i^2 = 16125; \sum_{i=1}^n x_i = 275$.
+* $S_{xx} = 16125 - 275^2/5 = 1000$.
+<br>
+* $\sum_{i=1}^n x_i y_i = 1987; \sum_{i=1}^n x_i = 275; \sum_{i=1}^n y_i = 34.6$.
+* $S_{xy} = 1987 - 275* 34.6/5 = 84$.
+
+## Cont.
+
+* $\widehat{\beta}_1 = \frac{S_{xy}}{S_{xx}} = \frac{84}{1000} = 0.084$.
+* $\widehat{\beta}_0 = 34.6/5 - 275/5 * 0.084 = 2.3$.
+
+<br>
+
+
+* Hence, our fitted regression line is:
+
+<span style="color:red"> $$\widehat{y}_i = 2.3  + 0.084 x_i. $$ </span>
+
+
+
+## Prediction
+
+* Once I have my fitted line, I can first generate a prediction.
+
+\begin{align*} 
+\widehat{y}_1 &= 2.3  + 0.084 (35) = 5.24 \\
+\widehat{y}_2 &= 2.3  + 0.084 (45) = 6.08 \\
+\widehat{y}_3 &= 2.3  + 0.084 (55) = 6.92 \\
+\widehat{y}_4 &= 2.3  + 0.084 (65) = 7.76 \\
+\widehat{y}_5 &= 2.3  + 0.084 (75) = 8.60 \\
+\end{align*}
+
+## Errors/ Residuals
+
+* Once I have my predictions, I can now calculate the prediction errors.
+
+
+\begin{align*} 
+e_1 = y_1 - \widehat{y}_1 &= 5.2 - 5.24 = -0.04\\
+e_2 = y_2 - \widehat{y}_2 &= 6.0 - 6.08 = -0.08\\
+e_3 = y_3 - \widehat{y}_3 &= 7.1 - 6.92 = 0.18\\
+e_4 = y_4 - \widehat{y}_4 &= 7.8 - 7.76 = 0.04\\
+e_5 = y_5 - \widehat{y}_5 &= 8.5 - 8.60 = -0.10\\
+\end{align*}
+
+
+## Final table
+
+
+```{r echo=F}
+# Load necessary libraries
+library(knitr)
+library(kableExtra)
+
+Income <- c(35, 45, 55, 65, 75)
+Expenditure <- c(5.2, 6.0, 7.1, 7.8, 8.5)
+mod <- lm(Expenditure ~ Income)
+Pred <- mod$fitted.values
+Res <- mod$residuals
+# Create a data frame with the values
+data <- data.frame(
+  `Income (in 1000)`= Income,
+  `Food Expenditure (in 1000)` = Expenditure,
+  `Income^2` = Income^2,
+  `Expenditure^2` = Expenditure^2,
+  `Income * Expenditure` = Income * Expenditure,
+  Residuals = Pred,
+  Errors = Res
+)
+
+
+
+
+# Create the kable table
+kable(data, format = "html", escape = FALSE,
+      col.names = c("$x_i$", "$y_i$", "$x_i^2$", "$y_i^2$", "$x_i y_i$", "$\\widehat{y}_i$", "$e_i$") ) %>%
+  kable_styling(bootstrap_options = "striped", full_width = F) 
+```
+
+
+## Plotting
+
+```{r echo=F, eval=F}
+# Load necessary libraries
+library(ggplot2)
+
+# Define the data
+Income <- c(35, 45, 55, 65, 75)
+Expenditure <- c(5.2, 6.0, 7.1, 7.8, 8.5)
+
+# Fit a linear regression model
+model <- lm(Expenditure ~ Income)
+
+# Create a data frame for ggplot
+data <- data.frame(Income, Expenditure)
+
+# Make predictions using the model
+data$Prediction <- predict(model)
+
+# Calculate residuals (errors)
+data$Residual <- data$Expenditure - data$Prediction
+
+# Plot the data
+ggplot(data, aes(x = Income, y = Expenditure)) +
+  # Plot the actual data points
+  geom_point(color = "blue", size = 3) +
+  
+  # Add the regression line
+  geom_smooth(method = "lm", se = FALSE, color = "red", linetype = "dashed", size = 1) +
+  
+  # Add the predicted points
+  geom_point(aes(y = Prediction), color = "green", size = 3, shape = 4) +
+  
+  # Add the residual lines (errors)
+  geom_segment(aes(xend = Income, yend = Prediction), linetype = "dotted", color = "gray") +
+  
+  # Add labels and title
+  labs(title = "Income vs Food Expenditure Regression",
+       subtitle = "With Regression Line, Predictions, and Errors",
+       x = "Income (in $1000s)",
+       y = "Expenditure (in $1000s)") +
+  
+  # Customize legend
+  scale_color_manual(name = "Legend",
+                     values = c("Actual" = "blue", "Predicted" = "green", "Regression Line" = "red")) +
+  
+  # Add theme for clarity
+  theme_minimal()
+
+```
+
+
+## True vs Estimated Regression line
+
+
+|                      | **True Regression Line**                            | **Sample Regression Line**                         |
+|----------------------------------|-----------------------------------------------------------|----------------------------------------------------|
+| **Equation**                     | \( y_i = \beta_0 + \beta_1 x_i + \epsilon \)                  | \( \hat{y}_i = \widehat{\beta}_0 + x_i \widehat{\beta}_1 \)                        |
+| **Intercept Coefficient**                 | \( \beta_0 \)       | \( \widehat{\beta}_0 \)           |
+| **Slope Coefficient**                 |  \( \beta_1 \)           | \( \widehat{\beta}_1 \)            |
+| **Error term**                   |  \( \epsilon_i \)                 |  \( e_i = y_i - \widehat{y}_i \) |
+| **Error variance**| var$(\epsilon_i) = \sigma^2$ |    $\widehat{\sigma}^2$ |
+
+
+
+## Error variance estimation
+
+\begin{align*}
+\widehat{\sigma}^2 &= \frac{1}{n-2} e_i^2 \\
+&= \frac{1}{n-2} \big(y_i - \widehat{y}_i \big)^2 \\
+&= \frac{1}{n-2} \big(y_i - \widehat{\beta}_0 - x_i \widehat{\beta}_1 \big)^2 \\
+\end{align*}
+
+
+
+
+
+## Example Continued
+
+* Estimated error variance = $\widehat{\sigma}^2 = \frac{1}{5-2} \big( (-0.04)^2 + (−0.08)^2 +  0.18^2 + 0.04^2$ + $(−0.10)^2 \big) = 0.0173$.
+
+* So, estimated error standard deviation = $\sqrt{0.0173} = 0.1317$.
+
+
+
+## $\texttt{R}$ Syntax
+
+* Modeling syntax:
+
+```{r eval=F}
+<model_name> = lm(<y_column> ~ <x_column>, data = <data_name>)
+```
+
+* Seeing the output:
+
+```{r eval=F}
+summary(<model_name>)
+```
+
+
+## Example Continued
+
+* Typical question format will look like this:
+  
+  - The following dataframe, named $\texttt{income_data}$ is a dataset of income (in $ \$ 1000$) and food expenditure (in $\$ 100$) of 5 families. Using income as the independent variable ($X$) and food expenditure as the dependent variable $(Y)$, build a simple linear regression model.
+  
+```{r echo=F}
+income_data = data.frame(
+  Income = c(35, 45, 55, 65, 75),
+  Expenditure = c(5.2, 6.0, 7.1, 7.8, 8.5)
+)
+
+kable(income_data)
+```
+  
+  
+## Example (cont.)
+
+
+```{r}
+income_data
+```
+  
+  
+## Example (cont.)
+
+```{r}
+my_model = lm(Expenditure ~ Income, data = income_data)
+summary(my_model)
+```

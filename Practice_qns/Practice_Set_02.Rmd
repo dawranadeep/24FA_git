@@ -1,0 +1,654 @@
+---
+title: "Practice Materials for Exam 1"
+subtitle: ""
+author: "Ranadeep Daw"
+date: "2024-09-07"
+output: 
+  revealjs::revealjs_presentation:
+    theme: solar
+    toc: true
+    toc_depth: 2
+    center: true
+    reveal_options:
+      slideNumber: 'c/t'
+      previewLinks: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, error = T, eval = T)
+```
+
+
+
+## Paired or Independent?
+
+
+* If data for one subject is present in both the samples, it is **paired test**.
+
+* If one subject belongs to exactly one of the two group, it is an **independent test**.  
+
+
+## Question 1
+
+* **Problem:**
+A group of 10 people are given a new diet plan. Their weight is measured before and after the diet. Test the hypothesis that the new diet plan will lead to a significant weight loss.
+
+
+
+* **Paired or independent**?
+
+
+
+
+## Question 1
+
+* **Problem:**
+A group of 10 people are given a new diet plan. Their weight is measured before and after the diet. Test the hypothesis that the new diet plan will lead to a significant weight loss.
+
+
+
+* **Paired or independent**?
+
+* <span style = "color:red"> Paired </span>
+* Each subject or person is measured both before and after the diet.
+
+
+
+
+
+
+## Question 2
+
+* **Problem:**
+A group of students takes a standardized test both before and after the implementation of a new teaching method. Test the hypothesis that the new method improves their scores.
+
+
+* **Paired or independent**?
+
+
+## Question 2
+
+* **Problem:**
+A group of students takes a standardized test both before and after the implementation of a new teaching method. Test the hypothesis that the new method improves their scores.
+
+
+* **Paired or independent**?
+
+* <span style = "color:red"> Paired </span>
+* Each subject or person is taking exam both before and after the implementation of the new teaching method.
+
+
+
+
+## Question 3
+
+
+* **Problem:**
+There are two groups of patients. Group 1 are given different a generic drug; group 2 receives the branded one. Test the hypothesis that the both the drugs have similar effect on the patients.
+
+
+* **Paired or independent**?
+
+
+## Question 3
+
+
+* **Problem:**
+There are two groups of patients. Group 1 are given different a generic drug; group 2 receives the branded one. Test the hypothesis that the both the drugs have similar effect on the patients.
+
+
+
+* **Paired or independent**?
+
+* <span style = "color:red"> Independent </span>
+* Each subject or person receives only one drug. 
+
+
+
+
+
+## Question 4
+
+* **Problem:** Two groups of plants are given different fertilizers. The height of the plants is measured after a month.
+
+* **Hypothesis:** Fertilizer A will lead to taller plants than Fertilizer B.
+
+
+
+* **Paired or independent**?
+
+
+
+## Question 4
+
+* **Problem:** Two groups of plants are given different fertilizers. The height of the plants is measured after a month.
+
+* **Hypothesis:** Fertilizer A will lead to taller plants than Fertilizer B.
+
+
+
+* **Paired or independent**?
+
+* <span style = "color:red"> Independent </span>
+* Each subject or plant gets one fertilizer only.
+
+
+
+## Question 5
+
+* **Problem:** Employees at UWF are surveyed about their job satisfaction. Their responses are compared. Test that employees at Biology departments will report higher job satisfaction than employees at Math department.
+
+
+
+* **Paired or independent**?
+
+
+## Question 5
+
+* **Problem:** Employees at UWF are surveyed about their job satisfaction. Their responses are compared. Test that employees at Biology departments will report higher job satisfaction than employees at Math department.
+
+
+
+* **Paired or independent**?
+
+* <span style = "color:red"> Independent </span>
+* Each subject or employee is either in the Biology dept, or in the Math dept.
+
+
+
+
+
+
+## Question 6
+
+* **Problem:** Employees at UWF are surveyed each year about their job satisfaction. Their responses are compared. Test that employees reported a higher job satisfaction in 2023 compared to the one in 2022.
+
+
+
+* **Paired or independent**?
+
+
+## Question 5
+
+* **Problem:** Employees at UWF are surveyed each year about their job satisfaction. Their responses are compared. Test that employees reported a higher job satisfaction in 2023 compared to the ones in 2022.
+
+
+
+* **Paired or independent**?
+
+* <span style = "color:red"> Paired </span>
+* Each subject or employee is recording the data twice; once in 2022 and once in 2023.
+
+
+
+## Possible hypothesis
+
+* Here $\mu_1$, $\mu_2$ are population means for the two samples. $M_1$, $M_2$ are population medians for the two samples.
+<br>
+
+
+* Case 1: $H_0: \mu_1 - \mu_2 = 0$; $H_A: \mu_1 - \mu_2 \neq 0$.
+* Case 2: $H_0: \mu_1 - \mu_2 \leq 0$; $H_A: \mu_1 - \mu_2 > 0$.
+* Case 3: $H_0: \mu_1 - \mu_2 \geq 0$; $H_A: \mu_1 - \mu_2 < 0$.
+
+
+
+
+
+
+## Parametric vs Nonparametric
+
+
+* So far we have done only the following:
+
+  * **Parametric tests**: t tests. One sample and two samples.
+    - Example of parametric case: Normality assumption.
+  
+  * **Nonparametric**: sign test, Wilcoxon rank sum, Wilcoxon signed rank.
+  
+  
+## How to know what test
+
+* If you assume normality, it has to be **t** test.
+
+* Terms like **under regular normality assumption**, or any hypothesis test about the **mean**.
+
+
+
+
+## When nonparametric
+
+* In this class, if the question says: **Test if the median of ... **
+
+* Any terminology that says **without any parametric assumption**.
+
+* If there is no keyword about parametric vs nonparametric, you are free to choose.
+
+
+## Equivalence between tests
+
+
+| Parametric test | Code| Non-parametric test | Code|
+|---|---|---|---|
+| One sample $t$ test | $\texttt{t.test}$ |?? | ??| 
+| Two sample independent test| $\texttt{t.test}$| Wilcoxon rank-sum test| $\texttt{wilcox.test}$ |
+| Two sample paired test| $\texttt{t.test}$| Wilcoxon signed-rank test| $\texttt{wilcox.test}$ |
+
+
+
+## Unlearn something
+
+* Let's simplify.
+* Forget the following two options:
+  -  $\texttt{var.equal=}$
+  -  $\texttt{exact=}$
+
+
+
+## One sample hypothesis test: parametric
+
+
+My following code downloads the bodyfat data^[http://hbiostat.org/data] in $\texttt{R}$ in a dataframe named $\texttt{bodyfat_data}$. 
+
+* Let's do the homework 1 question:
+```{r}
+ bodyfat_data = read.csv(url("https://hbiostat.org/data/repo/bodyfat.csv"))
+```
+
+Test the null hypothesis that population mean for the $\texttt{BodyFat}$ variable is less than $17$.
+
+
+
+## Answer:
+
+
+* Denote $\mu$ as the population mean for the $\texttt{BodyFat}$ variable.
+* Hypotheses: $H_0$: $\mu \geq 17$; $H_1$: $\mu < 17$.
+* One sample $t$ test.
+* First, let's save the $\texttt{BodyFat}$ variable in a new vector and then write the rest of the code.
+
+```{r}
+bfat = bodyfat_data$BodyFat
+```
+
+
+## Cont.
+
+
+```{r}
+bfat = bodyfat_data$BodyFat
+t.test(bfat, mu=17, alternative="less", conf.level=0.95)
+```
+
+Since $p$ value > $\alpha = 0.05$, can not reject $H_0$.
+
+
+
+## One sample hypothesis test: nonparametric
+
+
+* **Question 1**: Can you do a similar nonparametric test of the above problem? Specify in your hypothesis what test you are doing here and explain the symbols.
+
+* **Question 2**: Under no parametric assumption, test that population median for the $\texttt{BodyFat}$ variable is less than $17$.
+
+ 
+ 
+## One sample: nonparametric
+ 
+ 
+ 
+
+* Denote $M$ as the population mean for the $\texttt{BodyFat}$ variable.
+* Hypotheses: $H_0$: $M \geq 17$; $H_1$: $M < 17$.
+* One sample test; so the **sign test**.
+
+
+## Sign test
+
+```{r}
+bfat = bodyfat_data$BodyFat
+positives_cnt = sum(bfat> 17)
+negatives_cnt = sum(bfat< 17)
+binom.test(positives_cnt, positives_cnt+negatives_cnt,
+           alternative="less", conf.level = 0.95)
+```
+
+
+
+## Let's simplify
+
+* If you are confused, **forget the above.**
+* There is a version of Wilcoxon test that eases up the coding job.
+* You copy the code for the t test.
+* Then replace $\texttt{t.test}$ with $\texttt{wilcox.test}$.
+
+
+## Wilcoxon test for one sample
+
+```{r}
+bfat = bodyfat_data$BodyFat
+wilcox.test(bfat, mu=17, alternative="less", conf.level=0.95)
+```
+
+
+
+
+
+## Takeaway?
+
+
+* The code is $\texttt{t.test}(\ldots)$ or $\texttt{wilcox.test}(\ldots)$.
+* Put $\texttt{mu=}$ as the mean value <span style="color:red">IN THE HYPOTHESIS</span>.
+* Use $\texttt{alternative="two.sided"}$; or $\texttt{alternative="greater"}$, or $\texttt{alternative="less"}$. 
+* Use $\texttt{conf.level= 1 -} \alpha$.
+* <span style="color:purple">Same syntax in parametric and nonparametric; but only change the name of the function</span>.
+
+
+
+
+
+## Two sample hypothesis test
+
+
+* Once again, if you are confused, 
+  - FORGET $\texttt{var.equal=}$.
+  - FORGET $\texttt{exact=}$.
+
+* Let's do the parametric first; then replace $\texttt{t.test}$ with $\texttt{wilcox.test}$ for nonparametric.
+
+
+
+## HW2 Question 1
+
+
+* 16 students in a Statistics course are randomly divided into two groups of 8, each assigned to only one  of two test formats -- Project-based or Concept-based. The test scores for each group are as follows:
+<center> **Project-based:** <span style = "color:green"> 38, 54, 63, 45, 40, 49, 58, 57 </center> 
+<center> **Concept-based:** <span style = "color:green"> 55, 84, 79, 65, 78, 74, 58, 69 </center>
+
+
+
+* Under regular normality assumptions, test whether the mean scores of the two tests are equal at $\alpha = 0.05$.
+
+* Parametric/ nonparametric?
+* One/ two-tailed?
+* $\texttt{alternative=}$ ?
+
+
+## Cont.
+
+* Parametric since it says **under regular normality assumptions**.
+* Two-tailed since it says test if the mean of two tests are equal. So,  we are testing **equal to** against **not equal to**.
+* $\texttt{alternative= "two.sided"}$.
+
+## In $\texttt{R}$.
+
+* For independent test, **all values should be put in one vector first.**
+ 
+```{r}
+# First, all values in ONE vector
+all_scores = c(38, 54, 63, 45, 40, 49, 58, 57,
+               55, 84, 79, 65, 78, 74, 58, 69)
+```
+
+* Step 2: **All the groups in the second vector.**
+```{r} 
+ #Second, create a vector of test information
+test_types = c(  rep("1.Project", 8),
+                 rep("2.Concept", 8))
+```
+
+
+## Cont.
+
+* For the test, you have to do:
+```{r eval=F}
+t.test(<value_vector> ~ <group_vector>,  mu = ..., 
+    alternative = ..., conf.level = ...).
+```
+
+```{r}
+t.test(all_scores ~ test_types, mu=0, 
+       alternative="two.sided",   conf.level = 0.95)
+```
+
+
+## Cont.
+
+* Look at the p value.
+* In this case, reject $H_0$.
+
+## For nonparametric?
+
+* Wilcoxon rank sum test.
+* Replace $\texttt{t.test}$ with $\texttt{sign.test}$.
+* Question statement can say:
+  
+  - **Q1**: <span style="color:blue">Without assuming any parametric distribution</span>, test whether the median scores of the two test formats are equal at $\alpha = 0.05$. 
+  - **Q2** Test whether the <span style="color:blue">median</span> scores of the two test formats are equal at $\alpha = 0.05$. 
+  - **Q3**: Perform the <span style="color:blue">equivalent nonparametric test</span> for the above question. Explain notations and hypotheses.
+  
+
+
+## Cont: Nonparametric
+
+```{r}
+wilcox.test(all_scores ~ test_types,  mu=0, 
+             alternative="two.sided", conf.level = 0.95)
+```
+
+* Enough evidence to reject $H_0$.
+
+
+
+
+
+
+## HW 2 Q3
+
+
+* Practice hypothesis testing with datasets. My following code downloads the Diabetes Data^[<https://hbiostat.org/data>, courtesy of the Vanderbilt University Department of Biostatistics] in $\texttt{R}$ in a dataframe named $\texttt{diabetes_data}$. You need to be connected to internet for this.
+
+```{r}
+diabetes_data = read.csv(url("https://hbiostat.org/data/repo/diabetes.csv"))
+```
+
+
+* Assuming normality, test whether there is a significant difference in the mean Stabilized Glucose levels (column name = **stab.glu**) between males and females (column name = **gender**). $\alpha = 0.10$.
+
+
+## Cont.
+
+* Independent since in this example, each subject has either gender = male or gender = female.
+* Parametric since the question says **assuming normality**.
+* Two-tailed since we test **whether there is a significant difference**, i.e., **difference = 0** vs **difference $\neq$ 0**.
+
+## Cont.
+
+* Step 1:  **All values should be put in one vector first.** Here all the values of glucose level are in **stab.glu** column.
+
+```{r}
+Glucose = diabetes_data$stab.glu   # Values
+```
+
+
+* Step 2: **All the groups in the second vector.**.
+
+```{r}
+Gender  = diabetes_data$gender     # Groups
+```
+
+
+## Cont.
+
+* Step 3: Do the test.
+
+```{r}
+t.test(Glucose  ~ Gender, mu = 0, 
+       alternative = "two.sided", conf.level = 1-0.10)
+```
+
+* Step 4: Finish the conclusion.
+
+## Nonparametric equivalent questions
+
+* Without any parametric assumption, test whether there is a significant difference in the median Stabilized Glucose levels (column name = **stab.glu**) between males and females (column name = **gender**). $\alpha = 0.10$.
+
+* Do the nonparametric equivalent test for the last example.
+
+* <span style="color:purple"> Just replace $\texttt{t.test}$ with $\texttt{wilcox.test}$.
+
+
+## Cont.
+
+
+```{r}
+Glucose = diabetes_data$stab.glu   # Values
+Gender  = diabetes_data$gender     # Groups
+wilcox.test(Glucose  ~ Gender, mu = 0, 
+       alternative = "two.sided", conf.level = 1-0.10)
+```
+
+
+
+
+## Takeaway?
+
+* Write clearly first if it an <span style="color:purple">independent</span> or <span style="color:purple"> paired </span> test.
+
+* If independent test:
+  
+  - First: **All values should be put in one vector first.**
+  - Second: **All the groups in second vector.**
+
+```{r eval=F}
+t.test(<value_vector> ~ <group_vector>,  mu = ..., 
+    alternative = ..., conf.level = ...).
+```
+
+
+
+
+
+## HW2 Q3A
+
+
+* Do a nonparametric test that the median age (column name = **age**) is less than 40.5.
+
+
+## Q3A
+
+* What would you do if it were a t test/ parametric test?
+
+* $H_0$: $\mu \geq 40.5$; $H_A$: $\mu < 40.5$.
+```{r}
+Ages = diabetes_data$age
+t.test(Ages, mu=40.5,
+       alternative="less", conf.level=0.90)
+```
+
+
+## HW3 Q3A
+
+* Replace $\texttt{t.test}$ with $\texttt{wilcox.test}$.
+
+```{r}
+Ages = diabetes_data$age
+wilcox.test(Ages, mu=40.5,
+       alternative="less", conf.level=0.90)
+```
+
+
+
+## HW3 Q2A
+
+All the 8 students from a Statistics class take both a project-based test and a concept-based test. The following are their scores for each test:
+
+|           | Student 1 | Student 2 | Student 3 | Student 4 | Student 5 | Student 6 | Student 7 | Student 8 |
+|-----------|-----------|-----------|-----------|-----------|-----------|-----------|-----------|-----------|
+| **Project-based** |     38    |     54    |     63    |     45    |     40    |     49    |     58    |     57    |
+| **Concept-based** |     55    |     84    |     79    |     65    |     78    |     74    |     58    |     69    |
+
+
+## Cont.
+
+A. Assuming normality, test if the mean population score for the Project-based test is smaller than that of the Concept-based test.
+
+
+* Q. Paired/ Independent?
+* Q. One or two sided?
+* Q. $\texttt{alternative=}$?
+
+
+
+## Cont.
+
+* Paired since every subject has data in both samples.
+* One-sided since question says "smaller".
+* Q. $\texttt{alternative= "less"}$.
+
+## Paired test
+
+* For paired test:
+  - Create a vector for the first sample of data. 
+  - Create a second vector for the second sample of data. 
+
+* Syntax:
+
+```{r eval=F}
+t.test(<vector1>, <vector2>,  paired=TRUE, mu = ...,
+    alternative = ..., conf.level = ...).
+```
+
+
+## Cont.
+
+```{r}
+Project_based = c(38, 54, 63, 45, 40, 49, 58, 57)
+Concept_based = c(55, 84, 79, 65, 78, 74, 58, 69)
+
+t.test(Project_based, Concept_based, paired=TRUE,
+       alternative = "less",
+       mu=0, conf.level = 1-0.05)
+```
+
+
+
+
+## For nonparametric
+
+
+* What if the question says one of the following:
+  
+  - Replicate the above test with an equivalent nonparametric one.
+  - Test if the population median of the two tests are equal or not.
+  - Under no parametric assumption, can you test $\ldots$?
+  
+* You do the nonparametric test: Wilcoxon signed-rank test.
+
+* Replace $\texttt{t.test}$ with $\texttt{wilcox.test}$.
+
+
+## Cont.
+
+```{r}
+Project_based = c(38, 54, 63, 45, 40, 49, 58, 57)
+Concept_based = c(55, 84, 79, 65, 78, 74, 58, 69)
+
+t.test(Project_based, Concept_based, paired=TRUE,
+       alternative = "less",
+       mu=0, conf.level = 1-0.05)
+```
+
+
+
+
+
+## Equivalence between tests
+
+
+| Parametric test | Code| Non-parametric test | Code|
+|---|---|---|---|
+| One sample $t$ test | $\texttt{t.test}$ | Wilcoxon rank-sum test | $\texttt{wilcox.test}$| 
+| Two sample independent test| $\texttt{t.test}$| Wilcoxon rank-sum test| $\texttt{wilcox.test}$ |
+| Two sample paired test| $\texttt{t.test}$| Wilcoxon signed-rank test| $\texttt{wilcox.test}$ |
+
