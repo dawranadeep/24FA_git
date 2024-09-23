@@ -537,3 +537,34 @@ summary(my_model)
 * **Question:** What is the $R^2$ of the regression model from the output?
   - Look at the <span style="color:blue">Multiple R-squared</span> option in the output.
   - $R^2 = 0.9927$.
+  
+## Does the model make sense?
+
+* We can always fit a linear model like this.
+* But sometimes there is just no relationship between x and y.
+* Hence, it is our goal to check if the model is sensible or not.
+* There are two ways to check it -- you will understand the differences better in the multiple linear regression lecture.
+
+## Hypothesis Test 1: Test for the model performance
+
+* First, if there is no relationship, the slope coefficient should have a value close to $0$.
+* Hence, we want to test the null hypothesis $H_0:$ The model has no explanatory power, $\beta_1 = 0$ (the slope is zero). 
+* Alternate hypothesis is $H_A: \beta_1 \neq 0$, i.e., the slope is not zero.
+* **Careful, we are not testing with $\widehat{\beta}_1$.**
+* For this, we need an additional assumption that:
+  $\epsilon_i \sim \mathbb{N}(0, \sigma^2)$
+
+
+## Cont.
+
+* Our test statistic is: $F = \frac{SS_e/1}{SS_y/(n-2)}$.
+* Under $H_0$, the F-statistic follows a **F** distribution with degrees of freedoms $(1, n-2)$.
+* We reject the $H_0$ when $p$-value < $\alpha$.
+
+
+## SLR Output: Model Performance
+
+* **Question:** From the output, is the regression model explaining anything at $\alpha = 0.05$?
+  - Look at the very last <span style = "color:darkpink">$p$-value</span> in the output.
+  - Since $p$-value (0.00026) < $\alpha$ (0.05), we reject $H_0$ that the model is meaningless.
+  - So, here my model is explaining something about $y$ from $x$. 

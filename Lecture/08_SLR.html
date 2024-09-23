@@ -2832,6 +2832,55 @@ option in the output.</li>
 </ul></li>
 </ul>
 </section>
+<section id="does-the-model-make-sense" class="slide level2">
+<h2>Does the model make sense?</h2>
+<ul>
+<li>We can always fit a linear model like this.</li>
+<li>But sometimes there is just no relationship between x and y.</li>
+<li>Hence, it is our goal to check if the model is sensible or not.</li>
+<li>There are two ways to check it – you will understand the differences
+better in the multiple linear regression lecture.</li>
+</ul>
+</section>
+<section id="hypothesis-test-1-test-for-the-model-performance" class="slide level2">
+<h2>Hypothesis Test 1: Test for the model performance</h2>
+<ul>
+<li>First, if there is no relationship, the slope coefficient should
+have a value close to <span class="math inline">\(0\)</span>.</li>
+<li>Hence, we want to test the null hypothesis <span class="math inline">\(H_0:\)</span> The model has no explanatory power,
+<span class="math inline">\(\beta_1 = 0\)</span> (the slope is
+zero).</li>
+<li>Alternate hypothesis is <span class="math inline">\(H_A: \beta_1
+\neq 0\)</span>, i.e., the slope is not zero.</li>
+<li><strong>Careful, we are not testing with <span class="math inline">\(\widehat{\beta}_1\)</span>.</strong></li>
+<li>For this, we need an additional assumption that: <span class="math inline">\(\epsilon_i \sim \mathbb{N}(0,
+\sigma^2)\)</span></li>
+</ul>
+</section>
+<section id="cont.-2" class="slide level2">
+<h2>Cont.</h2>
+<ul>
+<li>Our test statistic is: <span class="math inline">\(F =
+\frac{SS_e/1}{SS_y/(n-2)}\)</span>.</li>
+<li>Under <span class="math inline">\(H_0\)</span>, the F-statistic
+follows a <strong>F</strong> distribution with degrees of freedoms <span class="math inline">\((1, n-2)\)</span>.</li>
+<li>We reject the <span class="math inline">\(H_0\)</span> when <span class="math inline">\(p\)</span>-value &lt; <span class="math inline">\(\alpha\)</span>.</li>
+</ul>
+</section>
+<section id="slr-output-model-performance" class="slide level2">
+<h2>SLR Output: Model Performance</h2>
+<ul>
+<li><strong>Question:</strong> From the output, is the regression model
+explaining anything at <span class="math inline">\(\alpha =
+0.05\)</span>?
+<ul>
+<li>Look at the very last <span style="color:darkpink"><span class="math inline">\(p\)</span>-value</span> in the output.</li>
+<li>Since <span class="math inline">\(p\)</span>-value (0.00026) &lt;
+<span class="math inline">\(\alpha\)</span> (0.05), we reject <span class="math inline">\(H_0\)</span> that the model is meaningless.</li>
+<li>So, here my model is explaining something about <span class="math inline">\(y\)</span> from <span class="math inline">\(x\)</span>.</li>
+</ul></li>
+</ul>
+</section>
     </div>
   </div>
 
