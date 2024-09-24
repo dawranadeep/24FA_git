@@ -300,7 +300,7 @@ fitted_values <- model$fitted.values
 errors <- y - fitted_values
 
 # Plot scatter plot with linear relationship and errors
-plot(x, y, main = "Scatter Plot with Linear Relationship and Error Bars",
+plot(x, y, main = "Scatter Plot for Income (x) vs Expenditure (y)",
      xlab = "Income", ylab = "Expenditure", pch = 19, col = "black", ylim = c(min(y, fitted_values), max(y, fitted_values)   )  )
 
 # Add the linear regression line
@@ -484,13 +484,18 @@ summary(my_model)
 
 ## Summary Output
 
-![](https://raw.githubusercontent.com/dawranadeep/24FA_git/refs/heads/main/Practice_qns/img/slr_output.png)
+
+
+![](https://raw.githubusercontent.com/dawranadeep/24FA_git/refs/heads/main/Practice_qns/img/slr_output2.png)
+
+* See the above output [here](https://raw.githubusercontent.com/dawranadeep/24FA_git/refs/heads/main/Practice_qns/img/slr_output2.png).
 
 
 
 ## Summary of SLR Output: Equation
 
 * **Question:** How can you write the estimated regression model from the output?
+<br>
   - Look at the <span style="color:red">Coefficients</span> table's <span style="color:red">Estimate</span> column.
   - First one is the intercept ($\widehat{\beta}_0$); second one is the slope ($\widehat{\beta}_1$).
   - So here the estimated regression equation is:
@@ -506,7 +511,7 @@ summary(my_model)
 
 * **Question:** What is the estimated error variance from the output?
   - You have to square the residual standard error.
-  - $\widehat{\sigma}^2 = 0.1317^2 = 0.0173$.
+  - $\widehat{\sigma}^2 = 0.1317^2 = 0.0173.$
   
   
 ## Link with correlation
@@ -514,9 +519,10 @@ summary(my_model)
 * Last class, we discussed correlation:
   $$r = \frac{1}{n-1} \sum_{i=1}^n \Big(\frac{x_i - \bar{x}}{s_X}\Big)  \Big(\frac{y_i - \bar{y}}{s_Y}\Big)$$
 * We can link correlation with regression here as below:
-  - $\widehat{\beta}_1 = r \sqrt{\frac{SS_y}{SS_x}}$
-  - Here $SS_{y} = \sum_{1=1}^n (y_i - \bar{y})^2 = \sum_{1=1}^n y_i^2 - \frac{\Big(\sum_{1=1}^n y_i \Big)^2}{n}$.
-
+  - $\widehat{\beta}_1 = r \sqrt{\frac{S_{yy}}{S_{xx}}}$
+  - $S_{yy} = \sum_{1=1}^n (y_i - \bar{y})^2 = \sum_{1=1}^n y_i^2 - \frac{\Big(\sum_{1=1}^n y_i \Big)^2}{n}$.
+  
+  
 
 ## $R$-square ($R^2$)
 
@@ -526,11 +532,26 @@ summary(my_model)
 * A high $R^2$ value indicates a strong linear relationship between $x$ and $y$. 
 
 
-## $R$-square: Other versions
 
-* $R^2 =  \widehat{\beta}_1^2 \frac{SS_x}{SS_y}$.
-* $R^2 =  1 - \frac{SS_e}{SS_y}$, where SS$_e$ is the total residual sum of squares = $\sum_{1=1}^n (e_i - \bar{e})^2 = \sum_{1=1}^n e_i^2$.
 
+## A property regarding $R^2$
+
+* You can show that:
+\begin{align*}
+\sum_{i=1}^n \big(y_i - \bar{y} \big)^2 &= \sum_{i=1}^n \big(\widehat{y}_i - \bar{y} \big)^2  + \sum_{i=1}^n \big(y_i - \widehat{y}_i \big)^2 
+\end{align*}
+
+* The first term is $S_{yy}$ or total variability in the response. It is denoted as SST (total sum of squares).
+* The second term is **regression sum of squares**, denoted as SS$_{\text{reg}}$.
+* The last term is **error sum of squares**, denoted as SSE.
+* SST = SS$_{\text{reg}}$ + SSE.
+
+## $R$-square: Properties and Interpretation
+
+* $R^2 =  \widehat{\beta}_1^2 \frac{S_{xx}}{S_{yy}}$.
+* $R^2 =  1 - \frac{S_{ee}}{S_{yy}}$, where S$_{ee}$ is the total residual sum of squares = $\sum_{1=1}^n (e_i - \bar{e})^2 = \sum_{1=1}^n e_i^2$.
+* $R^2 = \frac{S_{\text{reg}}}{S_{yy}}$, where $S_{\text{reg}} = S_{yy} - S_{ee}$.
+* $R^2$ is the fraction of variability explained of $y$ divided by the total variability in $y$. So, in other words, $R^2$ is the percentage of explained variability of $y$ by the model.
 
 ## Summary of SLR Output: $R^2$
 
@@ -557,7 +578,7 @@ summary(my_model)
 
 ## Cont.
 
-* Our test statistic is: $F = \frac{SS_e/1}{SS_y/(n-2)}$.
+* Our test statistic is: $F = \frac{S_{ee}/1}{S_{yy}/(n-2)}$.
 * Under $H_0$, the F-statistic follows a **F** distribution with degrees of freedoms $(1, n-2)$.
 * We reject the $H_0$ when $p$-value < $\alpha$.
 
@@ -565,6 +586,6 @@ summary(my_model)
 ## SLR Output: Model Performance
 
 * **Question:** From the output, is the regression model explaining anything at $\alpha = 0.05$?
-  - Look at the very last <span style = "color:darkpink">$p$-value</span> in the output.
+  - Look at the very last <span style = "color:pink">$p$-value</span> in the output.
   - Since $p$-value (0.00026) < $\alpha$ (0.05), we reject $H_0$ that the model is meaningless.
   - So, here my model is explaining something about $y$ from $x$. 
