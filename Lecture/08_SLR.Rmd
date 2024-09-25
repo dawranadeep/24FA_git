@@ -470,6 +470,10 @@ kable(income_data)
 
 
 ```{r}
+income_data = data.frame(
+  Income = c(35, 45, 55, 65, 75),
+  Expenditure = c(5.2, 6.0, 7.1, 7.8, 8.5)
+)
 income_data
 ```
   
@@ -507,7 +511,7 @@ summary(my_model)
 
 * **Question:** What is the estimated error standard deviation from the output?
   - Look at the <span style="color:green">Residual Standard Error</span>.
-  - $\widehat{\sigma} = 0.1317$.
+  - $\widehat{\sigma} = 0.1317.$
 
 * **Question:** What is the estimated error variance from the output?
   - You have to square the residual standard error.
@@ -586,6 +590,44 @@ summary(my_model)
 ## SLR Output: Model Performance
 
 * **Question:** From the output, is the regression model explaining anything at $\alpha = 0.05$?
-  - Look at the very last <span style = "color:pink">$p$-value</span> in the output.
+  - Look at the very last <span style = "color:LightPink">$p$-value</span> in the output.
   - Since $p$-value (0.00026) < $\alpha$ (0.05), we reject $H_0$ that the model is meaningless.
   - So, here my model is explaining something about $y$ from $x$. 
+  
+  
+
+
+## Hypothesis Test 2: Test for Individual Coefficients
+
+* Another test for $H_0$: $\beta_1 = 0$ vs $H_A$: $\beta_1 \neq 0$.
+* This time, we will perform a one sample $t$ test.
+* Same hypothesis as before, but this is a different test.
+* You will see the differences between the $t$ and the $F$ test more in the multiple linear regression case.
+
+
+## Cont.
+
+* Recall, the test statistic for the $t$ test has a form:
+ $$ T = \frac{\widehat{\beta}_1 - 0}{ \text{sd } (\widehat{\beta}_1 )}. $$
+* At level $\alpha$, we reject the $H_0$ if $|T| > t_{\alpha/2; n-1}$.
+
+## SLR Output: Test for $\beta_1 = 0$
+
+* From the $\texttt{R}$ output, look the <span style="color:#FFDB58"> Coefficients table, last column named *Pr(>|t|)* </span>. Look for the row corresponding to $\widehat{\beta}_1$.
+* This is the $p$ value. Reject $H_0$ if $p$ value < $\alpha$.
+* Also note, in the coefficients table, column $1$ (named *Estimate*) is the $\widehat{\beta}_1$.
+* Column $2$ is the sd of $\widehat{\beta}_1$.
+* The column $3$ (named *t value*) is the $t$ statistic.
+
+
+## SLR Output: Test for $\beta_1 = 0$ (cont.)
+
+* **Question:** From the output, can you test if $\beta_1 = 0$ at $\alpha = 0.05$?
+  - Look at the <span style = "color:#FFDB58"> column *Pr(>|t|)*  in the coefficients table; row 2 (or the row for $\beta_1$</span>.
+  - Since $p$-value (0.00026) < $\alpha$ (0.05), we reject $H_0$ that $\beta_1 = 0$.
+  - Also note that here the $t$ statistic is: **20.176** (column 3).
+  
+  
+
+
+
