@@ -629,5 +629,90 @@ summary(my_model)
   
   
 
+## Leverage Score
+
+- **Leverage score** quantifies how much influence an individual data point has on the predicted values.
+- It has the following formula: 
+  \[
+  h_i = \frac{1}{n} + \frac{(x_i - \bar{x})^2}{\sum_{j=1}^n (x_j - \bar{x})^2}
+  \]
+  
+  
+## Leverage Score (cont.)
+
+- Points with **higher leverage** are further from the mean of the predictor variable \( X \), i.e., more extreme observation in \( X \).
+- Points with **higher leverage** cause large changes in the parameter estimates ($\widehat{\beta}_0$, $\widehat{\beta}_1$,$\widehat{\sigma}^2$) when they are deleted. 
+
+
+## $\texttt{R}$ Syntax
+
+```{r eval=F}
+plot(hatvalues(<model_name>), type = 'h')
+```
+
+* Example: 
+
+```{r eval=T, out.width=400}
+plot(hatvalues(my_model), type = 'h')
+```
+
+
+## Interpreting Leverage Score
+
+- Leverage scores range between 0 and 1, i.e., $0 \leq h_i \leq 1$.
+- A **high leverage** point is usually defined as one where:
+  \[
+  h_i > \frac{2}{n}
+  \]
+
+- You may see other thresholds too. In practical examples, you have to experiment with different values to check what's working.
+- High leverage points may not necessarily be outliers, but they can significantly affect the regression model's fit.
+
+
+
+
+## Cook's Distance
+
+- **Cook's Distance** is a measure used to assess the influence of an observation on the regression model.
+- **Cook's Distance** quantifies how much the regression coefficients would change if a particular observation was removed from the model.
+- It combines both the **residual** (how far the actual point is from the predicted value) and the **leverage** (how far the point is from the mean of the predictor).
+
+
+
+## Formula for Cook's Distance
+
+For the \( i \)-th observation, Cook’s distance \( D_i \) is calculated as:
+
+\[
+D_i = (n-2) \frac{e_i^2}{ \sum_{j=1}^n e_j^2} \cdot \frac{h_i}{(1 - h_i)^2}
+\]
+
+
+- \( e_i \) is the **residual** for the \( i \)-th observation.
+- \( h_i \) is the **leverage score** for the \( i \)-th observation.
+
+
+## Interpreting Cook's Distance
+
+* You will see various thresholds for **high influence** such as:
+  - $D_i > 1$
+  - $D_i > 3 \bar{D}$
+
+* In real data, you have to keep experimenting which one works best for you.
+
+
+
+## $\texttt{R}$ Syntax
+
+```{r eval=F}
+plot(cooks.distance(<model_name>), type = 'h')
+```
+
+* Example: 
+
+```{r eval=T, out.width=400}
+plot(cooks.distance(my_model), type = 'h')
+```
+
 
 

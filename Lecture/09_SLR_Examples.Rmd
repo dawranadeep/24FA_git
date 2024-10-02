@@ -1,0 +1,536 @@
+---
+title: "Simple Linear Regression"
+subtitle: "Part 3: Examples using R"
+author: "Ranadeep Daw"
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    theme: cerulean
+    toc: true
+    toc_depth: 2
+    keep_md: false
+---
+  
+  
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = T, warning = F, message = F)
+```
+
+
+
+# Instructions
+
+1. Your HW3 has similar questions.
+2. This is an exercise as well as contains new learning materials. 
+3. In statistical modeling, it is a common practice to receive data file and descriptions separately. I have provided guidance on how to interpret the data descriptions, often referred to as the <span style="color:red">metadata</span> file.
+
+
+<br><br>
+
+# First question, based on data hosted on an external website.
+
+
+### Let's again go back to the pulse rate data that we used previously. The data was supplied by Dr Richard J. Wilson, Department of Mathematics, University of Queensland. The following is the link for the data and the metadata: [see here](<http://www.statsci.org/data/oz/ms212.html>). Read the description and understand which variable means what. 
+
+### When you try to practice at home, copy and run the following two lines first. This creates a dataframe called $\texttt{pulse_data}$ that has the data from the above link.
+
+```{r}
+pulse_data = read.table(url("http://www.statsci.org/data/oz/ms212.txt"), header = TRUE)
+pulse_data = pulse_data[complete.cases(pulse_data), ]
+```
+
+
+<br> <br>
+
+## (Question 1): Covariance and Correlation
+
+### <br> A. We are going to build a regression model today using the <span style = "color:maroon"> pulse measurement before the experiment</span> as the **independent variable or covariate** and <span style = "color:maroon">the pulse measurement after the experiment</span> as the **dependent variable or response**. From the metadata, can you guess what columns I need to use here? Also, following usual class notations, which one is $x$, which one is $y$ in my regression model?
+  
+  
+**Answer: **  
+
+* From the description file, the variable *pulse measurement before the experiment* is in the column **Pulse1**. *Pulse measurement after the experiment* is in the column **Pulse2**.
+
+* The independent variable ($x$) is: Pulse1.
+* The dependent variable ($y$) is: Pulse2.
+
+
+### <br> B. Draw a scatterplot between the above two variables (i.e., pulse measurements before and after excercize). From the scatterplot, what kind of relationship do you guess here between the variables?
+
+
+
+**Answer: **  
+
+```{r}
+Pulse1 = pulse_data$Pulse1
+Pulse2 = pulse_data$Pulse2
+
+plot(Pulse1, Pulse2)
+```
+
+It seems that there is a weak increasing relationship, i.e., $y$ is increasing with $x$ increasing.
+
+### <br> C. What is the covariance and correlation between the two variables? What kind of relationship do you guess here between the variables? 
+
+
+
+**Answer: **  
+
+```{r}
+cov(Pulse1, Pulse2) # This is Covariance
+cor(Pulse1, Pulse2) # This is Correlation
+```
+
+
+### <br> D. Using the same two variables, can you demonstrate that the correlation between $\mathbf{x}$ and $\mathbf{y}$ is the same as the correlation between correlation between $\mathbf{y}$ and $\mathbf{x}$ $\big($i.e., cor($\mathbf{y, x}$) = cor($\mathbf{x, y}$) $\big)$?
+
+
+**Answer: **  
+
+```{r}
+# Just swapping the two variables. Check that this number is the same as the correlation before.
+cor(Pulse2, Pulse1)   
+```
+
+
+### <br> E. What is the Spearman's rank correlation coefficient between the two variables? 
+
+**Answer: **  
+
+```{r}
+# Same code as correlation, but you need to add method = "spearman"
+cor(Pulse1, Pulse2, method = "spearman")     
+```
+
+
+<br> <br>
+
+## (Question 2): Regression Model
+
+### <br>  A. Build the above simple linear regression model in $\texttt{R}$. Provide the estimated regression equation.
+  
+**Answer: **  
+
+```{r}
+# Remember, the code is <model_name> = lm( <y_variable> ~ <x_variable>, data  = <data_name>)
+model = lm(Pulse2   ~ Pulse1, data = pulse_data )
+model
+```
+
+
+So, my regression equation is: $\widehat{y} = 31.85 +  0.86 x$. 
+
+
+
+### <br>  B. What is the interpretation of your estimated $\widehat{\beta}_0$?
+
+**Answer: **  $\widehat{\beta}_0 = 31.85$ is the estimated value of Pulse2 (or $y$) when Pulse1 (or $x$) is equal to 0.
+
+### <br>  C. What is the interpretation of your estimated $\widehat{\beta}_1$?
+
+
+**Answer: **  $\widehat{\beta}_1 = 0.86$ is the estimated change in Pulse2 (or $y$) when Pulse1 (or $x$) changes by 1 unit.
+
+### <br> D. Find and interpret $R^2$, also denoted by <span style="color: red"> the coefficient of determination</span>. 
+
+**Answer: **  
+
+
+For this question, you will need the summary of the model. So let's print it first.
+
+
+```{r}
+summary(model)
+```
+
+
+Now you have to remember that the value of $R^2$ is written beside $\texttt{## Multiple R-squared:}.$ So, from the output table, $R^2 = 0.1307$.
+ 
+Also, $R^2$ is the percentage of the explained variability of $y$ by the model. So, here, only $13\%$ variability in Pulse2 ($y$) is being explained by the model.
+
+
+### <br> E. Verify that $R^2$ is square of the corrleation coefficient between the two variables.
+
+**Answer: **  
+
+```{r}
+# Take a square of the correlation coefficient you calculated in 1C
+# See that this number is same as the R^2
+cor(Pulse1, Pulse2)^2
+```
+
+
+
+
+### <br>  F. Plot the regression line on top of the scatter plot of the data.
+
+
+**Answer: **  
+
+For this, first do the scatterplot. Then, use the command $\texttt{abline(<model_name>}$. You can give it a color by adding $\texttt{col=...}$.
+
+```{r}
+plot(Pulse1, Pulse2) #Scatterplot from 1B
+abline(model, col="red") # Plotting the model
+```
+
+
+<br> <br>
+
+## (Question 3) Prediction and Residuals 
+
+
+
+### <br> A. Use the model to predict the second pulse rate when the first pulse rate is 70.
+
+**Answer: **  
+
+
+<span style="color: red">Careful! This one is tricky.</span> The usual syntax of the code is: 
+
+```{r eval=F}
+predict(<model_name>, newdata = data.frame(<x_variable> = <value>))
+```
+
+Here the $\texttt{<model_name>}$ is $\texttt{model}$; $\texttt{<x_variable>}$ is $\texttt{Pulse1}$;  $\texttt{<value>}$ is $\texttt{70}$. Let's complete the code now.
+
+```{r}
+# Code
+predict(model, newdata = data.frame(Pulse1 = 70) )
+```
+
+
+### <br> B. Use the model to predict the second pulse rate when the first pulse rate is 45.
+
+Following the same syntax as before.
+
+```{r}
+predict(model, newdata = data.frame(Pulse1 = 45))
+```
+
+
+
+
+
+
+
+### <br> C. What is the estimated error standard deviation? What is the estimated error variance?
+
+
+**Answer: ** 
+
+
+$\hat{\sigma} = 29.57$.
+$\hat{\sigma}^2 = 874.38$.
+
+```{r}
+29.57^2
+```
+
+
+### <br> D. Plot the residuals from the model and plot them against the fitted values. Is there any pattern?
+
+
+**Answer: ** 
+
+```{r}
+plot(model, which = 1)
+```
+
+<br><br>
+
+## (Question 4): Hypothesis testing
+
+### A. Test whether the slope ($\beta_1$) of the regression line is significantly different from zero. Use a significance level of 0.05. State the null and alternative hypotheses, and report the p-value and your conclusion.
+
+**Answer: ** 
+
+$H_0$: $\beta_1 = 0$ vs $H_A$: $\beta_1 \neq 0$.
+
+```{r}
+#p value = 0
+```
+p-value = 0 < 0.05. Reject $H_0$.
+
+
+### B. In the above test, what is the value of the test statistic? Show that the test statistic is equal to $\frac{\widehat{\beta}_1 \text{ - } 0}{\text{sd}(\widehat{\beta}_1)}$?
+
+**Answer: ** 
+
+```{r}
+0.8581/0.2140
+```
+
+### C. Find the 95% confidence interval for the slope $\beta_1$.
+
+
+```{r}
+confint(model, level = 0.95)
+```
+
+
+### D. Test whether the model makes any sense or not. Use a significance level of 0.05. State the null and alternative hypotheses, and report the p-value and your conclusion.
+
+$H_0$: $\beta_1 = 0$ vs $H_A$: $\beta_1 \neq 0$.
+
+p-value = 0. Reject $H_0$.
+
+
+## (Question 5): Leverage and Influence
+
+
+### A. Calculate the leverage score values from this regression model.
+
+```{r}
+plot(hatvalues(model), type = 'h')
+```
+
+
+### B. How would you identify influential points using Cook's Distance?
+
+```{r}
+plot(cooks.distance(model), type = 'h')
+```
+
+
+**Answer**: 
+
+
+
+
+<br><br><br>
+
+
+
+
+
+
+# Second question, based on an internal data that comes with $\texttt{R}$ - the $\texttt{mtcars}$ data. 
+<br><br>
+
+## (Question 6): Covariance and Correlation
+
+### <br> Load the $\texttt{mtcars}$ data. For internal $\texttt{R}$ datasets, see the metadata by typing $\texttt{?mtcars}$.  
+
+### <br> A. We are going to build a regression model today using the <span style = "color:maroon"> Displacement (cu.in.)</span> as the **independent variable or covariate** and <span style = "color:maroon">mpg</span> as the **dependent variable or response**.  From the metadata, can you guess what columns I need to use here? Also, following usual class notations, which one is $x$, which one is $y$ in my regression model?
+  
+  
+**Answer: **  
+
+
+x: disp; y: mpg
+
+
+### <br> B. Draw a scatterplot between the above two variables. From the scatterplot, what kind of relationship do you guess here between the variables?
+
+
+
+**Answer: **  
+
+```{r}
+data("mtcars")
+Disp = mtcars$disp
+MPG  = mtcars$mpg
+
+plot(Disp, MPG)
+```
+
+### <br> C. What is the covariance and correlation between the two variables? What kind of relationship do you guess here between the variables? 
+
+
+
+**Answer: **  
+
+```{r}
+cov(Disp, MPG)
+cor(Disp, MPG)
+```
+
+
+### <br> D. Using the same two variables, can you demonstrate that the correlation between $\mathbf{x}$ and $\mathbf{y}$ is the same as the correlation between correlation between $\mathbf{y}$ and $\mathbf{x}$ $\big($i.e., cor($\mathbf{y, x}$) = cor($\mathbf{y, x}$) $\big)$?
+
+
+**Answer: **  
+
+```{r}
+# Code
+```
+
+
+### <br> E. What is the Spearman's rank correlation coefficient between the two variables? 
+
+**Answer: **  
+
+```{r}
+cor(Disp, MPG, method = "spearman")
+```
+
+
+<br> <br>
+
+## (Question 7): Regression Model
+
+### <br>  A. Build the above simple linear regression model in $\texttt{R}$. Provide the estimated regression equation.
+  
+**Answer: **  
+
+```{r}
+model2 = lm(mpg ~ disp, data = mtcars)
+model2
+```
+
+
+### <br>  B. What is the interpretation of your estimated $\widehat{\beta}_0$?
+
+**Answer: **  
+
+### <br>  C. What is the interpretation of your estimated $\widehat{\beta}_1$?
+
+
+**Answer: **  
+
+### <br> D. Find and interpret $R^2$, also denoted by <span style="color: red"> the coefficient of determination</span>. 
+
+**Answer: **  
+
+```{r}
+summary(model2)
+```
+
+
+$R^2 = 0.72$. 72%  variability of mpg explained by the model.
+
+
+### <br> E. Verify that $R^2$ is square of the corrleation coefficient between the two variables.
+
+**Answer: **  
+
+```{r}
+# Code
+```
+
+
+
+
+### <br>  F. Plot the regression line on top of the scatter plot of the data.
+
+
+**Answer: **  
+
+
+
+```{r}
+plot(Disp, MPG) #scatterplot
+abline(model2, col = "blue")
+```
+
+
+<br> <br>
+
+## (Question 8) Prediction and Residuals 
+
+
+
+### <br> A. Use the model to predict the mpg when the displacement is 230.
+
+**Answer: **  
+
+```{r}
+predict(model2, newdata = data.frame(disp = 230) )
+```
+
+
+
+### <br> B. Use the model to predict the mpg when the displacement is 300.
+
+**Answer: ** 
+
+```{r}
+predict(model2, newdata = data.frame(disp = 300))
+```
+
+
+### <br> C. What is the estimated error standard deviation? What is the estimated error variance?
+
+
+**Answer: ** 
+
+$\hat{\sigma} = 3.251; \hat{\sigma}^2 =  10.57$.
+
+```{r}
+3.251^2
+```
+
+
+### <br> D. Plot the residuals from the model and plot them against the fitted values. Is there any pattern?
+
+
+**Answer: ** 
+
+```{r}
+plot(model2, which = 1)
+```
+
+<br><br>
+
+## (Question 9): Hypothesis testing
+
+### A. Test whether the slope ($\beta_1$) of the regression line is significantly different from zero. Use a significance level of 0.05. State the null and alternative hypotheses, and report the p-value and your conclusion.
+
+**Answer: ** 
+
+
+$H_0$: $\beta_1 = 0$ vs $H_A$: $\beta_1 \neq 0$.
+
+p-value = 0. Reject $H_0$.
+
+
+```{r}
+# Code
+```
+
+
+### B. In the above test, what is the value of the test statistic? Show that the test statistic is equal to $\frac{\widehat{\beta}_1 \text{ - } 0}{\text{sd}(\widehat{\beta}_1)}$?
+
+**Answer: ** 
+
+```{r}
+-0.041215/0.004712
+```
+
+### C. Find the 95% confidence interval for the slope $\beta_1$.
+
+
+```{r}
+confint(model2, level = 0.95)
+```
+
+
+### D. Test whether the model makes any sense or not. Use a significance level of 0.05. State the null and alternative hypotheses, and report the p-value and your conclusion.
+
+
+```{r}
+# Code
+```
+
+
+## (Question 10): Leverage and Influence
+
+
+### A. Calculate the leverage score values from this regression model.
+
+```{r}
+plot(hatvalues(model2), type = 'h')
+```
+
+
+### B. How would you identify influential points using Cook's Distance?
+
+```{r}
+plot(cooks.distance(model2), type = 'h')
+```
+
+
+**Answer**: 
+
+

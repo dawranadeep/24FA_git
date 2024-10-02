@@ -89,8 +89,10 @@ The confidence interval (0.455, 0.587) is for the probability of success $p$. Si
 
 Check the notes 03_Hypothesis_testing_updated.html, under normal distribution. The expression for first, second, and third quartile for a $\mathbb{N}(\mu, \sigma^2)$ variable are:
 
-$Q_1 = \mu - 0.674 * \sigma$
-$Q_2$ (median) $ = \mu$
+$Q_1 = \mu - 0.674 * \sigma$.
+
+$Q_2$ (median) = $\mu$.
+
 $Q_3 = \mu + 0.674 * \sigma$.
 
 

@@ -1,0 +1,301 @@
+---
+title: "Multiple Linear Regression"
+subtitle: ""
+author: "Ranadeep Daw"
+date: "`r Sys.Date()`"
+output:
+  revealjs::revealjs_presentation:
+    theme: "solar"
+    center: true
+    widescreen: true
+    self_contained: true
+    width: 1600
+    height: 900
+    df_print: kable
+    reveal_options:
+      slideNumber: 'c/t'
+      previewLinks: true
+---
+  
+  
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = T, warning = F, message = F)
+```
+
+
+
+## Simple Linear Regression (SLR)
+
+
+* You learnt simple linear regression: <br><br>
+  - One dependent variable/ response -- <span style = "color:#0CAF59"> $y$ </span>.
+  - One independent variable/ predictor/ covariate -- <span style = "color:#0CAF59"> $x$</span>.
+  - $n$ pairs of observations from $x$ and $y$.
+  - You built a model: <span style = "color:#0CAF59">$$y_i = \beta_0 + \beta_1 x_i + \epsilon_i$$</span>.
+  
+## Multiple Linear Regression
+
+* Time to extend to multiple linear regression: <br><br>
+  - One dependent variable/ response -- <span style = "color:#0CAF59"> $y$ </span>.
+  - $p$ independent variables/ predictors/ covariates -- <span style = "color:#0CAF59"> $X_1, X_2, \ldots, X_p$</span>.
+  - $n$ observations from $y$, $X_1, X_2, \ldots, X_p$.
+  - We will built a similar model: 
+  
+<span style = "color:#0CAF59">$$y_i = \beta_0 + \beta_1 X_{1i} + \beta_2 X_{2i} + \ldots + \beta_p X_{pi} + \epsilon_i$$</span>.
+
+
+## Model Assumptions
+
+* Similar to SLR, we assume error terms to have a mean $0$ and variance $\sigma^2$, i.e., $\mathbb{E}(\epsilon_i) = 0$; var($\epsilon_i) = \sigma^2_i$.
+
+* For the error/residual analysis, we will need one additional assumption that $\epsilon_i$-s are normally distributed with ean $0$ and variance $\sigma^2$, i.e., $\epsilon_i \sim \mathbb{N}(0, \sigma^2)$.
+
+
+## Least square
+
+* Similar to SLR, we try to minimize the total sum of squares: $$\sum_{i=1}^n \big[ y_i - (\beta_0 + \beta_1 X_{1i} + \beta_2 X_{2i} + \ldots + \beta_p X_{pi})\big]^2.$$
+
+* We try to find estimates $\widehat{\beta}_0$, $\widehat{\beta}_1$, $\widehat{\beta}_2, \ldots$, $\widehat{\beta}_p$, $\widehat{\sigma}^2$ that minimizes the above.   
+
+* Fitted regression equation:
+
+$$ \hat{y}_i = \widehat{\beta}_0 + \widehat{\beta}_1 X_{1i} + \widehat{\beta}_2 X_{2i} + \ldots + \widehat{\beta}_p X_{pi} $$
+
+
+
+
+## Solutions for estimates
+
+* Unlike SLR, here the expression for $\widehat{\beta}_0, \widehat{\beta}_1,  \ldots, \widehat{\beta}_p$ is complicated and needs using matrix forms.
+
+* I will avoid this part. Refer to the textbook to see the formula of estimated coefficient.
+
+* The error variance is estimated by:
+
+$$ \widehat{\sigma}^2 = \frac{1}{n - p - 1} \sum_{i=1}^n (y_i - \widehat{y})^2 $$
+
+
+
+## Our goal
+
+
+* In this class, we will try to implement this model via $\texttt{R}$ to analyze some data.
+
+* We will use this to build model, check model outputs, and residual analysis.
+
+* You will see some extra concepts such as multicollinearity, variance inflation function (VIF), adjusted $R^2$, and some introduction to nonlinear models.
+
+
+
+
+
+## $\texttt{R}$ Syntax
+
+* Modeling syntax:
+
+```{r eval=F}
+<model_name> = lm(<y_column> ~ <X1_column> + <X2_column> +
+                    ... + <Xp_column>, data = <data_name>)
+```
+
+* Seeing the summary output:
+
+```{r eval=F}
+summary(<model_name>)
+```
+
+
+## Example Data: $\texttt{mtcars}$
+
+* In this lecture, I am going to use the $\texttt{mtcars}$ data from $\texttt{R}$. 
+* We will use the $\texttt{mpg}$ column (Miles/(US) gallon) as dependent variable ($y$).
+* Let's use $\texttt{disp}$ (Displacement), $\texttt{wt}$, and $\texttt{qsec}$ as the independent variables ($X_1$, $X_2$, $X_3$).
+
+
+
+## Example: Model building
+
+* Remember, to load the $\texttt{mtcars}$ data, we do the following first:
+
+```{r}
+data("mtcars")
+```
+
+* Now, let's build the model and see the output:
+```{r}
+my_model2 = lm( mpg ~ disp + wt + qsec, data = mtcars )
+my_model2
+```
+
+
+## Fitted Model
+
+
+* **Question**: So what model equation have you got here?
+
+  - $$ \widehat{y}_i = 19.78 + (-0.00) X_{1i} + (-5.03) X_{2i} + 0.93 X_{3i}   $$.
+
+* Alternatively, we can also write:
+
+$$ \widehat{\text{mpg}}_i = 19.78 + (-0.00) \,\text{disp}_i + (-5.03) \, \text{wt}_i + 0.93 \, \text{qsec}_{i}.   $$
+
+
+## Interpretation of intercept
+
+* **Question**: How would you interpret $\widehat{\beta}_0$?
+  - **Answer**: When all the predictor/ independent variables are set as 0, $\widehat{\beta}_0$ is the predicted mean response $\hat{y}$.
+
+* In the last example, when disp, wt, and qsec are set to $0$, the predicted mpg is $\widehat{\beta}_0$ = 19.78.
+
+
+## Interpretation of slopes
+
+
+* **Question**: How would you interpret any other $\widehat{\beta}_j$ (i.e., $\widehat{\beta}_1, \ldots, \widehat{\beta}_p$)?
+  - **Answer**: Holding all other variables constant, a 1-unit increase in the $j$-th variable results in a change of  $\widehat{\beta}_j$ in the predicted mean response.
+  
+
+## Interpretation of slopes
+  
+* For example, in the previous case, with $\texttt{disp}$ and $\texttt{wt}$ held constant, increasing qsec (the 3rd variable) by 1 unit would increase the predicted mpg by  $\widehat{\beta}_3$ = 0.93.
+
+* Similarly, keeping $\texttt{disp}$ and $\texttt{qsec}$ fixed, increasing wt (the 2nd variable) by 1 unit would change the predicted mpg by $\widehat{\beta}_2$ = (-5.03), meaning mpg would decrease by 5.03 units
+
+
+
+ 
+## Summary output (You may have to scroll)
+
+```{r}
+summary(my_model2)
+```
+
+
+## Estimated error variance
+
+* * **Question:** What is the estimated error standard deviation from the output?
+  - Same as SLR: see the <span style="color:green">Residual Standard Error</span>.
+  - Here, $\widehat{\sigma} = 2.642.$
+  
+  <br><br>
+
+* **Question:** What is the estimated error **variance** from the output?
+  - You have to square the residual standard error.
+  - $\widehat{\sigma}^2 = 2.642^2 = 5.980.$
+  
+
+
+## Interpretation of $R^2$
+
+* Like SLR, $R^2$ is going to be the fraction of the explained variability (SS$_{\text{reg}}$) and the total variability $S_{yy}$. Recall that:
+
+\begin{align*}
+\sum_{i=1}^n \big(y_i - \bar{y} \big)^2 &= \sum_{i=1}^n \big(\widehat{y}_i - \bar{y} \big)^2  + \sum_{i=1}^n \big(y_i - \widehat{y}_i \big)^2 \\
+\Rightarrow S_{yy} &= SS_{\text{reg}} + SSE \qquad \text{(error sum of squares)} 
+\end{align*}
+
+
+## Finding $R^2$
+
+* **Question:** What is the $R^2$ of the regression model from the output?
+  - Look at the <span style="color:blue">Multiple R-squared</span> option in the output.
+  - $R^2 = 0.8264$.
+  
+<br><br>
+
+
+* **Question:** How would you interpret the $R^2$?
+  - Approximately $83\%$ variability of mpg ($y$) is being explained by my model.
+  
+  
+## Model significance
+
+* Here is something different from SLR.
+*In multiple linear regression, if our model is not meaningful, it suggests that none of the independent variables are contributing to predicting $y$.
+* This is equivalent to testing $H_0: \beta_1 = \beta_2 = \ldots = \beta_p = 0 $. 
+* **Careful, $\beta_0$ is never included here**.
+* Alternate hypothesis: At least one of the coefficient is not $0$.
+
+
+  
+## $F$-test for model significance
+
+* Hypotheses: $H_0: \beta_1 = \beta_2 = \ldots = \beta_p = 0 $; $H_A$:  At least one of the coefficient is not $0$.
+* Test statistic: $F = \frac{S_{ee}/p}{S_{yy}/(n-p-1)}$.
+* Under $H_0$, the F-statistic follows a **F** distribution with degrees of freedoms $(p, n-p-1)$.
+* We reject the $H_0$ when $p$-value < $\alpha$. $$
+
+
+## Example
+
+* **Question:** From the output, is the regression model significant, i.e., is it explaining anything at $\alpha = 0.05$?
+  - Test statistic:  F = 44.44.
+  - Look at the very last <span style = "color:LightPink">$p$-value</span> in the output.
+  - Since $p$-value ($\approx 0$) < $\alpha$ (0.05), we reject $H_0$ that the model is meaningless.
+  - So, here my model is explaining something about $y$ from $x$. 
+
+
+## Test for Individual Coefficients
+
+* Test for $H_0$: $\beta_j = 0$ vs $H_A$: $\beta_j \neq 0$.
+* Test statistic: $T = \frac{\widehat{\beta}_j}{ \text{sd } (\widehat{\beta}_j)}.$
+* At level $\alpha$, we reject the $H_0$ if <span style="color:red">$|T| > t_{\alpha/2; n-p}$</span>.
+
+
+
+## Example: Test for $\beta_1 = 0$
+
+* Look at the row for $\beta_1$ and the <span style = "color:#FFDB58"> column *Pr(>|t|)*  in the coefficients table.</span>
+  -  $t$ statistic: **-0.012**  (column 3) = $\frac{-0.0001279}{0.0105603}$.
+  - Since $p$-value (0.99) > $\alpha$ (0.05), we fail to reject $H_0$ that $\beta_1 = 0$.
+  -  Column 3 = $\frac{\text{column 1}}{\text{column 2}}$. 
+  
+
+
+## Confidence Intervals
+
+* $\texttt{R}$ syntax: <span style = "color:#0CAF59">$\texttt{confint(<model_name>, level= <level_value>)}$</span>.
+
+* Example: Find the $95\%$  CI for the model you built.
+
+```{r}
+confint(my_model2, level = 0.95)
+```
+
+
+## Confidence Intervals (Cont.)
+
+* **Question**: From the above $95\%$  CI, can you conclude if $\beta_1$ (coefficient for disp) = 0?
+  
+  - **Answer**: Since CI for $\beta_1$ contains 0, we fail to reject the hypothesis that $\beta_1 = 0$.
+  
+<br><br>
+
+* **Question**: From the above $95\%$  CI, can you conclude if $\beta_3$ (coefficient for qsec) = 1.5?
+  
+  - **Answer**: Since CI for $\beta_3$ contains 1.5, we fail to reject the hypothesis that $\beta_3= 1.5$.
+
+
+## Influence values
+
+* To plot the influence values using leverage score and Cook's distance, we will follow the same syntax:
+
+```{r eval=F}
+plot(hatvalues(<model_name>), type = 'h') # For Leverage score
+plot(cooks.distance(<model_name>), type = 'h') # For Cook's distance
+```
+
+
+## Example: Leverage score
+
+```{r out.width=600}
+plot(hatvalues(my_model2), type = 'h')
+```
+
+
+## Example: Cook's distance
+
+```{r out.width=600}
+plot(cooks.distance(my_model2), type = 'h')
+```
+
