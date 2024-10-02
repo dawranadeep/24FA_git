@@ -144,6 +144,8 @@ summary(model)
 ```
 
 
+<span style="color:red">I have hosted this output [here](<https://raw.githubusercontent.com/dawranadeep/24FA_git/refs/heads/main/Practice_qns/img/pulse_summary.png>). Keep it open in a separate tab for this exercise.</span>
+
 Now you have to remember that the value of $R^2$ is written beside $\texttt{## Multiple R-squared:}.$ So, from the output table, $R^2 = 0.1307$.
  
 Also, $R^2$ is the percentage of the explained variability of $y$ by the model. So, here, only $13\%$ variability in Pulse2 ($y$) is being explained by the model.
@@ -219,17 +221,25 @@ predict(model, newdata = data.frame(Pulse1 = 45))
 
 **Answer: ** 
 
+Again, go to the model output (link [here](<https://raw.githubusercontent.com/dawranadeep/24FA_git/refs/heads/main/Practice_qns/img/pulse_summary.png>)). Keep this open.
 
-$\hat{\sigma} = 29.57$.
-$\hat{\sigma}^2 = 874.38$.
+For $\hat{\sigma}$, you should see the line beside $\texttt{## Residual standard error:}$. So, $\hat{\sigma} = 29.57$.
+
+
+For error variance $\hat{\sigma}^2$, you have to manually square the above number.
 
 ```{r}
-29.57^2
+29.57^2 #Error variance
 ```
+
+So, $\hat{\sigma}^2 = 874.38$.
+
 
 
 ### <br> D. Plot the residuals from the model and plot them against the fitted values. Is there any pattern?
 
+
+Something similar is going to be needed for your HW3 Question 6. Note: plot(model) usually gives you 4 plots. For the residual vs fitted plot, you have to use the first one.
 
 **Answer: ** 
 
@@ -245,41 +255,81 @@ plot(model, which = 1)
 
 **Answer: ** 
 
-$H_0$: $\beta_1 = 0$ vs $H_A$: $\beta_1 \neq 0$.
+Anytime you do the test for coefficients, you go to the summary table and look at the Coefficient table from there. I mean that the following part:
 
-```{r}
-#p value = 0
+
+```{r echo=F}
+printCoefmat(coef(summary(model)))
 ```
-p-value = 0 < 0.05. Reject $H_0$.
+
+
+* Column 1 ($\texttt{Estimate}$) is the estimated coefficients or $\widehat{\beta}_0, \widehat{\beta}_1$.
+* Column 2 ($\texttt{Std. Error}$) is their standard deviations.
+* Column 3 ($\texttt{t value}$) is the T statistic.
+* Column 4 ($\texttt{Pr(>|t|)}$) is the p-value.
+
+
+Now, from the question, I am supposed to test $H_0$: $\beta_1 = 0$ vs $H_A$: $\beta_1 \neq 0$. This means that I have to deal with the row corresponding to $\texttt{Pulse1}$ here.
+
+
+Here, p-value = 0.0001 < $\alpha$ ( =0.05). So, we have enough evidence to reject the $H_0$.
 
 
 ### B. In the above test, what is the value of the test statistic? Show that the test statistic is equal to $\frac{\widehat{\beta}_1 \text{ - } 0}{\text{sd}(\widehat{\beta}_1)}$?
 
 **Answer: ** 
 
+Again, the same coefficient table. The test statistic for $\widehat{\beta}_1$ is $4.0104$. Let's now check if it is $\texttt{Estimate/Std. Error}$ or not.
+
 ```{r}
-0.8581/0.2140
+# Do Estimate/Std. Error for Pulse1
+0.85813/0.21398
 ```
+
+So, we get the same number.
 
 ### C. Find the 95% confidence interval for the slope $\beta_1$.
 
+
+The syntax for confidence interval is:
+
+```{r eval=F}
+confint(<model_name>, level = <level_value>)
+```
+
+Let's do it now.
 
 ```{r}
 confint(model, level = 0.95)
 ```
 
 
+So, the 95% CI for $\beta_1$ is: (0.43, 1.28).
+
+
+<span style = "color:blue"> So, if I ask you test $H_0$: $\beta_1 = 0$ vs $H_A: \beta_1 \neq 0$ at $\alpha = 0.05$, just check if the corresponding confidence interval contains $0$ or not. Here, 0 is not inside; hence reject $H_0$.</span>
+
+
+
+<span style = "color:maroon"> So, if I ask you test $H_0$: $\beta_1 = 1$ vs $H_A: \beta_1 \neq 1$ at $\alpha = 0.05$, just check if the corresponding confidence interval contains $1$ or not. Here, 1 isinside the CI; hence fail to reject $H_0$.</span>
+
+
+
 ### D. Test whether the model makes any sense or not. Use a significance level of 0.05. State the null and alternative hypotheses, and report the p-value and your conclusion.
 
-$H_0$: $\beta_1 = 0$ vs $H_A$: $\beta_1 \neq 0$.
 
-p-value = 0. Reject $H_0$.
+This is the model significance test. For the significance test, you will look at the last line of the summary output; everything after $\texttt{## F-statistic: ...}$.
+
+The hypothesis test has the form: $H_0$: $\beta_1 = 0$ vs $H_A$: $\beta_1 \neq 0$.
+
+p-value = 0.0001 < $\alpha (= 0.05)$. Reject $H_0$.
 
 
 ## (Question 5): Leverage and Influence
 
 
 ### A. Calculate the leverage score values from this regression model.
+
 
 ```{r}
 plot(hatvalues(model), type = 'h')
@@ -317,8 +367,17 @@ plot(cooks.distance(model), type = 'h')
   
 **Answer: **  
 
+First, load the data and read the description/ metadata.
 
-x: disp; y: mpg
+```{r}
+data("mtcars")
+?mtcars
+```
+
+Note, in this document, nothing will show when you do $\texttt{?mtcars}$. You should do it in $\texttt{R}$ console to see the output. 
+
+  -  Here, the columns **disp**  is the independent variable.
+  -  **mpg** is the dependent variable.
 
 
 ### <br> B. Draw a scatterplot between the above two variables. From the scatterplot, what kind of relationship do you guess here between the variables?
@@ -347,13 +406,13 @@ cor(Disp, MPG)
 ```
 
 
-### <br> D. Using the same two variables, can you demonstrate that the correlation between $\mathbf{x}$ and $\mathbf{y}$ is the same as the correlation between correlation between $\mathbf{y}$ and $\mathbf{x}$ $\big($i.e., cor($\mathbf{y, x}$) = cor($\mathbf{y, x}$) $\big)$?
+### <br> D. Using the same two variables, can you demonstrate that the correlation between $\mathbf{x}$ and $\mathbf{y}$ is the same as the correlation between correlation between $\mathbf{y}$ and $\mathbf{x}$ $\big($i.e., cor($\mathbf{y, x}$) = cor($\mathbf{x, y}$) $\big)$?
 
 
 **Answer: **  
 
 ```{r}
-# Code
+cor(MPG, Disp)
 ```
 
 
@@ -382,16 +441,18 @@ model2
 
 ### <br>  B. What is the interpretation of your estimated $\widehat{\beta}_0$?
 
-**Answer: **  
+**Answer: **  $\widehat{\beta}_0 = 29.60$ is the estimated value of mpg (or $y$) when disp (or $x$) is equal to 0.
 
 ### <br>  C. What is the interpretation of your estimated $\widehat{\beta}_1$?
 
 
-**Answer: **  
+**Answer: **   $\widehat{\beta}_1 = -0.04$ is the estimated change in mpg (or $y$) when disp (or $x$) changes by 1 unit. 
 
 ### <br> D. Find and interpret $R^2$, also denoted by <span style="color: red"> the coefficient of determination</span>. 
 
 **Answer: **  
+
+Again, you need the summary table. Following table is hosted [here](<>). Keep it open.
 
 ```{r}
 summary(model2)
