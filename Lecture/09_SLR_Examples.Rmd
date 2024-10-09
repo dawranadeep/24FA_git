@@ -82,6 +82,10 @@ cor(Pulse1, Pulse2) # This is Correlation
 ```
 
 
+Both covariance and correlation suggest a positive/increasing trend. However, the correlation value also suggests that the relationship is weak.
+
+
+
 ### <br> D. Using the same two variables, can you demonstrate that the correlation between $\mathbf{x}$ and $\mathbf{y}$ is the same as the correlation between correlation between $\mathbf{y}$ and $\mathbf{x}$ $\big($i.e., cor($\mathbf{y, x}$) = cor($\mathbf{x, y}$) $\big)$?
 
 
@@ -374,7 +378,7 @@ data("mtcars")
 ?mtcars
 ```
 
-Note, in this document, nothing will show when you do $\texttt{?mtcars}$. You should do it in $\texttt{R}$ console to see the output. 
+Note, in this document, nothing will show when you do $\texttt{?mtcars}$. You have to copy paste the above two lines in $\texttt{R}$ console to see the output. Read the description from there.
 
   -  Here, the columns **disp**  is the independent variable.
   -  **mpg** is the dependent variable.
@@ -394,6 +398,8 @@ MPG  = mtcars$mpg
 plot(Disp, MPG)
 ```
 
+A strong negative pattern is visible in the plot.
+
 ### <br> C. What is the covariance and correlation between the two variables? What kind of relationship do you guess here between the variables? 
 
 
@@ -404,6 +410,8 @@ plot(Disp, MPG)
 cov(Disp, MPG)
 cor(Disp, MPG)
 ```
+
+Both covariance and correlation suggest a negative trend. However, the correlation value also suggests that the relationship is very strong.
 
 
 ### <br> D. Using the same two variables, can you demonstrate that the correlation between $\mathbf{x}$ and $\mathbf{y}$ is the same as the correlation between correlation between $\mathbf{y}$ and $\mathbf{x}$ $\big($i.e., cor($\mathbf{y, x}$) = cor($\mathbf{x, y}$) $\big)$?
@@ -452,14 +460,14 @@ model2
 
 **Answer: **  
 
-Again, you need the summary table. Following table is hosted [here](<>). Keep it open.
+Again, you need the summary table. Following table is hosted [here](<https://raw.githubusercontent.com/dawranadeep/24FA_git/refs/heads/main/Practice_qns/img/mtcars_summary.png>). Keep it open for various parts of this problem.
 
 ```{r}
 summary(model2)
 ```
 
 
-$R^2 = 0.72$. 72%  variability of mpg explained by the model.
+$R^2 = 0.72$. So, 72% variability of mpg is being explained by the model.
 
 
 ### <br> E. Verify that $R^2$ is square of the corrleation coefficient between the two variables.
@@ -467,7 +475,7 @@ $R^2 = 0.72$. 72%  variability of mpg explained by the model.
 **Answer: **  
 
 ```{r}
-# Code
+cor(Disp, MPG)^2
 ```
 
 
@@ -494,7 +502,18 @@ abline(model2, col = "blue")
 
 ### <br> A. Use the model to predict the mpg when the displacement is 230.
 
+
+
 **Answer: **  
+
+
+Again, the usual syntax of the code is: 
+
+```{r eval=F}
+predict(<model_name>, newdata = data.frame(<x_variable> = <value>))
+```
+
+So, let's fill in the options here.
 
 ```{r}
 predict(model2, newdata = data.frame(disp = 230) )
@@ -515,12 +534,14 @@ predict(model2, newdata = data.frame(disp = 300))
 
 
 **Answer: ** 
-
-$\hat{\sigma} = 3.251; \hat{\sigma}^2 =  10.57$.
+Again, keep the summary table open (link [here](<https://raw.githubusercontent.com/dawranadeep/24FA_git/refs/heads/main/Practice_qns/img/mtcars_summary.png>)). See the $\hat{\sigma}$ beside $\texttt{## Residual standard error:...}$ and square it for $\hat{\sigma}^2$.
 
 ```{r}
 3.251^2
 ```
+
+
+$\hat{\sigma} = 3.251; \hat{\sigma}^2 =  10.57$.
 
 
 ### <br> D. Plot the residuals from the model and plot them against the fitted values. Is there any pattern?
@@ -543,21 +564,29 @@ plot(model2, which = 1)
 
 $H_0$: $\beta_1 = 0$ vs $H_A$: $\beta_1 \neq 0$.
 
+Let's look at the coefficients table, i.e., 
+
+```{r echo=F}
+printCoefmat(coef(summary(model2)))
+```
+
 p-value = 0. Reject $H_0$.
 
-
-```{r}
-# Code
-```
 
 
 ### B. In the above test, what is the value of the test statistic? Show that the test statistic is equal to $\frac{\widehat{\beta}_1 \text{ - } 0}{\text{sd}(\widehat{\beta}_1)}$?
 
 **Answer: ** 
 
+Test statistic = -8.747. 
+
+
 ```{r}
 -0.041215/0.004712
 ```
+
+So, we get the same number.
+
 
 ### C. Find the 95% confidence interval for the slope $\beta_1$.
 
@@ -570,15 +599,15 @@ confint(model2, level = 0.95)
 ### D. Test whether the model makes any sense or not. Use a significance level of 0.05. State the null and alternative hypotheses, and report the p-value and your conclusion.
 
 
-```{r}
-# Code
-```
+Test statistic = 76.51. p-value = 0. Hence, reject $H_0$ i.e., our model is significant.
 
 
 ## (Question 10): Leverage and Influence
 
 
 ### A. Calculate the leverage score values from this regression model.
+
+**Answer**: 
 
 ```{r}
 plot(hatvalues(model2), type = 'h')
@@ -587,11 +616,11 @@ plot(hatvalues(model2), type = 'h')
 
 ### B. How would you identify influential points using Cook's Distance?
 
-```{r}
-plot(cooks.distance(model2), type = 'h')
-```
+
 
 
 **Answer**: 
 
-
+```{r}
+plot(cooks.distance(model2), type = 'h')
+```

@@ -1,0 +1,351 @@
+---
+title: "Model Diagnostics"
+subtitle: "Evaluating Model Assumptions"
+author: "Ranadeep Daw"
+date: "`r Sys.Date()`"
+output:
+  revealjs::revealjs_presentation:
+    theme: "solar"
+    center: true
+    widescreen: true
+    self_contained: true
+    width: 1600
+    height: 900
+    df_print: kable
+    reveal_options:
+      slideNumber: 'c/t'
+      previewLinks: true
+---
+  
+  
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = T, warning = F, message = F)
+```
+
+
+
+
+## Why Diagnostics Matter?
+
+- **Model diagnostics** are crucial for ensuring the validity of your regression model.
+- Whenever you have some data on a response and one or more predictors, you will be able to create a model.
+- However, without checking the model assumptions, your results might be misleading.
+- Diagnostics allow us to understand if the assumptions of **Linear Regression** model hold.
+
+
+## Overview of Regression Assumptions:
+
+<span style = "color:#0CAF59">$$y_i = \beta_0 + \beta_1 X_{1i} + \beta_2 X_{2i} + \ldots + \beta_p X_{pi} + \epsilon_i$$</span>
+
+
+1. **Linearity**: the relationship between the independent variables and the dependent variable should be linear.
+2. **Normality** of residuals with mean $0$ and same variance (**Homoscedasticity**).
+3. <span style = "color:maroon">**Multicollinearity**</span>: the independent variables should not be too highly correlated.
+
+
+
+## Why They Matter:
+
+* Violations of these assumptions can lead to:
+  - biased estimates.
+  - unreliable inferences.
+  - incorrect predictions.
+
+## 1. Linearity
+
+
+- **Linearity** means that there is a straight-line relationship between the independent variables and the dependent variable.
+- This assumption is crucial for interpreting regression coefficients meaningfully.
+
+
+
+## How to Diagnose Linearity
+
+1. **Scatterplot**: Should show a linear pattern. Anything else is violation of linearity.
+2. **Residuals vs Fitted Plot**: Any clear pattern (e.g., a curve) suggests a violation of linearity.
+
+
+## Example
+
+
+```{r echo=F}
+set.seed(123)
+x = rnorm(100)
+y1 = x + rnorm(100, 0, 0.1)
+y2 = x + x^3 + rnorm(100, 0, 0.1)
+
+par(mfrow = c(1, 2))
+plot(x, y1, xlab = "x", ylab = "y", main = "Good example", cex = 0.5, col = "seagreen")
+plot(x, y2, xlab = "x", ylab = "y", main = "Bad example", cex = 0.5, col = "darkblue")
+
+```
+
+
+
+
+## Example: Residual vs Fitted plot
+
+
+```{r echo=F}
+par(mfrow = c(1, 2))
+plot(lm(  y1 ~ x), which = 1, col = "seagreen", main = "Good example", cex = 0.5)
+plot(lm(  y2 ~ x), which = 1, col = "darkblue", main = "Bad example", cex = 0.5)
+```
+
+
+
+## Polynomial regression model
+
+* When the relationship between predictors and the response variable is not linear, we can try to fit a polynomial regression model. 
+
+* Let's try to fit our very first polynomial regression model with the $\texttt{mtcars}$ data.
+
+* Let's take $\texttt{mpg}$ as the response and the variable $\texttt{hp}$ as our predictor variable.
+
+
+## Example: scatterplot
+
+```{r out.width=2}
+data("mtcars")
+HP = mtcars$hp
+MPG = mtcars$mpg
+plot(HP, MPG, xlabl = "hp", ylab = "mpg", cex = 0.2)
+```
+
+
+
+## Example: model
+
+* Since there is a slight change in pattern before and after hp = 200, we may consider using a complicated model here.
+
+* Let's try to fit a quadratic model of the following form:
+
+$$ \text{mpg} = \beta_0 + \beta_1 \, \text{hp} + \beta_2 \, \text{hp}^2 + \epsilon $$
+
+
+
+
+## Example: In $\texttt{R}$
+
+* In $\texttt{R}$, for a quadratic model, you have to specify 
+
+```{r eval=F}
+<model_name> = lm(<y_column> ~ poly(<x_column>, 2), data = <data_name>)
+```
+
+* Example here:
+
+```{r}
+model_polynomial <- lm(mpg ~ poly(hp, 2), data = mtcars)
+model_polynomial
+```
+
+
+## Example: Fitted equation
+
+* **Question**: What is the fitted model here?
+  
+  $$ \widehat{\text{mpg}} = 20.09 -26.05 \, \text{hp} + 13.15 \, \text{hp}^2  $$
+
+
+## Example: Model summary
+
+```{r}
+summary(model_polynomial) # See the summary table
+```
+
+
+## Example: Plot it
+
+```{r echo=F}
+plot(mpg ~ hp, data = mtcars, xlabl = "hp", ylab = "mpg", cex = 0.5)
+lines(sort(mtcars$hp), fitted(model_polynomial)[order(mtcars$hp)], col="red")
+```
+
+
+## Example: cont.
+
+* **Question**: Is it a better model than the usual linear model: 
+$$ \text{mpg} = \beta_0 + \beta_1 \, \text{hp} + \epsilon? $$
+
+* **Answer**: Let's fit this simple model first.
+
+
+```{r}
+model_simple = lm( mpg ~ hp, data = mtcars)
+model_simple
+```
+
+
+## Example: See the summary table
+
+```{r}
+summary(model_simple) # See the new summary table
+```
+
+
+
+## Comparison
+
+* As shown previously, we learnt to compare models using $3$ ways:
+  - Backward elimination using $p$-value. Stop when all variables significant.
+  - Backward elimination in $\texttt{R}$. Stops using the AIC criterion.
+  - Adjusted $R^2$.
+  
+## Backward elimination using $p$-value
+
+* See the polynomial model coefficient table.
+* Since all $p$-values < $\alpha$, the polynomial term is significant here.
+
+## Backward elimination in $\texttt{R}$
+
+* Let's try the $\texttt{step}$ function from $\texttt{R}$ to see the final model.
+* Recall that, the syntax is:
+
+```{r eval=F}
+backward_model = step(<full_model>, direction = "backward")
+summary(backward_model)
+```
+
+* Here, full model is the polynomial one. So, let's try our code.
+* You will see next that the polynomial model is still favored here.
+
+
+## Backward elimination in $\texttt{R}$
+
+```{r echo=T, eval=F}
+backward_model = step(model_polynomial, direction = "backward")
+summary(backward_model)
+```
+
+```{r echo=F, eval=T}
+backward_model = step(model_polynomial, direction = "backward", trace=F)
+summary(backward_model)
+```
+
+
+
+## Example: comparing Adjusted $R^2$
+
+* Look at the two summary tables.
+  - Polynomial model had adjusted $R^2$ as 0.7393.
+  - Polynomial model had adjusted $R^2$ of 0.5892.
+* So, here also, the polynomial model has been favored.
+* In summary, in this example, the polynomial model is performing better than the simpler linear version, tested by $3$ different diagnostic methods.
+
+
+
+
+## Diagnostics 2: Test for Normality.
+
+* We assume that the errors/ residuals of a regression model ideally follow a normal distribution.
+* How do we test for normality?
+  - Step 1: Fit the model and see the residuals.
+  - Step 2: **Visual Check:** Use a QQ-plot (Quantile-Quantile plot).
+  - Step 3: **Formal statistical test:** Perform a Shapiro-Wilk test.
+  
+## QQ-plot for normality
+
+
+```{r echo=F}
+par(mfrow = c(1, 2))
+plot(lm(  y1 ~ x), which = 2, col = "seagreen", main = "Good example", cex = 0.5)
+plot(lm(  y2 ~ x), which = 2, col = "darkblue", main = "Bad example", cex = 0.5)
+```
+
+## Example
+
+* Let's do another linear regression model with $\texttt{mtcars}$ data.
+* Use $\texttt{mpg}$ as predictor and $\texttt{wt}$, $\texttt{drat}$, and $\texttt{qsec}$ as predictors.
+
+```{r}
+mlr_model = lm(   mpg ~  wt + qsec + drat, data = mtcars)
+mlr_model
+```
+
+## QQ-plot
+
+```{r out.width=650}
+plot(mlr_model, which = 2, cex = 0.5, col = "red")
+```
+
+## QQ-plot
+
+* It seems that the observed quantiles are almost on the straight lines, which ideally should be the case under normality.
+* So, just by eye checking, I am concluding here that the residuals follow normality.
+* **You may or may not agree with me.** That's the problem with eye test. Hence we need more rigorous method of hypothesis testing.
+* Interested people try running the Shapiro-Wilk test with code:
+
+```{r eval=F}
+shapiro.test(residuals(<model_name>))
+```
+
+
+
+## Diagnostics 3: Multicollinearity
+
+* **Multicollinearity** occurs when two or more independent variables or predictors are highly correlated among each-other.
+* This makes it difficult to isolate the individual effects of each predictor on the dependent variable.
+* It can lead to incorrect conclusions about the predictors.
+
+
+## Detection of Multicollinearity
+
+1. **Correlation Matrix:**
+  - Any high correlation between any two predictors suggests multicollinearity in the data.
+
+2. **Variance Inflation Factor (VIF):**
+  
+  - VIF measures how much the variance of a regression coefficient is inflated due to multicollinearity.
+  - A VIF value greater than a threshold (typically $5$ or $10$) indicates problematic multicollinearity.
+  
+  
+## Example:
+
+* Let's fit another multiple linear regression model with $\texttt{mtcars}$ data.
+* Use $\texttt{mpg}$ as predictor and $\texttt{wt}$, $\texttt{disp}$, and $\texttt{qsec}$ as predictors.
+
+```{r}
+mlr_model = lm(   mpg ~  wt + disp + qsec, data = mtcars)
+mlr_model
+```
+
+
+
+## Example: Multicollinearity using Covariance matrix
+
+* Let's look at the covariance matrix next.
+
+```{r}
+cor(mtcars[c("wt", "disp", "qsec")])
+```
+* See that how highly $\texttt{wt}$ and $\texttt{disp}$ are correlated. This clearly suggests multicollinearity.
+
+
+
+## Example: Multicollinearity using VIF
+
+* To calculate VIF, you have to install the $\texttt{car}$ package and use the function $\texttt{vif}$ from there.
+* Please try installing it by using:
+```{r eval=F}
+install.packages("car")
+```
+* Syntax: 
+
+```{r eval=F}
+car::vif(<model_name>)
+```
+
+## Example: Multicollinearity using VIF (cont)
+
+```{r}
+mlr_model = lm(   mpg ~  wt + disp + qsec, data = mtcars)
+car::vif(mlr_model)
+```
+
+
+
+## How to Handle Multicollinearity?
+
+* Remove or combine highly correlated predictors.
+* Use Principal Component Analysis (PCA) or penalized regression models to reduce multicollinearity.

@@ -31,22 +31,22 @@ knitr::opts_chunk$set(echo = T, warning = F, message = F)
   - One dependent variable/ response -- <span style = "color:#0CAF59"> $y$ </span>.
   - One independent variable/ predictor/ covariate -- <span style = "color:#0CAF59"> $x$</span>.
   - $n$ pairs of observations from $x$ and $y$.
-  - You built a model: <span style = "color:#0CAF59">$$y_i = \beta_0 + \beta_1 x_i + \epsilon_i$$</span>.
+  - You built a model: <span style = "color:#0CAF59">$$y_i = \beta_0 + \beta_1 x_i + \epsilon_i$$</span>
   
 ## Multiple Linear Regression
 
 * Time to extend to multiple linear regression: <br><br>
   - One dependent variable/ response -- <span style = "color:#0CAF59"> $y$ </span>.
   - $p$ independent variables/ predictors/ covariates -- <span style = "color:#0CAF59"> $X_1, X_2, \ldots, X_p$</span>.
-  - $n$ observations from $y$, $X_1, X_2, \ldots, X_p$.
+  - $n$ observations from $\{y$, $X_1, X_2, \ldots, X_p\}$.
   - We will built a similar model: 
   
-<span style = "color:#0CAF59">$$y_i = \beta_0 + \beta_1 X_{1i} + \beta_2 X_{2i} + \ldots + \beta_p X_{pi} + \epsilon_i$$</span>.
+<span style = "color:#0CAF59">$$y_i = \beta_0 + \beta_1 X_{1i} + \beta_2 X_{2i} + \ldots + \beta_p X_{pi} + \epsilon_i$$</span>
 
 
 ## Model Assumptions
 
-* Similar to SLR, we assume error terms to have a mean $0$ and variance $\sigma^2$, i.e., $\mathbb{E}(\epsilon_i) = 0$; var($\epsilon_i) = \sigma^2_i$.
+* Similar to SLR, we assume error terms to have a mean $0$ and variance $\sigma^2$, i.e., $\mathbb{E}(\epsilon_i) = 0$; var($\epsilon_i) = \sigma^2$.
 
 * For the error/residual analysis, we will need one additional assumption that $\epsilon_i$-s are normally distributed with ean $0$ and variance $\sigma^2$, i.e., $\epsilon_i \sim \mathbb{N}(0, \sigma^2)$.
 
@@ -72,7 +72,7 @@ $$ \hat{y}_i = \widehat{\beta}_0 + \widehat{\beta}_1 X_{1i} + \widehat{\beta}_2 
 
 * The error variance is estimated by:
 
-$$ \widehat{\sigma}^2 = \frac{1}{n - p - 1} \sum_{i=1}^n (y_i - \widehat{y})^2 $$
+$$ \widehat{\sigma}^2 = \frac{1}{n - p - 1} \sum_{i=1}^n (y_i - \widehat{y}_i)^2 $$
 
 
 
@@ -109,22 +109,89 @@ summary(<model_name>)
 
 * In this lecture, I am going to use the $\texttt{mtcars}$ data from $\texttt{R}$. 
 * We will use the $\texttt{mpg}$ column (Miles/(US) gallon) as dependent variable ($y$).
-* Let's use $\texttt{disp}$ (Displacement), $\texttt{wt}$, and $\texttt{qsec}$ as the independent variables ($X_1$, $X_2$, $X_3$).
+* Let's use $\texttt{disp}$ (Displacement), $\texttt{wt}$, $\texttt{qsec}$, and $\texttt{drat}$ as the independent variables ($X_1$, $X_2$, $X_3$, $X_4$).
 
 
+## Example
 
-## Example: Model building
 
 * Remember, to load the $\texttt{mtcars}$ data, we do the following first:
 
 ```{r}
 data("mtcars")
 ```
+* Let's look at the data first.
+
+```{r}
+head(mtcars)
+```
+
+
+
+## Plotting
+
+* As long as you have numeric variables, you can write: $\texttt{plot(<dataset_name>)}$ to get pairwise scatterplots.
+
+
+* Since this would look very messy, you can also try plotting only the significant variables by doing: $\texttt{plot(<dataset_name>[, c("var1", "var2", ...)])}$
+
+
+
+
+## Plotting Example
+
+
+
+```{r out.width=600}
+plot(mtcars)
+```
+
+
+
+## Plotting Example 2
+
+
+
+```{r out.width=600}
+plot(mtcars[c("disp", "wt", "qsec", "drat", "mpg")])
+```
+
+
+
+## Correlation
+
+* Similar to plotting, you can also do **(with all numeric variables)**:
+  - $\texttt{cor(<dataset_name>}$
+  - $\texttt{cor(<dataset_name>[, c("var1", "var2", ...)])}$
+
+## Correlation Example
+
+
+
+```{r out.width=600}
+cor(mtcars)
+```
+
+
+
+## Correlation Example 2
+
+
+
+```{r out.width=600}
+cor(mtcars[c("disp", "wt", "qsec", "drat", "mpg")])
+```
+
+
+
+
+## Example: Model building
+
 
 * Now, let's build the model and see the output:
 ```{r}
-my_model2 = lm( mpg ~ disp + wt + qsec, data = mtcars )
-my_model2
+mlr_model = lm( mpg ~ disp + wt + qsec + drat, data = mtcars )
+mlr_model
 ```
 
 
@@ -133,11 +200,20 @@ my_model2
 
 * **Question**: So what model equation have you got here?
 
-  - $$ \widehat{y}_i = 19.78 + (-0.00) X_{1i} + (-5.03) X_{2i} + 0.93 X_{3i}   $$.
+-
+\begin{align*}  
+\widehat{y}_i = 9.03 &+ 0.005 X_{1i} + (-4.87) X_{2i} \\
+&+ 1.05 X_{3i} + 1.87 X_{4i}. 
+\end{align*}
 
-* Alternatively, we can also write:
+<br><br>
 
-$$ \widehat{\text{mpg}}_i = 19.78 + (-0.00) \,\text{disp}_i + (-5.03) \, \text{wt}_i + 0.93 \, \text{qsec}_{i}.   $$
+
+
+\begin{align*} 
+\widehat{\text{mpg}}_i = 9.03 &+ 0.005 \,\text{disp}_i + (-4.87) \, \text{wt}_i \\
+  &+ 1.05 \, \text{qsec}_{i} +  1.87 \, \text{drat}_{i}. 
+\end{align*}
 
 
 ## Interpretation of intercept
@@ -145,7 +221,9 @@ $$ \widehat{\text{mpg}}_i = 19.78 + (-0.00) \,\text{disp}_i + (-5.03) \, \text{w
 * **Question**: How would you interpret $\widehat{\beta}_0$?
   - **Answer**: When all the predictor/ independent variables are set as 0, $\widehat{\beta}_0$ is the predicted mean response $\hat{y}$.
 
-* In the last example, when disp, wt, and qsec are set to $0$, the predicted mpg is $\widehat{\beta}_0$ = 19.78.
+<br> <br>
+
+* In the last example, when disp, wt, qsec, and drat are set to $0$, the predicted mpg is $\widehat{\beta}_0$ = 9.03.
 
 
 ## Interpretation of slopes
@@ -157,9 +235,9 @@ $$ \widehat{\text{mpg}}_i = 19.78 + (-0.00) \,\text{disp}_i + (-5.03) \, \text{w
 
 ## Interpretation of slopes
   
-* For example, in the previous case, with $\texttt{disp}$ and $\texttt{wt}$ held constant, increasing qsec (the 3rd variable) by 1 unit would increase the predicted mpg by  $\widehat{\beta}_3$ = 0.93.
+* For example, in the previous case, with $\texttt{disp}$, $\texttt{drat}$, and $\texttt{wt}$ held constant, increasing qsec (the 3rd variable) by 1 unit would increase the predicted mpg by  $\widehat{\beta}_3$ = 1.05.
 
-* Similarly, keeping $\texttt{disp}$ and $\texttt{qsec}$ fixed, increasing wt (the 2nd variable) by 1 unit would change the predicted mpg by $\widehat{\beta}_2$ = (-5.03), meaning mpg would decrease by 5.03 units
+* Similarly, keeping $\texttt{disp}$, $\texttt{drat}$, and $\texttt{qsec}$ fixed, increasing wt (the 2nd variable) by 1 unit would change the predicted mpg by $\widehat{\beta}_2$ = (-4.87), meaning mpg would decrease by 4.87 units.
 
 
 
@@ -167,7 +245,7 @@ $$ \widehat{\text{mpg}}_i = 19.78 + (-0.00) \,\text{disp}_i + (-5.03) \, \text{w
 ## Summary output (You may have to scroll)
 
 ```{r}
-summary(my_model2)
+summary(mlr_model)
 ```
 
 
@@ -175,13 +253,13 @@ summary(my_model2)
 
 * * **Question:** What is the estimated error standard deviation from the output?
   - Same as SLR: see the <span style="color:green">Residual Standard Error</span>.
-  - Here, $\widehat{\sigma} = 2.642.$
+  - Here, $\widehat{\sigma} = 2.596.$
   
   <br><br>
 
 * **Question:** What is the estimated error **variance** from the output?
   - You have to square the residual standard error.
-  - $\widehat{\sigma}^2 = 2.642^2 = 5.980.$
+  - $\widehat{\sigma}^2 = 2.596^2 = 6.739$
   
 
 
@@ -199,31 +277,31 @@ summary(my_model2)
 
 * **Question:** What is the $R^2$ of the regression model from the output?
   - Look at the <span style="color:blue">Multiple R-squared</span> option in the output.
-  - $R^2 = 0.8264$.
+  - $R^2 = 0.8384$.
   
 <br><br>
 
 
 * **Question:** How would you interpret the $R^2$?
-  - Approximately $83\%$ variability of mpg ($y$) is being explained by my model.
+  - Approximately $83.84\%$ variability of mpg ($y$) is being explained by my model.
   
   
 ## Model significance
 
 * Here is something different from SLR.
-*In multiple linear regression, if our model is not meaningful, it suggests that none of the independent variables are contributing to predicting $y$.
-* This is equivalent to testing $H_0: \beta_1 = \beta_2 = \ldots = \beta_p = 0 $. 
+* In multiple linear regression, if our model is not meaningful, it suggests that none of the independent variables are contributing to predicting $y$.
+* This is equivalent to testing $H_0: \beta_1 = \beta_2 = \ldots = \beta_p = 0$. 
 * **Careful, $\beta_0$ is never included here**.
-* Alternate hypothesis: At least one of the coefficient is not $0$.
+* Alternate hypothesis: At least one of the coefficient is not 0.
 
 
   
 ## $F$-test for model significance
 
-* Hypotheses: $H_0: \beta_1 = \beta_2 = \ldots = \beta_p = 0 $; $H_A$:  At least one of the coefficient is not $0$.
-* Test statistic: $F = \frac{S_{ee}/p}{S_{yy}/(n-p-1)}$.
+* **Hypotheses:** $H_0: \beta_1 = \beta_2 = \ldots = \beta_p = 0$; $H_A$:  At least one of the coefficient is not $0$.
+* **Test statistic:** $F = \frac{S_{ee}/p}{S_{yy}/(n-p-1)}$.
 * Under $H_0$, the F-statistic follows a **F** distribution with degrees of freedoms $(p, n-p-1)$.
-* We reject the $H_0$ when $p$-value < $\alpha$. $$
+* We reject the $H_0$ when the $p$-value (**the very last number in the summary table**) is less than $\alpha$. 
 
 
 ## Example
@@ -231,24 +309,33 @@ summary(my_model2)
 * **Question:** From the output, is the regression model significant, i.e., is it explaining anything at $\alpha = 0.05$?
   - Test statistic:  F = 44.44.
   - Look at the very last <span style = "color:LightPink">$p$-value</span> in the output.
-  - Since $p$-value ($\approx 0$) < $\alpha$ (0.05), we reject $H_0$ that the model is meaningless.
-  - So, here my model is explaining something about $y$ from $x$. 
+  - Since $p$-value ($\approx 0$) < $\alpha$ (0.05), we reject $H_0$ that the model is meaningless or insignificant.
+  - So, here my model is explaining something about $y$ from the predictors. 
 
 
 ## Test for Individual Coefficients
 
 * Test for $H_0$: $\beta_j = 0$ vs $H_A$: $\beta_j \neq 0$.
 * Test statistic: $T = \frac{\widehat{\beta}_j}{ \text{sd } (\widehat{\beta}_j)}.$
-* At level $\alpha$, we reject the $H_0$ if <span style="color:red">$|T| > t_{\alpha/2; n-p}$</span>.
+* At level $\alpha$, we reject the $H_0$ if $|T| > t_{\alpha/2; n-p}$.
 
 
 
-## Example: Test for $\beta_1 = 0$
+## Example: Test for $\beta_2 = 0$ (at $\alpha = 0.05$)
 
-* Look at the row for $\beta_1$ and the <span style = "color:#FFDB58"> column *Pr(>|t|)*  in the coefficients table.</span>
-  -  $t$ statistic: **-0.012**  (column 3) = $\frac{-0.0001279}{0.0105603}$.
-  - Since $p$-value (0.99) > $\alpha$ (0.05), we fail to reject $H_0$ that $\beta_1 = 0$.
-  -  Column 3 = $\frac{\text{column 1}}{\text{column 2}}$. 
+* Look at the row for $\beta_2$ and the <span style = "color:#FFDB58"> column *Pr(>|t|)*  in the coefficients table.</span>
+  -  $t$ statistic: **-4.027**  (column 3) = $\frac{-4.867682  }{ 1.208716}$. [Note:  **Column 3 = $\frac{\text{column 1}}{\text{column 2}}$.**]
+  - Since $p$-value (0.00) in column $4$ is less than $\alpha$ (0.05), we reject $H_0$ that $\beta_2 = 0$.
+  - This means that the corresponding variable ($\texttt{wt}$) is significant in predicting $\texttt{mpg}$.
+  
+  
+  
+## Example: Test for $\beta_1 = 0$ (at $\alpha = 0.05$)
+
+
+  -  $t$ statistic: **0.473 **  (column 3) = $\frac{0.005222 }{  0.011047}$.
+  - Since $p$-value (0.64) in column $4$ is greater than $\alpha$ (0.05), we fail to reject $H_0$ that $\beta_1 = 0$.
+  -  This means that the corresponding variable ($\texttt{disp}$) is not significant at level $\alpha = 0.05$ in predicting $\texttt{mpg}$.
   
 
 
@@ -256,10 +343,10 @@ summary(my_model2)
 
 * $\texttt{R}$ syntax: <span style = "color:#0CAF59">$\texttt{confint(<model_name>, level= <level_value>)}$</span>.
 
-* Example: Find the $95\%$  CI for the model you built.
+* Example: Find the $95\%$  CI for the parameters of the model you built.
 
 ```{r}
-confint(my_model2, level = 0.95)
+confint(mlr_model, level = 0.95)
 ```
 
 
@@ -289,13 +376,157 @@ plot(cooks.distance(<model_name>), type = 'h') # For Cook's distance
 ## Example: Leverage score
 
 ```{r out.width=600}
-plot(hatvalues(my_model2), type = 'h')
+plot(hatvalues(mlr_model), type = 'h')
 ```
 
 
 ## Example: Cook's distance
 
 ```{r out.width=600}
-plot(cooks.distance(my_model2), type = 'h')
+plot(cooks.distance(mlr_model), type = 'h')
 ```
 
+
+
+
+
+## Backward Selection
+
+* Let's look at the coefficients table one more time.
+
+```{r echo=F}
+printCoefmat(coef(summary(mlr_model)))
+```
+
+* See how $\texttt{disp}$ and $\texttt{drat}$ are not significant anymore in predicting $\texttt{mpg}$ (p-value > $\alpha$).
+
+* So, can we create a simplified model?
+
+
+
+## Backward Selection
+
+* We can remove the insignificant variables to simplify our model statement.
+* You can only remove one variable at a time.
+* So, for example, here I will remove $\texttt{disp}$ first and refit my model as:
+
+$$ \text{mpg} = \beta_0 + \beta_1 \, \text{wt}_i + \beta_2 \, \text{qsec}_{i} + \beta_3 \, \text{drat}_{i} + \epsilon_i$$
+
+* This procedure is called the **backward selection** or  **backward elimination** procedure.
+
+
+## Backward Selection
+
+* **Step 1**:     Fit the full model with all predictors.
+* **Step 2**: 
+Identify the predictor with the least significance (or the largest p-value). Remove it if its p-value > $\alpha$.
+* **Step 3**: Refit the model without this predictor and repeat Step 2.
+* **Step 4**: Continue until all remaining predictors are significant (i.e., p value < $\alpha$).
+
+
+## $\texttt{mtcars}$ Example
+
+* Remove $\texttt{disp}$ and refit the model.
+
+```{r}
+mlr_model2 = lm( mpg ~ wt + qsec + drat, data = mtcars )
+summary(mlr_model2)
+```
+
+
+
+
+
+## Example (cont.)
+
+* Still not done. We need to remove $\texttt{drat}$ since this is not significant.
+
+```{r out.width=600}
+mlr_model3 = lm( mpg ~ wt + qsec , data = mtcars )
+summary(mlr_model3)
+```
+
+
+## Example (cont.)
+
+* See that all the predictor are significant now.
+* At $\alpha = 0.05$, this is where we stop and find our simplified model.
+* **$\texttt{R}$ implementation:** $\texttt{R}$ automatically can select a model by doing something similar; but with a different stopping criterion.
+* Instead of checking parameter significance, $\texttt{R}$ uses a criterion that is called the AIC (Akaike Information Criterion). 
+
+
+
+## $\texttt{R}$ Automation
+
+* Syntax: <span style = "color:#0CAF59">$\texttt{step(<full_model>, direction = "backward")}$.</span>
+
+* Continue Example: Fit the initial model first.
+
+```{r}
+mlr_model = lm( mpg ~ disp + wt + qsec + drat, data = mtcars ) # Full model
+```
+
+* Do the automated backward selection procedure next.
+
+```{r echo=T, eval=F}
+backward_model = step(mlr_model, direction = "backward")
+```
+
+```{r echo=F, eval=T}
+backward_model = step(mlr_model, direction = "backward", trace = 0)
+```
+
+
+
+## Continue: See the output
+
+
+```{r}
+summary(backward_model)
+```
+
+
+## Understanding the difference
+
+* Note that this final model through $\texttt{step}$ is different from the one we have got by comparing significance values.
+* This is fine, since the $\texttt{step}$ function in $\texttt{R}$ uses a different stopping criterion (AIC) for model selection.
+* We previously used the variable significance checking, i.e., largest $p$-value in the final model should be less than $\alpha$.
+* Now, let's look at one more stopping criterion, which is the <span style = "color:#0CAF59"> Adjusted $R^2$</span> or <span style = "color:#0CAF59">$R^2_A$</span>.
+
+
+## Adjusted $R^2$
+
+* In the last few slides, we have created 3 models.
+* Note that, although everytime we tried to improve the model by dropping insignificant variables, the $R^2$ value is going down.
+* It is a phenomena that if you add more variables as predictors, however meaningless, $R^2$ always improves.
+* Hence, to compare models, we now need to study a different numbers -- the adjusted $R^2$ ($R^2_A$).
+
+
+## Adjusted $R^2$
+
+
+$$R^2_A = 1 - \frac{(1 - R^2)(n-1)}{(n-p-1)} $$
+
+* **Properties:**
+  - $0 \leq R^2_A < 1$. Higher is better predictive power.
+  - Penalizes excessive number of predictors.
+  - In a regression model, if you keep adding predictors, $R^2$ always improves; but $R^2_A$ may or may not. Hence, we use it to compare models.
+  
+* <span style = "color:#0CAF59">In the summary table, it is mentioned beside "Adjusted R-squared:  $\ldots$" </span>
+
+
+
+
+## Example: continued
+
+* Let's look at our 3 models and find their adjusted $R^2$.
+
+| Model Name  | Predictors               | Adjusted R² | R² |
+|-------------|--------------------------|-------------|-------------|
+| $\texttt{mlr_model}$     | $\texttt{disp, wt, drat, qsec}$               | 0.8144| 0.8384        |
+| $\texttt{mlr_model2}$     | $\texttt{wt, drat, qsec}$                  | 0.8196 | 0.837       |
+| $\texttt{mlr_model3}$    | $\texttt{wt, qsec}$       | 0.8144 | 0.8264       |
+
+<br>
+
+* So, by comparing the $R^2_A$, our second model with $3$ predictor variables seems to be the best.
