@@ -491,7 +491,7 @@ summary(backward_model)
 * Note that this final model through $\texttt{step}$ is different from the one we have got by comparing significance values.
 * This is fine, since the $\texttt{step}$ function in $\texttt{R}$ uses a different stopping criterion (AIC) for model selection.
 * We previously used the variable significance checking, i.e., largest $p$-value in the final model should be less than $\alpha$.
-* Now, let's look at one more stopping criterion, which is the <span style = "color:#0CAF59"> Adjusted $R^2$</span> or <span style = "color:#0CAF59">$R^2_A$</span>.
+* Now, let's look at one more comparison criterion/tool, which is the <span style = "color:#0CAF59"> Adjusted $R^2$</span> or <span style = "color:#0CAF59">$R^2_A$</span>.
 
 
 ## Adjusted $R^2$
@@ -508,7 +508,7 @@ summary(backward_model)
 $$R^2_A = 1 - \frac{(1 - R^2)(n-1)}{(n-p-1)} $$
 
 * **Properties:**
-  - $0 \leq R^2_A < 1$. Higher is better predictive power.
+  - $R^2_A \leq 1$. Higher is better predictive power.
   - Penalizes excessive number of predictors.
   - In a regression model, if you keep adding predictors, $R^2$ always improves; but $R^2_A$ may or may not. Hence, we use it to compare models.
   

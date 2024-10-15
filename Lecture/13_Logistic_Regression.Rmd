@@ -1,0 +1,153 @@
+---
+title: "Logistic Regression"
+subtitle: "Classification with Binary Response"
+author: "Ranadeep Daw"
+date: "`r Sys.Date()`"
+output:
+  revealjs::revealjs_presentation:
+    theme: "solar"
+    center: true
+    widescreen: true
+    self_contained: true
+    width: 1600
+    height: 900
+    df_print: kable
+    reveal_options:
+      slideNumber: 'c/t'
+      previewLinks: true
+---
+  
+  
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = T, warning = F, message = F)
+```
+
+
+
+
+## Binary Response variables
+
+* Continuous variable is a variable that can take any value within a given range.
+  - e.g., height, weight, blood pressure, stock prices.
+
+* We have done this case so far, where response variables are continuous. 
+* Today, we will extend to the case of binary response variables, e.g., variables with <span style = "color:#0CAF59">only two possible outcomes</span>, e.g.,
+  - Head/ Tail.
+  - 1/ 0.
+  - Yes/ No.
+  
+
+
+## From Linear Regression to Logistic Regression
+
+* <span style = "color:#0CAF59">Linear Regression</span> is a predictive model that estimates a <span style = "color:#0CAF59">continuous response variable</span> based on one or more predictor variables.
+* <span style = "color:#CB4335">Logistic Regression</span> is an extension of linear regression used when the outcome is <span style = "color:#CB4335">binary (0/1, yes/no, etc.).</span>
+  - Since in logistic regression, we only work with two possible outcomes or classes, this is also known as **classification.**
+
+
+
+## Classification Model
+
+
+* One **binary** dependent variable/ response -- <span style = "color:#0CAF59"> $y$ </span>. Possible values: <span style = "color:#0CAF59">0, 1</span>.
+* $p$ independent variables/ predictors/ covariates -- <span style = "color:#0CAF59"> $X_1, X_2, \ldots, X_p$</span>.
+* $n$ observations from $\{y$, $X_1, X_2, \ldots, X_p\}$.
+
+
+## How to model?
+
+- With a binary variable, one calculates the following:
+\begin{align*}
+p_i = \mathbb{P}[y_i = 1] \\
+\Rightarrow 1 - p_i = \mathbb{P}[y_i = 0]
+\end{align*}
+
+- The logistic regression model then takes the form:
+  
+<span style = "color:#0CAF59">$$p_i = \frac{1}{1 + \exp^{-(\beta_0 + \beta_1 X_{1i} + \beta_2 X_{2i} + \ldots + \beta_p X_{pi})}}$$</span>
+
+
+
+
+
+
+## Different Versions
+
+* The equivalent versions of the logistic regression model is:
+
+\begin{align*}
+\log\frac{p_i}{1 - p_i} = \beta_0 + \beta_1 X_{1i} + \beta_2 X_{2i} + \ldots + \beta_p X_{pi}
+\end{align*}
+
+* We define the <span style = "color:#0CAF59">logit function</span> as the $\text{logit}(p_i) = \log\frac{p_i}{1 - p_i}$.
+* You may also hear the term <span style = "color:#0CAF59">log-odds</span> which is also the same thing as logit.
+
+
+
+## Key Assumptions
+
+* **<span style = "color:#6C3483">Binary Outcome:</span>** The dependent variable is binary (0/1, yes/no, head/tail, etc.).
+* **<span style = "color:#6C3483">Linearity in the Log-Odds:</span>** The log-odds of the outcome is linearly related to the predictors.
+* **<span style = "color:#6C3483">No Multicollinearity:</span>** Predictors should not be highly correlated with each other.
+
+
+## Logistic Regression in $\texttt{R}$ 
+
+* **Model Syntax:**
+```{r eval =F}
+<model_name> = glm( <y_column> ~ <X1_column> + <X2_column> +
+                    ... + <Xp_column>, data = <data_name>, 
+                        family = binomial )
+summary(<model_name>)
+```
+
+* **To predict the probability ($p_i$)**
+
+```{r eval=F}
+predict(<model_name>, type = "response")
+```
+
+
+## Example: 
+
+* We'll again use the $\texttt{mtcars}$ dataset available in $\texttt{R}$.
+* We'll use the $\texttt{am}$ variable as the response ($y$). We want to predict whether a car has automatic ($\texttt{am = 0}$) or manual ($\texttt{am = 1}$) transmission.
+* We'll use variables $\texttt{mpg}$ (miles per gallon), $\texttt{disp}$ (displacement),  and $\texttt{hp}$ (horsepower) as predictors.
+
+
+## Example (cont.)
+
+```{r}
+data(mtcars)
+logistic_model <- glm(am ~ mpg + disp + hp + drat, 
+                      data = mtcars, 
+                      family = "binomial")
+summary(logistic_model)
+```
+
+## Example (Cont.)
+
+```{r}
+# Let's check the predicted probabilites (p_i)
+predictions = predict(logistic_model, type="response")
+predictions
+```
+
+
+## Plot: response against the predicted probabilites
+
+```{r out.width=550}
+AM = mtcars$am
+predictions = predict(logistic_model, type="response")
+plot(AM, predictions, col = "purple", xlab = "Response", ylab = "Probabilites")
+```
+
+## Comment
+
+* As shown in the summary, this model performs poorly, with none of the variables being statistically significant.
+* If I were to apply backward selection, I could still use the $\texttt{step}$ function here and perform model selection processes.
+* We will revisit these types of situations involving categorical variable analysis and inference after Exam 2.
+
+
+
+

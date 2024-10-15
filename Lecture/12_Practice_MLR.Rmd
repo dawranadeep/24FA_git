@@ -1,0 +1,374 @@
+---
+title: "Multiple Linear Regression"
+subtitle: "Examples using R"
+author: "Ranadeep Daw"
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    theme: cerulean
+    toc: true
+    toc_depth: 2
+    keep_md: false
+---
+  
+  
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = T, warning = F, message = F)
+```
+
+
+
+# Question 1: MLR
+
+
+### Let's again go back to the OzDASL website to download the **Cheese Taste** data. Metadata link is [here](<https://lib.stat.cmu.edu/DASL/Datafiles/Cheese.html>). Following code downloads the same data from a different site in a dataframe called $\texttt{cheese_data}$ that has the data from the above link.
+
+
+```{r}
+cheese_data = read.csv(url("https://raw.githubusercontent.com/dawranadeep/24FA_git/refs/heads/main/Practice_qns/img/cheese_data.csv"))
+```
+
+### Look how the first few rows of the data look like:
+
+```{r}
+head(cheese_data)
+```
+
+
+### <br> A. Draw all the scatterplots between the response variable **taste** and the other predictors. Any comments on the plots?
+
+**Answer:** 
+
+```{r}
+Taste = cheese_data$taste
+Acetic = cheese_data$Acetic
+H2S = cheese_data$H2S
+Lactic = cheese_data$Lactic
+
+plot(Acetic, Taste)
+plot(H2S, Taste)
+plot(Lactic, Taste)
+```
+
+
+### <br> B. Build the multiple linear regression model with **taste** as the response and other variables as predictors. Write down the fitted equation.
+
+
+
+**Answer:** 
+
+```{r}
+mlr_model = lm(taste ~ Acetic + H2S + Lactic, data = cheese_data)
+mlr_model
+```
+
+
+### <br> C. What are the $R^2$ and adjusted $R^2$? Is this model significant?
+
+
+
+**Answer:** 
+
+```{r}
+summary(mlr_model)
+```
+
+Multiple R-squared:  0.6518.
+Adjusted R-squared:  0.6116 
+
+
+$H_0$: $\beta_1 = \beta_2 = \beta_3 = 0$
+$H_A$: At least one of them is not 0.
+
+p-value = 0 < 0.05. So reject $H_0$ or model is significant.
+
+
+
+### <br> D. Test for $H_0: \beta_1 = 0$ vs $H_A: \beta_1 \neq 0$. Take $\alpha = 0.05$.
+
+**Answer:** 
+
+
+p-value = 0.94 > $\alpha$. So, can not reject $H_0$.
+
+
+### <br> E. Test for $H_0: \beta_2 = 0$ vs $H_A: \beta_2 \neq 0$. Take $\alpha = 0.05$.
+
+**Answer:** 
+
+p-value = 0.00425 < $\alpha$. So, reject $H_0$.
+
+
+
+### <br> F. Find the $95\%$ confidence intervals of the estimated coefficients. Can you perform the tests in part D and E from this CI?
+
+**Answer:** 
+
+```{r}
+confint(mlr_model, level = 0.95)
+```
+
+Check if 0 is inside or not.
+
+
+### <br> G. Do the residual-vs-fitted plot. Can you comment anything on the residual?
+
+
+**Answer:** 
+
+```{r}
+plot(mlr_model, which = 1)
+```
+
+
+### <br> H. Do the QQ-plot of the residual. Can you comment anything about normality?
+
+
+**Answer:** 
+
+```{r}
+plot(mlr_model, which = 2)
+```
+
+
+```{r}
+shapiro.test(residuals(mlr_model))
+```
+
+
+### <br> I. Let's try to do backward selction using the $p$ values. How would you update the model? 
+
+**Answer:** 
+
+```{r}
+mlr_model2 = lm(  taste ~ H2S + Lactic , data = cheese_data)
+summary(mlr_model2)
+```
+
+
+
+
+### <br> J. Now do the backward selction using the $\texttt{step}$ function from $\texttt{R}$. What is the final model? 
+
+**Answer:** 
+
+```{r}
+backward_model = step(mlr_model, direction = "backward")
+summary(backward_model)
+```
+
+
+### <br> K. Comparing adjusted $R^2$, which model would you prefer?
+
+**Answer:** 
+
+
+Model 1: $R^2 = 0.6518$, Adjusted $R^2$ = 0.6116
+
+
+Model 2: $R^2 = 0.6517$, Adjusted $R^2$ = 0.6259 
+
+<br><br><br>
+
+# Question 2: Polynomial Regression and Model Selection
+
+### Let's again go back to the OzDASL website to download the **Sound Pressure of Dolphin Sonar** data. Metadata link is [see here](<http://www.statsci.org/data/general/dolphin.html>). Following code downloads the data in a dataframe called $\texttt{dolphin_data}$ and shows a snapshot.
+
+```{r}
+dolphin_data = read.table(url("http://www.statsci.org/data/general/dolphin.txt"), header = TRUE)
+head(dolphin_data)
+```
+
+
+
+
+
+### <br> A. We'll use Range as $x$ and SoundPressure as $y$. Draw the scatterplot. What kind of model do you think you can build here?
+
+**Answer:** 
+
+```{r}
+
+Range = dolphin_data$Range
+SoundPressure = dolphin_data$SoundPressure
+
+plot(Range, SoundPressure, pch = 16, col = "seagreen")
+
+```
+
+
+
+### <br> B. First, build a linear regression model. What are the $R^2$ and adjusted $R^2$? Is this model significant?
+
+
+**Answer:** 
+
+```{r}
+mod_linear = lm( SoundPressure ~ Range, data = dolphin_data)
+summary(mod_linear)
+
+
+plot(Range, SoundPressure, pch = 16, col = "seagreen")
+abline(mod_linear, col = "red")
+
+```
+
+
+### <br> C. Build a quadratic (polynomial with degree 2) regression model now, i.e., <span style = "color:#0CAF59"> $\text{SoundPressure} = \beta_0 + \beta_1 * \text{Range} + \beta_2 * \text{Range}^2 + \epsilon$</span>. What are the $R^2$ and adjusted $R^2$? Is this model significant?
+
+
+
+**Answer:** 
+
+```{r}
+mod_poly = lm( SoundPressure ~ poly(Range, 2), data = dolphin_data)
+summary(mod_poly)
+```
+
+
+### <br> D. Comparing by adjusted $R^2$ values, which model would you prefer?
+
+
+
+**Answer:** 
+
+
+
+### <br> E. Let's try to do backward selction using the $p$ values. How would you update the model? Looking at the parameter significance values, which model would you prefer?
+
+
+
+**Answer:** All the terms are significant at $\alpha = 0.05$, so we select the quadratic model.
+
+
+
+
+### <br> F. Now, try the $\texttt{step}$ function to do backward selction using AIC. Which model is your $\texttt{R}$ selecting?
+
+
+
+**Answer:** 
+
+```{r}
+backward_model = step(mod_poly, direction = "backward")
+summary(backward_model)
+```
+
+
+
+
+### <br> G. Let's take the quadratic model you have done so far. Can you check if the residuals follow a normal distribution?
+
+
+**Answer:** 
+
+
+```{r}
+plot(mod_poly, which = 2)
+```
+
+
+```{r}
+shapiro.test( residuals(mod_poly) )
+```
+
+
+### <br> H. For the above, please plot the fitted vs residual plot. What comments can you make from this plot?
+
+
+**Answer:** 
+
+
+```{r}
+plot(mod_poly, which = 1)
+```
+
+
+
+
+
+### <br> I. Let's take the linear regression model. Can you check if the residuals follow a normal distribution?
+
+
+**Answer:** 
+
+
+```{r}
+plot( mod_linear, which = 2)
+```
+
+
+
+```{r}
+shapiro.test( residuals(mod_linear))
+```
+
+### <br> H. Again, take the linear regression model and draw the residual-vs-fitted plot. What comments can you make from this plot?
+
+
+**Answer:** 
+
+```{r}
+plot( mod_linear, which = 1)
+
+```
+
+
+
+<br><br><br>
+
+
+
+# Question 3: Multicollinearity
+^[Courtesy: <https://online.stat.psu.edu/stat462/node/177/>]
+
+### Use the data on 20 individuals with high blood pressure from [here](<https://online.stat.psu.edu/stat462/sites/onlinecourses.science.psu.edu.stat462/files/data/bloodpress/index.txt>). The variables are:
+
+| Description                          | Column Name |
+|--------------------------------------|-------------|
+| Blood pressure  ( in mm Hg)          | BP          |
+| Age (in years)                       | Age         |
+| Weight (in kg)                       | Weight      |
+| Body surface area (in sq m)          | BSA         |
+| Duration of hypertension (in years)  | Dur         |
+| Basal pulse (in beats per minute)    | Pulse       |
+| Stress index                         | Stress      |
+
+
+
+
+### My following code downloads the data in a dataframe called $\texttt{bp_data}$, cleans it, and shows a snapshot of the data:
+
+```{r}
+bp_data = read.table(url("https://online.stat.psu.edu/stat462/sites/onlinecourses.science.psu.edu.stat462/files/data/bloodpress/index.txt"), header =TRUE)
+bp_data[,1] = NULL
+head(bp_data)
+```
+
+
+### <br> A. We want to build a linear regression model with blood pressure as response and age, weight, body surface area, duration, pulse rate and/or stress level  as predictors. Build the regression model.
+
+
+```{r}
+new_model = lm(BP ~ Age + Weight + BSA + Dur +Pulse +Stress, data = bp_data)
+summary(new_model)
+```
+
+
+
+### <br> B. Check if multicollinearity is present in the data using correlation coefficients. Take a cutoff of $\pm 0.65$.
+
+
+
+```{r}
+cor( bp_data[c("Age", "Weight",  "BSA", "Dur", "Pulse", "Stress")])
+```
+
+### <br> C. Calculate the VIF of the model. Do you think there is multicollinearity in the data using a cutoff of $5$?
+
+
+```{r}
+car::vif(new_model)
+```
+
+

@@ -29,8 +29,7 @@ knitr::opts_chunk$set(echo = T, warning = F, message = F)
 
 - **Model diagnostics** are crucial for ensuring the validity of your regression model.
 - Whenever you have some data on a response and one or more predictors, you will be able to create a model.
-- However, without checking the model assumptions, your results might be misleading.
-- Diagnostics allow us to understand if the assumptions of **Linear Regression** model hold.
+- However, diagnostics allow us to understand if the model assumptions hold or if the model is misleading.
 
 
 ## Overview of Regression Assumptions:
@@ -41,7 +40,7 @@ knitr::opts_chunk$set(echo = T, warning = F, message = F)
 1. **Linearity**: the relationship between the independent variables and the dependent variable should be linear.
 2. **Normality** of residuals with mean $0$ and same variance (**Homoscedasticity**).
 3. <span style = "color:maroon">**Multicollinearity**</span>: the independent variables should not be too highly correlated.
-
+4. **Outliers**: Not an assumption, but there should be no outlier in the data.
 
 
 ## Why They Matter:
@@ -49,9 +48,117 @@ knitr::opts_chunk$set(echo = T, warning = F, message = F)
 * Violations of these assumptions can lead to:
   - biased estimates.
   - unreliable inferences.
-  - incorrect predictions.
+  - incorrect uncertainty.
+  
+  
+  
 
-## 1. Linearity
+## Diagnostics 2: Test for Residual Normality.
+
+* We assume that the errors/ residuals of a regression model ideally follow a normal distribution.
+* How do we test for normality?
+  - Step 1: Fit the model and see the residuals.
+  - Step 2: **Visual Check:** Use a QQ-plot (Quantile-Quantile plot).
+  - Step 3: **Formal statistical test:** Perform a Shapiro-Wilk test.
+  
+
+## QQ-plot for normality
+
+* QQ-plot is a scatterplot between theoretical normal quantiles against the quantiles of the residuals.
+* If the normality assumption is correct, the residual quantiles and the theoretical quantiles should be close.
+* Look at the QQ-plot next. As long as most of the data are falling on the line, the normality assumption is fine.
+* Note: **we may disagree on our conclusion**. You just have to conclude what you think from the plot.
+* Syntax: $\texttt{plot(<model_name>, which=2)}$
+
+## QQ-plot for normality
+
+
+```{r echo=F}
+
+set.seed(1234)
+x = rnorm(100)
+y1 = x + rnorm(100, 0, 0.1)
+y2 = x + x^3 + rnorm(100, 0, 0.1)
+
+par(mfrow = c(1, 2))
+plot(lm(  y1 ~ x), which = 2, col = "seagreen", main = "Good example", cex = 0.5)
+plot(lm(  y2 ~ x), which = 2, col = "darkblue", main = "Bad example", cex = 0.5)
+```
+
+## Example
+
+* Let's do another linear regression model with $\texttt{mtcars}$ data.
+* Use $\texttt{mpg}$ as predictor and $\texttt{wt}$, $\texttt{drat}$, and $\texttt{qsec}$ as predictors.
+
+```{r}
+mlr_model = lm(   mpg ~  wt + qsec + drat, data = mtcars)
+mlr_model
+```
+
+## QQ-plot
+
+```{r out.width=650}
+plot(mlr_model, which = 2, cex = 0.5, col = "red")
+```
+
+## QQ-plot
+
+* It seems that the observed quantiles are deviating a bit from the straight line, which ideally should not be the case under normality.
+* So, just by eye checking, I am concluding here that the residuals don't follow normality.
+* **You may or may not agree with me.** That's the problem with eye test. Hence we need more rigorous method of hypothesis testing.
+
+
+
+## Shapiro-Wilk test
+
+* This is a test to formally check if the residuals follow normality or not.
+* The null hypothesis ($H_0$) is that the residual follows normal distribution.
+* If the $p$-value is less than $\alpha$, then we reject the $H_0$ and conclude that normality  assumption is violated.
+* The syntax is the following:
+
+```{r eval=F}
+shapiro.test(residuals(<model_name>))
+```
+
+## Shapiro-Wilk (cont.)
+
+```{r}
+shapiro.test(residuals(mlr_model))
+```
+
+
+* Since $p$-value > $\alpha = 0.05$, I can't reject the $H_0$ that residuals follow normality.
+* Hence, my eye test from the previous part is not correct.
+
+
+
+
+
+## Diagnostics 4: No outliers
+
+
+* You should look at the residual-vs-fitted plot. Remember, the syntax is: $\texttt{plot(<model_name>, which=1)}$
+
+* No residual point should stand out compared to others.
+* We will only do an eye test. You can also do the boxplot to check outliers or do some formal testing procedures.
+
+
+## Diagnostics 4
+
+```{r echo=F}
+y3 = y1
+y3[50] = y3[50] + 2
+
+par(mfrow = c(1, 2))
+plot(lm(  y1 ~ x), which = 1, col = "seagreen", main = "Good example", cex = 0.5)
+plot(lm(  y3 ~ x), which = 1, col = "darkblue", main = "Bad example", cex = 0.5)
+```
+
+
+
+
+
+## Diagnostics 1: Linearity
 
 
 - **Linearity** means that there is a straight-line relationship between the independent variables and the dependent variable.
@@ -69,11 +176,6 @@ knitr::opts_chunk$set(echo = T, warning = F, message = F)
 
 
 ```{r echo=F}
-set.seed(123)
-x = rnorm(100)
-y1 = x + rnorm(100, 0, 0.1)
-y2 = x + x^3 + rnorm(100, 0, 0.1)
-
 par(mfrow = c(1, 2))
 plot(x, y1, xlab = "x", ylab = "y", main = "Good example", cex = 0.5, col = "seagreen")
 plot(x, y2, xlab = "x", ylab = "y", main = "Bad example", cex = 0.5, col = "darkblue")
@@ -105,11 +207,11 @@ plot(lm(  y2 ~ x), which = 1, col = "darkblue", main = "Bad example", cex = 0.5)
 
 ## Example: scatterplot
 
-```{r out.width=2}
+```{r out.width=500}
 data("mtcars")
 HP = mtcars$hp
 MPG = mtcars$mpg
-plot(HP, MPG, xlabl = "hp", ylab = "mpg", cex = 0.2)
+plot(HP, MPG, xlabl = "hp", ylab = "mpg", cex = 0.8)
 ```
 
 
@@ -191,10 +293,15 @@ summary(model_simple) # See the new summary table
   - Backward elimination using $p$-value. Stop when all variables significant.
   - Backward elimination in $\texttt{R}$. Stops using the AIC criterion.
   - Adjusted $R^2$.
+* Let's try to compare the polynomial model with the linear model here.
   
 ## Backward elimination using $p$-value
 
 * See the polynomial model coefficient table.
+
+```{r echo =F}
+printCoefmat( coef(summary(model_polynomial)))
+```
 * Since all $p$-values < $\alpha$, the polynomial term is significant here.
 
 ## Backward elimination in $\texttt{R}$
@@ -234,51 +341,6 @@ summary(backward_model)
 * In summary, in this example, the polynomial model is performing better than the simpler linear version, tested by $3$ different diagnostic methods.
 
 
-
-
-## Diagnostics 2: Test for Normality.
-
-* We assume that the errors/ residuals of a regression model ideally follow a normal distribution.
-* How do we test for normality?
-  - Step 1: Fit the model and see the residuals.
-  - Step 2: **Visual Check:** Use a QQ-plot (Quantile-Quantile plot).
-  - Step 3: **Formal statistical test:** Perform a Shapiro-Wilk test.
-  
-## QQ-plot for normality
-
-
-```{r echo=F}
-par(mfrow = c(1, 2))
-plot(lm(  y1 ~ x), which = 2, col = "seagreen", main = "Good example", cex = 0.5)
-plot(lm(  y2 ~ x), which = 2, col = "darkblue", main = "Bad example", cex = 0.5)
-```
-
-## Example
-
-* Let's do another linear regression model with $\texttt{mtcars}$ data.
-* Use $\texttt{mpg}$ as predictor and $\texttt{wt}$, $\texttt{drat}$, and $\texttt{qsec}$ as predictors.
-
-```{r}
-mlr_model = lm(   mpg ~  wt + qsec + drat, data = mtcars)
-mlr_model
-```
-
-## QQ-plot
-
-```{r out.width=650}
-plot(mlr_model, which = 2, cex = 0.5, col = "red")
-```
-
-## QQ-plot
-
-* It seems that the observed quantiles are almost on the straight lines, which ideally should be the case under normality.
-* So, just by eye checking, I am concluding here that the residuals follow normality.
-* **You may or may not agree with me.** That's the problem with eye test. Hence we need more rigorous method of hypothesis testing.
-* Interested people try running the Shapiro-Wilk test with code:
-
-```{r eval=F}
-shapiro.test(residuals(<model_name>))
-```
 
 
 
@@ -323,20 +385,30 @@ cor(mtcars[c("wt", "disp", "qsec")])
 
 
 
-## Example: Multicollinearity using VIF
+## Multicollinearity using VIF
 
 * To calculate VIF, you have to install the $\texttt{car}$ package and use the function $\texttt{vif}$ from there.
-* Please try installing it by using:
+* To check if $\texttt{car}$ package is installed, please go to the $\texttt{R}$ console and try:
+```{r}
+library("car")
+```
+* If it gives an error, it means the package is not installed. In that case, please try installing it by using:
 ```{r eval=F}
 install.packages("car")
 ```
+* <span style = "color:red"> **Please don't install from a Rmd file. It doesn't work.** </span>
+
+
+## Example: Multicollinearity using VIF (cont)
+
 * Syntax: 
 
 ```{r eval=F}
 car::vif(<model_name>)
 ```
 
-## Example: Multicollinearity using VIF (cont)
+* Example:
+
 
 ```{r}
 mlr_model = lm(   mpg ~  wt + disp + qsec, data = mtcars)
@@ -347,5 +419,69 @@ car::vif(mlr_model)
 
 ## How to Handle Multicollinearity?
 
-* Remove or combine highly correlated predictors.
-* Use Principal Component Analysis (PCA) or penalized regression models to reduce multicollinearity.
+1. **Do nothing:** You may do this when only prediction is of importance, but definitely not recommended when variable significance is needed. 
+2. **Remove or combine predictors:** Methods like <span style = "color:#0CAF59">Principal Component Analysis (PCA)</span> combine predictors and create a new set of predictors that have no collinearity.
+3. **Penalized regression**: Methods like <span style = "color:#0CAF59">Ridge and Lasso regression</span> apply regularization to shrink the coefficients $\widehat{\beta}$ helping to reduce multicollinearity's impact.
+
+## Example 2^[Courtesy: <https://online.stat.psu.edu/stat462/node/177/>]
+
+* Use the data on 20 individuals with high blood pressure from [here](<https://online.stat.psu.edu/stat462/sites/onlinecourses.science.psu.edu.stat462/files/data/bloodpress/index.txt>). The variables are:
+
+| Description                          | Column Name |
+|--------------------------------------|-------------|
+| Blood pressure  ( in mm Hg)          | BP          |
+| Age (in years)                       | Age         |
+| Weight (in kg)                       | Weight      |
+| Body surface area (in sq m)          | BSA         |
+| Duration of hypertension (in years)  | Dur         |
+| Basal pulse (in beats per minute)    | Pulse       |
+| Stress index                         | Stress      |
+
+
+
+## Cont.
+
+* My following code downloads the data in a dataframe called $\texttt{bp_data}$, cleans it, and shows a snapshot of the data:
+
+```{r}
+bp_data = read.table(url("https://online.stat.psu.edu/stat462/sites/onlinecourses.science.psu.edu.stat462/files/data/bloodpress/index.txt"), header =TRUE)
+bp_data[,1] = NULL
+head(bp_data)
+```
+
+## Example 2:
+
+1. We want to build a linear regression model with blood pressure as response and age, weight, body surface area, duration, pulse rate and/or stress level  as predictors. Build the regression model.
+
+2. Check if multicollinearity is present in the data using correlation coefficients. Take a cutoff of $\pm 0.65$.
+
+3. Calculate the VIF of the model. Do you think there is multicollinearity in the data using a cutoff of $5$?
+
+
+
+
+## Example 2: Q1
+
+```{r}
+my_model = lm(BP ~ Age + Weight + BSA + Dur + Pulse + Stress, data = bp_data)
+summary(my_model)
+```
+
+
+## Example 2: Q2
+
+```{r}
+cor(bp_data[c("Age", "Weight", "BSA", "Dur", "Pulse", "Stress")])
+```
+
+* By using the $0.65$ cutoff, weight is highly correlated with BSA and Pulse.
+
+
+## Example 2: Q3
+
+```{r}
+car::vif(my_model)
+```
+
+* By using the cutoff value $5$, both Weight and BSA have high VIF value.
+* This means that both Weight and BSA are highly correlated with the linear combination of the other predictors in the model, excluding themselves.
