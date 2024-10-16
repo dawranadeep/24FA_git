@@ -243,12 +243,6 @@ model_polynomial
 ```
 
 
-## Example: Fitted equation
-
-* **Question**: What is the fitted model here?
-  
-  $$ \widehat{\text{mpg}} = 20.09 -26.05 \, \text{hp} + 13.15 \, \text{hp}^2  $$
-
 
 ## Example: Model summary
 
@@ -415,6 +409,12 @@ mlr_model = lm(   mpg ~  wt + disp + qsec, data = mtcars)
 car::vif(mlr_model)
 ```
 
+
+## Interpretation of VIF
+
+* If we follow the cutoff value of $5$, you'll notice that both $\texttt{wt}$ and $\texttt{disp}$ have high VIF.
+
+* This means that both $\texttt{wt}$ and $\texttt{disp}$ are highly correlated with a linrar comnbination of other variables, excluding themselves.
 
 
 ## How to Handle Multicollinearity?

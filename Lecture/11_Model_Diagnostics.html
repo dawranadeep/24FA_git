@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="generator" content="pandoc">
   <meta name="author" content="Ranadeep Daw" />
-  <meta name="dcterms.date" content="2024-10-14" />
+  <meta name="dcterms.date" content="2024-10-15" />
   <title>Model Diagnostics</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -1839,7 +1839,7 @@ document.addEventListener('DOMContentLoaded', function(e) {
     <h1 class="title">Model Diagnostics</h1>
   <h1 class="subtitle">Evaluating Model Assumptions</h1>
     <h2 class="author">Ranadeep Daw</h2>
-    <h3 class="date">2024-10-14</h3>
+    <h3 class="date">2024-10-15</h3>
 </section>
 
 <section id="why-diagnostics-matter" class="slide level2">
@@ -2069,14 +2069,6 @@ model, you have to specify</li>
 ## Coefficients:
 ##  (Intercept)  poly(hp, 2)1  poly(hp, 2)2  
 ##        20.09        -26.05         13.15</code></pre>
-</section>
-<section id="example-fitted-equation" class="slide level2">
-<h2>Example: Fitted equation</h2>
-<ul>
-<li><p><strong>Question</strong>: What is the fitted model here?</p>
-<p><span class="math display">\[ \widehat{\text{mpg}} = 20.09 -26.05 \,
-\text{hp} + 13.15 \, \text{hp}^2  \]</span></p></li>
-</ul>
 </section>
 <section id="example-model-summary" class="slide level2">
 <h2>Example: Model summary</h2>
@@ -2325,6 +2317,14 @@ file. It doesn’t work.</strong> </span></li>
 <span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>car<span class="sc">::</span><span class="fu">vif</span>(mlr_model)</span></code></pre></div>
 <pre><code>##       wt     disp     qsec 
 ## 6.370710 7.607087 1.659492</code></pre>
+</section>
+<section id="interpretation-of-vif" class="slide level2">
+<h2>Interpretation of VIF</h2>
+<ul>
+<li><p>If we follow the cutoff value of <span class="math inline">\(5\)</span>, you’ll notice that both <span class="math inline">\(\texttt{wt}\)</span> and <span class="math inline">\(\texttt{disp}\)</span> have high VIF.</p></li>
+<li><p>This means that both <span class="math inline">\(\texttt{wt}\)</span> and <span class="math inline">\(\texttt{disp}\)</span> are highly correlated with
+a linrar comnbination of other variables, excluding themselves.</p></li>
+</ul>
 </section>
 <section id="how-to-handle-multicollinearity" class="slide level2">
 <h2>How to Handle Multicollinearity?</h2>

@@ -58,8 +58,8 @@ knitr::opts_chunk$set(echo = T, warning = F, message = F)
 
 - With a binary variable, one calculates the following:
 \begin{align*}
-p_i = \mathbb{P}[y_i = 1] \\
-\Rightarrow 1 - p_i = \mathbb{P}[y_i = 0]
+p_i = \mathbb{P}[y_i = 1 | \mathbf{X}] \\
+\Rightarrow 1 - p_i = \mathbb{P}[y_i = 0 | \mathbf{X}]
 \end{align*}
 
 - The logistic regression model then takes the form:
@@ -79,10 +79,45 @@ p_i = \mathbb{P}[y_i = 1] \\
 \log\frac{p_i}{1 - p_i} = \beta_0 + \beta_1 X_{1i} + \beta_2 X_{2i} + \ldots + \beta_p X_{pi}
 \end{align*}
 
-* We define the <span style = "color:#0CAF59">logit function</span> as the $\text{logit}(p_i) = \log\frac{p_i}{1 - p_i}$.
+
+
+* We define the <span style = "color:#0CAF59">logit function</span> as the $\text{logit}(p_i) = \log\frac{p_i}{1 - p_i}$. So, we can also write:
+
+
+\begin{align*}
+\text{logit}(p_i) = \beta_0 + \beta_1 X_{1i} + \beta_2 X_{2i} + \ldots + \beta_p X_{pi}
+\end{align*}
+
+## Different Versions
+
+
+* Sometimes you may find the notation $\mu_i=  \beta_0 + \beta_1 X_{1i} + \beta_2 X_{2i} + \ldots + \beta_p X_{pi}$.
+
+* Then, the model statement can be simplified as: $$\text{logit}(p_i) = \mu_i.$$
+
+
+
 * You may also hear the term <span style = "color:#0CAF59">log-odds</span> which is also the same thing as logit.
 
 
+
+
+## Plotting
+
+
+```{r echo=F}
+mu = seq(-10, 10, , 1000)
+p = 1/ (1 + exp(-mu))
+plot(mu, p, xlab = expression(mu[i]), ylab = expression(p[i]), pch = 16, main = expression(  paste("Sigmoid Function:  ", p[i] == frac(1, 1 + e^-{mu[i]}))), xaxt = "n", yaxt = "n", col = "darkblue"
+)
+
+axis(1, at = 0, labels = 0)  # Adds the tick at 0
+
+abline(0.5, 0, col = "blue", lty = 2)
+abline(0, 9999999999999999, col= "blue",  lty = 2)
+
+axis(2, c(0, 0.5, 1), labels = c(0, 0.5, 1))
+```
 
 ## Key Assumptions
 
@@ -147,6 +182,10 @@ plot(AM, predictions, col = "purple", xlab = "Response", ylab = "Probabilites")
 * As shown in the summary, this model performs poorly, with none of the variables being statistically significant.
 * If I were to apply backward selection, I could still use the $\texttt{step}$ function here and perform model selection processes.
 * We will revisit these types of situations involving categorical variable analysis and inference after Exam 2.
+
+
+
+
 
 
 
