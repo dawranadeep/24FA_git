@@ -365,6 +365,8 @@ MLR</a></li>
 2: Polynomial Regression and Model Selection</a></li>
 <li><a href="#question-3-multicollinearity" id="toc-question-3-multicollinearity">Question 3:
 Multicollinearity</a></li>
+<li><a href="#question-4-logistic-regression" id="toc-question-4-logistic-regression">Question 4: Logistic
+Regression</a></li>
 </ul>
 </div>
 
@@ -865,12 +867,129 @@ multicollinearity in the data using a cutoff of <span class="math inline">\(5\)<
 <pre class="r"><code>car::vif(new_model)</code></pre>
 <pre><code>##      Age   Weight      BSA      Dur    Pulse   Stress 
 ## 1.762807 8.417035 5.328751 1.237309 4.413575 1.834845</code></pre>
+<p><br><br><br></p>
+</div>
+</div>
+<div id="question-4-logistic-regression" class="section level1">
+<h1>Question 4: Logistic Regression</h1>
+<p><a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a></p>
+<div id="the-frog-abnormality-dataset-describes-some-characteristics-of-the-alaskan-wood-frog.-there-are-some-variables-namely-textttabnormal-skel_ab-eye_ab-surf_ab-that-describes-if-there-are-some-abnormality-in-the-frogs-or-not.-we-will-use-predictors-textttsvl-tail_length-bleeding_inj-to-predict-textttabnormal." class="section level3">
+<h3>The frog abnormality dataset describes some characteristics of the
+Alaskan wood frog. There are some variables (namely <span class="math inline">\(\texttt{ABNORMAL, SKEL_AB, EYE_AB,
+SURF_AB}\)</span>) that describes if there are some abnormality in the
+frogs or not. We will use predictors <span class="math inline">\(\texttt{SVL, TAIL_LENGTH, BLEEDING_INJ}\)</span>
+to predict <span class="math inline">\(\texttt{Abnormal}\)</span>.</h3>
+</div>
+<div id="the-original-data-file-was-taken-from-httpsdatadryad.orgstashdatasetdoi10.5061dryad.sq72d.-you-can-also-access-this-data-here.-following-code-downloads-the-in-a-dataframe-called-textttfrog_data-and-shows-a-snapshot" class="section level3">
+<h3>The original data file was taken from <a href="https://datadryad.org/stash/dataset/doi:10.5061/dryad.sq72d" class="uri">https://datadryad.org/stash/dataset/doi:10.5061/dryad.sq72d</a>.
+You can also access this data <a href="https://github.com/dawranadeep/24FA_git/blob/main/Practice_qns/img/FrogAbnormalities.csv">here</a>.
+Following code downloads the in a dataframe called <span class="math inline">\(\texttt{frog_data}\)</span> and shows a
+snapshot:</h3>
+<pre class="r"><code>frog_data = read.csv(url(&quot;https://raw.githubusercontent.com/dawranadeep/24FA_git/refs/heads/main/Practice_qns/img/FrogAbnormalities.csv&quot;))
+frog_data = frog_data[ complete.cases(frog_data$TAIL_LENGTH), ] 
+head(frog_data)</code></pre>
+<pre><code>##          COLLECTION_ID FROG_ID GOSNER_STAGE SVL TAIL_LENGTH
+## 1  KNA1021-RASY-080712      15           45  17           2
+## 2  KNA1024-RASY-080812      13           44  22          20
+## 3  KNA1069-RASY-080612      24           45  18           1
+## 4  KNA1090-RASY-080612       5           45  17           3
+## 5 KNA11119-RASY-081612      26           44  20          17
+## 6  KNA1024-RASY-080812      47           44  21          33
+##                                                                                                                                            FROG_COMMENTS
+## 1                                                                                                                                                       
+## 2                                                                                                                                                       
+## 3                                                                                                                                                       
+## 4                                                                                                                                                       
+## 5                                                                                                                                                       
+## 6 ~ 3mm of right thigh is comparable to left, remainder of thigh/calf are underdeveloped and foot is not fully developed, digits are not differentiated.
+##   ABNORMAL BLEEDING_INJ SKEL_AB EYE_AB SURF_AB Perkensus      SITE      DATE
+## 1        0            0       0      0       0         0   KNA1021  8/7/2012
+## 2        0            0       0      0       0         0   KNA1024  8/8/2012
+## 3        0            0       0      0       0         0   DNR1069  8/6/2012
+## 4        0            0       0      0       0         0   KEN1090  8/6/2012
+## 5        0            0       0      0       0         0 KNA111-19 8/16/2012
+## 6        1            0       1      0       0         0   KNA1024  8/8/2012
+##   YEAR
+## 1 2012
+## 2 2012
+## 3 2012
+## 4 2012
+## 5 2012
+## 6 2012</code></pre>
+</div>
+<div id="build-the-logistic-regression-model-here.-show-the-model-summary." class="section level3">
+<h3><br> 1. Build the logistic regression model here. Show the model
+summary.</h3>
+<p><strong>Answer:</strong></p>
+<pre class="r"><code>logistic_model = glm( ABNORMAL ~ SVL + TAIL_LENGTH + BLEEDING_INJ ,data = frog_data, family = &quot;binomial&quot;)
+summary(logistic_model)</code></pre>
+<pre><code>## 
+## Call:
+## glm(formula = ABNORMAL ~ SVL + TAIL_LENGTH + BLEEDING_INJ, family = &quot;binomial&quot;, 
+##     data = frog_data)
+## 
+## Coefficients:
+##               Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)  -1.013276   0.322431  -3.143 0.001674 ** 
+## SVL          -0.063288   0.017143  -3.692 0.000223 ***
+## TAIL_LENGTH   0.004817   0.002742   1.757 0.078932 .  
+## BLEEDING_INJ  3.718124   0.123142  30.194  &lt; 2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 6695.5  on 7703  degrees of freedom
+## Residual deviance: 5346.5  on 7700  degrees of freedom
+## AIC: 5354.5
+## 
+## Number of Fisher Scoring iterations: 4</code></pre>
+</div>
+<div id="from-the-summary-output-can-you-simplify-the-model" class="section level3">
+<h3><br> 2. From the summary output, can you simplify the model?</h3>
+<p><strong>Answer:</strong></p>
+<pre class="r"><code>logistic_model2 = glm( ABNORMAL ~ SVL + BLEEDING_INJ ,data = frog_data, family = &quot;binomial&quot;)
+summary(logistic_model2)</code></pre>
+<pre><code>## 
+## Call:
+## glm(formula = ABNORMAL ~ SVL + BLEEDING_INJ, family = &quot;binomial&quot;, 
+##     data = frog_data)
+## 
+## Coefficients:
+##              Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)  -0.97302    0.32055  -3.035 0.002402 ** 
+## SVL          -0.06107    0.01703  -3.587 0.000335 ***
+## BLEEDING_INJ  3.73886    0.12271  30.470  &lt; 2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 6695.5  on 7703  degrees of freedom
+## Residual deviance: 5349.6  on 7701  degrees of freedom
+## AIC: 5355.6
+## 
+## Number of Fisher Scoring iterations: 4</code></pre>
+</div>
+<div id="check-for-multicollinearity-in-the-data-using-both-correlation-and-the-vif.-do-you-think-there-is-multicollinearity" class="section level3">
+<h3><br> 3. Check for multicollinearity in the data using both
+correlation and the VIF. Do you think there is multicollinearity?</h3>
+<p><strong>Answer:</strong></p>
+<pre class="r"><code>cor(  frog_data[c(&quot;SVL&quot;, &quot;TAIL_LENGTH&quot;, &quot;BLEEDING_INJ&quot;)])</code></pre>
+<pre><code>##                     SVL TAIL_LENGTH BLEEDING_INJ
+## SVL          1.00000000  0.04950068   0.01071263
+## TAIL_LENGTH  0.04950068  1.00000000   0.09025493
+## BLEEDING_INJ 0.01071263  0.09025493   1.00000000</code></pre>
+<pre class="r"><code>car::vif(logistic_model)</code></pre>
+<pre><code>##          SVL  TAIL_LENGTH BLEEDING_INJ 
+##     1.010575     1.014214     1.011217</code></pre>
 </div>
 </div>
 <div class="footnotes footnotes-end-of-document">
 <hr />
 <ol>
 <li id="fn1"><p>Courtesy: <a href="https://online.stat.psu.edu/stat462/node/177/" class="uri">https://online.stat.psu.edu/stat462/node/177/</a><a href="#fnref1" class="footnote-back">↩︎</a></p></li>
+<li id="fn2"><p>Courtesy: <a href="https://datadryad.org/stash/dataset/doi:10.5061/dryad.sq72d" class="uri">https://datadryad.org/stash/dataset/doi:10.5061/dryad.sq72d</a><a href="#fnref2" class="footnote-back">↩︎</a></p></li>
 </ol>
 </div>
 

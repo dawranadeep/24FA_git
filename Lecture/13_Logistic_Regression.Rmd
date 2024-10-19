@@ -188,5 +188,49 @@ plot(AM, predictions, col = "purple", xlab = "Response", ylab = "Probabilites")
 
 
 
+## Summary 1
+
+* We learnt how to draw **scatteerplot**, and find covariance, correlation, and the correspomnding Spearman's versions.
+  - <span style = "color:#0CAF59">$\texttt{plot(x, y)}$</span>.
+  - <span style = "color:#0CAF59">$\texttt{cov(x, y), cor(x, y)}$</span>.
+  - <span style = "color:#0CAF59">$\texttt{cov(x, y, method="spearman")}$.
+  - <span style = "color:#0CAF59">$\texttt{cor(x, y, method="spearman")}$.
+  
+  
+## Summary 2
+
+* We learnt linear regression -- both simple and multiple linear regression.
+  - <span style = "color:#0CAF59">$\texttt{<model>=lm(<y>~<x1>+<x2>+..., data=<data>)}$</span>.
+* Summary table: <span style = "color:#0CAF59">$\texttt{summary(<model>)}.$</span>
+* In the bottom 3 lines of summary, you will find the model-realted statistics: <span style = "color:#0CAF59">$\widehat{\sigma}$, $R^2$, adjusted $R^2$,</span> and model significance test values such as <span style = "color:#0CAF59">$F$ statistic</span> and <span style = "color:#0CAF59">$p$ value.</span>
+* In the coefficient table, you will find the details regarding coefficients estimates for <span style = "color:#0CAF59">$\hat{\beta}_1, \hat{\beta}_2, \ldots$.</span> and their significance test results.
 
 
+
+
+## Summary 3
+
+* We learnt model selection by backward elimination:
+  - Using $p$ values, keep dropping <span style = "color:#0CAF59">the least significant variable</span> (only one at a time) until all the variables are significant.
+  - Using the AIC values through $\texttt{R}$: 
+    - <span style = "color:#0CAF59">$\texttt{step(<model>, direction = "backward")}$</span>
+* Compare models using <span style = "color:#0CAF59">Adjusted $R^2$.</span>
+
+
+
+## Summary 4
+
+* We learnt polynomial regression (only did the quadratic model):
+  - <span style = "color:#0CAF59">$\texttt{<model>=lm(<y>~ poly(<x>, 2), data=<data>)}$</span>.
+
+* We did the logistic regression with binary data:
+    - <span style = "color:#0CAF59">$\texttt{<model>= glm(<y>~ <x1>+<x2>...,}$ $\texttt{data=<data>, family = "binomial")}$</span>.
+    - Prediction: <span style = "color:#0CAF59">$\texttt{predict(<model>, type="response")}$.
+  
+  
+  
+
+
+## Extra Resource
+
+Any topic you are interested in, Google with the keyword "bookdown". Many instructors have uploaded their materials as a bookdown file and they usually contain $\texttt{R}$ implementations.

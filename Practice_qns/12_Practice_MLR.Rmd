@@ -39,22 +39,36 @@ head(cheese_data)
 
 **Answer:** 
 
-```{r}
+Creating one plot at a time helps us visualize them more clearly. In the following examples, I include additional options like $\texttt{pch}$ and $\texttt{col}$ -- these are not essential but enhance the appearance of the plots. Additionally, note that $\texttt{xlab}$ and $\texttt{ylab}$ set the axis labels, while $\texttt{main}$ adds a heading to the scatterplot.
 
+```{r}
 Taste = cheese_data$taste
 Acetic = cheese_data$Acetic
 H2S = cheese_data$H2S
 Lactic = cheese_data$Lactic
-
-plot(  Acetic, Taste )
-#abline(  lm(Taste ~ Acetic))
-
-plot(H2S, Taste)
-plot(Lactic, Taste)
-
-
-
 ```
+
+Now, let's do the scatterplots.
+
+```{r}
+# Scatterplot between Acetic and Taste
+plot(  Acetic, Taste, xlab = "Acetic", ylab = "Taste",
+       main = "Scatterplot between Acetic and Taste",
+       pch = 16, col = "violetred")
+
+# Scatterplot between H2S and Taste
+plot(  H2S, Taste, xlab = "H2S", ylab = "Taste",
+       main = "Scatterplot between H2S and Taste",
+       pch = 16, col = "seagreen")
+
+# Scatterplot between Lactic and Taste
+plot(  Lactic, Taste, xlab = "Lactic", ylab = "Taste",
+       main = "Scatterplot between Lactic and Taste",
+       pch = 16, col = "blue")
+```
+
+
+The scatterplots show that every predictor variable has an overall positive or increasing trend with respect to the response, $\texttt{Taste}$. Between $\texttt{H2S}$ and $\texttt{Taste}$, the trend seems linear with a relatively stronger relationship compared to the other predictors. $\texttt{Lactic}$ also exhibits an overall increasing trend with a linear pattern, however, the variability in the response variable in considerably high. $\texttt{Acetic}$ although show an overall weak increasing trend, it is evident that the response variable has no clear trend once the predictor goes beyond $5.5$.
 
 
 ### <br> B. Build the multiple linear regression model with **taste** as the response and other variables as predictors. Write down the fitted equation.
@@ -64,10 +78,22 @@ plot(Lactic, Taste)
 **Answer:** 
 
 ```{r}
-
-mlr_model = lm( taste ~ Acetic + H2S + Lactic  ,data = cheese_data)
-summary(mlr_model)
+# Recall, <model> = lm(<y> ~ <x1> + ..., data = <data>)
+mlr_model = lm( taste ~ Acetic + H2S + Lactic, data = cheese_data)
+mlr_model
 ```
+
+\begin{align*}
+\widehat{\text{Taste}} = -28.8768 + 0.3277 * \text{Acetic} + 3.9118 * \text{H2S} + 19.6705 * \text{Lactic}
+\end{align*}
+
+
+<span style = "color:#CB4335">If I ask you to interpret the coefficients:</span>
+
+- <span style = "color:#CB4335">$-28.8768$ is the estimated mean value of $\texttt{Taste}$ when all the predictors are set to $0$.</span>
+- <span style = "color:#CB4335">Keeping $\texttt{H2S}$ and $\texttt{Lactic}$ same, if I increase the value of $\texttt{Acetic}$ by $1$ unit, the estimated mean value of $\texttt{Taste}$ increases by $0.3277$.</span>
+- <span style = "color:#CB4335">Rest follows similarly as the last one.</span>
+
 
 
 ### <br> C. What are the $R^2$ and adjusted $R^2$? Is this model significant?
@@ -76,9 +102,16 @@ summary(mlr_model)
 
 **Answer:** 
 
-Multiple R-squared:  0.6518, Adjusted R-squared:  0.6116 
+```{r}
+summary(mlr_model)
+```
 
-p-value: 3.81e-06 < $\alpha$ = 0.05. So, model is significant.
+- Multiple R-squared:  $0.6518$.
+- Adjusted R-squared:  $0.6116$. 
+- Model significance test:
+  - $H_0$: $\beta_1 = \beta_2  = \beta_3 = 0$; $H_A$: At least one of the coefficients are not $0$.
+  - Let's test at level $\alpha = 0.05$. 
+  - $p$-value: $3.81e-06$ < $\alpha$ = 0.05. So, we can reject the null hypothesis model is significant.
 
 
 
@@ -87,14 +120,17 @@ p-value: 3.81e-06 < $\alpha$ = 0.05. So, model is significant.
 
 **Answer:** 
 
-p - value = 0.94198 ; Can not reject $H_0$.
+- $H_0$: $\beta_1 = 0$; $H_A$: $\beta_1 \neq 0$.
+- $p$-value = $0.94198$ > $\alpha = 0.05$; Hence, can not reject $H_0$.
 
 
 ### <br> E. Test for $H_0: \beta_2 = 0$ vs $H_A: \beta_2 \neq 0$. Take $\alpha = 0.05$.
 
 **Answer:** 
 
-p - value = 0.00425 < $\alpha$ ; Reject $H_0$.
+- $H_0$: $\beta_1 = 0$; $H_A$: $\beta_1 \neq 0$.
+- $p$-value = $0.00425$ < $\alpha = 0.05$; Hence, reject $H_0$.
+
 
 
 ### <br> F. Find the $95\%$ confidence intervals of the estimated coefficients. Can you perform the tests in part D and E from this CI?
@@ -102,21 +138,53 @@ p - value = 0.00425 < $\alpha$ ; Reject $H_0$.
 **Answer:** 
 
 ```{r}
-
-confint( mlr_model)
-
+# 95% CI
+confint( mlr_model, level = 0.95)
 ```
 
-Check if 0 inside or not.
+- The $95\%$ CI for $\beta_1$ is $(-8.84, 9.49)$. Since we are testing for $0$, we need to check if $0$ is inside the CI or not. Since $0$ is inside, we fail to reject $H_0$.
+- The $95\%$ CI for $\beta_2$ is $(1.35, 6.48)$. Since $0$ is not inside the CI, we reject $H_0$.
 
 ### <br> G. Do the residual-vs-fitted plot. Can you comment anything on the residual?
 
 
 **Answer:** 
 
+You can directly plot the residual against fitted values plot by using the following:
+
 ```{r}
-plot(mlr_model, which = 1)
+plot(mlr_model, which = 1, 
+     col="darkolivegreen1", pch=19,
+     main = "Residual vs Fitted plot")
 ```
+
+Note that the <span style = "color:red">red</span> line is known as the LOESS line, a nonlinear model that smooths the residuals to help identify any underlying patterns.
+
+Alternatively, if you ask ChatGPT, it produces the same answer in a slightly complicated way, without the LOESS fit:
+
+```{r}
+# ChatGPT produced result
+
+plot(fitted(mlr_model), residuals(mlr_model),
+     xlab = "Fitted Values",
+     ylab = "Residuals",
+     main = "Residuals against Fitted plot",
+     pch = 19, col = "darkslategrey")
+
+# Add a horizontal line at y=0
+abline(h = 0, col = "red", lwd = 2)
+```
+
+
+Overall, there is no noticeable pattern in the residual plot, and no outliers stand out significantly. However, for a more statistically rigorous approach, you can create a boxplot of the residuals.
+
+
+```{r}
+boxplot(residuals(mlr_model), 
+        col = "coral2", pch = 19)
+```
+
+As the boxplot suggests, there seems to be an outlier on the higher side.
 
 
 ### <br> H. Do the QQ-plot of the residual. Can you comment anything about normality?
@@ -124,27 +192,37 @@ plot(mlr_model, which = 1)
 
 **Answer:** 
 
+Let's first try the QQ-plot. We will try to first guess normality based on the plot.
+
 ```{r}
-plot(mlr_model, which = 2)
+plot(mlr_model, which = 2, pch = 16, col = "cyan3")
 ```
 
+The plot seems quite likely to follow normal distribution. The line seems to have a $45^{\circ}$ angle, and poinst seem to closely follow the qqline. However, we will now try the Shapiro-Wilk test to formally check about our guess.  In this test, the null hypothesis is that the residuals are normally distributed. Let's apply it to our model.
 
 ```{r}
 shapiro.test(  residuals(mlr_model))
 ```
-
+Let's test at $\alpha = 0.05$. The $p$-value  = $0.8312$ > $\alpha$. Hence, we fail to reject the null hypothesis that residuals are normally distributed.
 
 ### <br> I. Let's try to do backward selction using the $p$ values. How would you update the model? 
 
+
+
 **Answer:** 
 
+
+
+Referring back to the coefficient table from part C, we see that $\texttt{Acetic}$ has the highest $p$-value and is not significant at level $\alpha = 0.05$. Therefore, we can exclude this variable and fit a new model:
+
+
 ```{r}
-
-mlr_model2 = lm( taste ~ H2S + Lactic  ,data = cheese_data)
+mlr_model2 = lm( taste ~ H2S + Lactic, data = cheese_data)
 summary(mlr_model2)
-
 ```
 
+
+In this updated model, all predictors are significant at the $\alpha = 0.05$ level, making this my final choice after performing backward selection based on the $p$-value criterion.
 
 
 
@@ -152,21 +230,29 @@ summary(mlr_model2)
 
 **Answer:** 
 
+Recall, variable selection can also be done automatically using the $\text{step}$ function, but this time the stopping criterion is the AIC.
+
 ```{r}
-
-backward_model = step( mlr_model, direction = "backward"  )
+backward_model = step(mlr_model, direction = "backward")
 summary(backward_model)
-
 ```
+
+So, again the final selected model is the same as in part I.
 
 
 ### <br> K. Comparing adjusted $R^2$, which model would you prefer?
 
 **Answer:** 
 
-Multiple R-squared:  0.6518, Adjusted R-squared:  0.6116 
+* Initial Model: <span style = "color:#0CAF59">$\text{Taste} = \beta_0 + \beta_1 * \text{Acetic} + \beta_2 * \text{H2S} + \beta_3 * \text{Lactic} + \epsilon_i$.</span>
+  - Multiple R-squared:  **$0.6518$**.
+  - Adjusted R-squared:  **$0.6116$**.
 
-Model 2: Multiple R-squared:  0.6517, Adjusted R-squared:  0.6259 
+* Model 2:  <span style = "color:#CB4335">$\text{Taste} = \beta_0 + \beta_1 * \text{H2S} + \beta_2 * \text{Lactic} + \epsilon_i$.</span>
+  - Multiple R-squared:  **$0.6517$**.
+  - Adjusted R-squared:  **$0.6259$**.
+
+Remember that to compare between different models, we should use the adjusted $R^2$ value. Hence, here our second model is the preferred one by following adjusted $R^2$.
 
 
 <br><br><br>
@@ -198,19 +284,37 @@ plot(Range, SoundPressure, pch = 16, col = "blue")
 ```
 
 
+Carefully note that in the scatterplot, there is an outlier. Also, the pattern is not exactly linear, but shows some evidence of curvy pattern between the two variables. 
+
+Note that, the curve seems to look like the $y = \log(x)$ shape. In more advanced Statistics courses, you will learn how to fit different models depending on the type of scatterplot. However, for now, we will focus on fitting a polynomial or quadratic model in the next section.
+
+
 
 ### <br> B. First, build a linear regression model. What are the $R^2$ and adjusted $R^2$? Is this model significant?
 
 
 **Answer:** 
 
-```{r}
-mod_linear = lm(SoundPressure ~ Range ,data = dolphin_data)
-summary(mod_linear)
+We want to fit the model: <span style = "color:#0CAF59"> $\text{SoundPressure} = \beta_0 + \beta_1 * \text{Range} + \epsilon$</span>.
 
+```{r}
+mod_linear = lm(SoundPressure ~ Range, data = dolphin_data)
+summary(mod_linear)
+```
+
+- $R^2 = 0.5542$.
+- Adjusted $R^2 = 0.554$. 
+- $H_0$: $\beta_1 = 0$ vs $H_A: \beta_1 \neq 0$. Since we are testing for model significance, we will go to the last line. Test statistic: $F = 2029$. $p$-value $\approx 0 < 0.05$. So, $H_0$ is rejected and the model is significant.
+
+
+Let’s now visualize how good the model fits the scatterplot:
+
+```{r}
 plot(Range, SoundPressure, pch = 16, col = "blue")
 abline(mod_linear, col = "red")
 ```
+
+Notice that the rapidly increasing pattern on the far left side is not captured by the model. Since we only used a linear model, the line fails to account for this relationship Therefore, next, we will try to improve the model to address this.
 
 
 ### <br> C. Build a quadratic (polynomial with degree 2) regression model now, i.e., <span style = "color:#0CAF59"> $\text{SoundPressure} = \beta_0 + \beta_1 * \text{Range} + \beta_2 * \text{Range}^2 + \epsilon$</span>. What are the $R^2$ and adjusted $R^2$? Is this model significant?
@@ -218,20 +322,38 @@ abline(mod_linear, col = "red")
 
 **Answer:** 
 
-```{r}
+Note, to fit a quadratic model (or a second-order polynomial model), simply modify the code from $\texttt{lm(<y> ~ <x>, ...)}$ to $\texttt{lm(<y> ~  poly(<x>, 2), ...)}$.
 
+```{r}
 mod_polynomial = lm(SoundPressure ~ poly(Range,2) ,data = dolphin_data)
 summary(mod_polynomial)
-
 ```
+
+
+<br> <span style = "color:#0CAF59">For interested people, if you want to see how good the model fits the data, you can extract the fitted values using the command $\texttt{fitted(<model_name>)}$ and then add these fitted values to your scatterplot using the command $\texttt{points(...)}$. The code is below:</span> <br>
+
+
+
+```{r}
+plot(Range, SoundPressure, pch = 16, col = "blue") # Scatterplot
+points(Range, fitted(mod_polynomial), pch = 16, col = "limegreen")
+title("Scatterplot (in green) with fitted values (in blue)")
+```
+
+
+See that, the behavior in the far left side of the graph is now better captured.
 
 
 ### <br> D. Comparing by adjusted $R^2$ values, which model would you prefer?
 
 
 
-**Answer:**  Quadratic model: 0.61
-Linear model: 0.55
+**Answer:**  
+
+  - Quadratic model: **$0.61$**
+  - Linear model: **$0.55$**
+  
+Going by the adjusted $R^2$ value, the quadratic model would be preferred.
 
 
 
@@ -239,8 +361,7 @@ Linear model: 0.55
 
 
 
-**Answer:**  All p-values < 0.05. So, polynomial model is fine.
-
+**Answer:**  From part C, examining the summary table of the polynomial model shows that all $p$-values are below $0.05$, indicating that all predictor terms are significant. Therefore, this would be the final model when applying backward selection based on the $p$-value criterion.
 
 
 
@@ -249,6 +370,8 @@ Linear model: 0.55
 
 
 **Answer:** 
+
+Careful, I did not notice first that this method doesn't work well in $\texttt{R}$. However, there's no need for an additional learning about this at this point. For now, simply pass the model through the step function.
 
 ```{r}
 backward_model = step(mod_polynomial, direction = "backward")
@@ -262,15 +385,19 @@ summary(backward_model)
 
 **Answer:** 
 
+Let's try the QQ-plot first. The graph by an eye test seems to indicate a normal distribution since many of the points are almost on the line. The line is slightly deviating from a $45^{\circ}$ angle, but still not much by eye test.
 
 ```{r}
-plot(mod_polynomial, which = 2)
+plot(mod_polynomial, which = 2, pch=16, col="darkseagreen3")
 ```
 
+Now, just to make sure, let's do the Shapiro-Wilk test.
 
 ```{r}
-shapiro.test(  residuals(mod_polynomial))  
+shapiro.test(residuals(mod_polynomial))  
 ```
+
+This time, from the $p$ values, we can surely conclude that our initial intuition was wrong. Shapiro-Wilk test starts with the null hypothesis of normality, which we reject here following the small $p$ value.
 
 
 
@@ -279,10 +406,15 @@ shapiro.test(  residuals(mod_polynomial))
 
 **Answer:** 
 
+Let's follow the easier version of residual-against-fitted plot and not the one usually given by ChatGPT.
 
 ```{r}
-plot(mod_polynomial, which = 1)
+plot(mod_polynomial, which = 1, pch = 16,
+     col="darkorchid3")
 ```
+
+
+From this plot, my first comment would be that there is an outlier in the data. Secondly, the ideal residual plot should not tell any story about the data. This time though, on the left side, below fitted value = 200, there is a slight visible pattern of curve. So, this plot suggests you that there is still some room for improvement in our modeling. 
 
 
 
@@ -293,13 +425,14 @@ plot(mod_polynomial, which = 1)
 
 **Answer:** 
 
+Let's do both the QQ-plot and the normality test.
 
 ```{r}
-plot(mod_linear, which = 2)
+plot(mod_linear, which = 2, pch = 20, col = "chartreuse")
 shapiro.test(  residuals(mod_linear))
-
 ```
 
+The QQ-plot shows a big deviation from the line. Also, the Shapiro-Wilk test $p$ value clearly suggests a violation of normality.
 
 ### <br> H. Again, take the linear regression model and draw the residual-vs-fitted plot. What comments can you make from this plot?
 
@@ -307,10 +440,11 @@ shapiro.test(  residuals(mod_linear))
 **Answer:** 
 
 ```{r}
-plot(mod_linear, which = 1)
-
+plot(mod_linear, which = 1, pch = 16,
+     col="deeppink")
 ```
 
+See, the curvy pattern on the left side is clearly visible here. So, our linera model was clearly not doing a good enough job in the beginning. The polynomial model improved the residual pattern in part F, but we saw that there may still be work to do.
 
 
 
@@ -351,25 +485,136 @@ head(bp_data)
 ### <br> A. We want to build a linear regression model with blood pressure as response and age, weight, body surface area, duration, pulse rate and/or stress level  as predictors. Build the regression model.
 
 
+**Answer:**
+
 ```{r}
-# Code
+bp_model = lm( BP ~ Age+ Weight+ BSA+ Dur+ Pulse+ Stress, data = bp_data )
+summary(bp_model)
 ```
 
 
+
+<span style = "color:#0CAF59">I did not ask this, but from the summary table, you can easily see that variables $\texttt{Dur, Pulse, Stress}$ are not significant. So if you had to do backward selection, you would start with dropping the least significant variable, $\texttt{Dur}$.</span>
 
 ### <br> B. Check if multicollinearity is present in the data using correlation coefficients. Take a cutoff of $\pm 0.65$.
 
 
+**Answer:** Note, we only need the correlation values only for the predictors in this part. No need to include the response, $\texttt{BP}$ here.
 
 ```{r}
-# Code
+cor( bp_data[ c("Age",    "Weight",  
+"BSA"    
+,"Dur"    
+,"Pulse"  
+,"Stress" ) ])
 ```
+
+Since the question asks you to check for the value $\pm 0.65$ (more than $0.65$ or less than $-0.65$), see that only possible high values are between $\texttt{Weight, BSA}$ and $\texttt{Weight, Pulse}$. So, going by the cutoff of $\pm 0.65$, there is evidence of multicollinearity in the data.
+
 
 ### <br> C. Calculate the VIF of the model. Do you think there is multicollinearity in the data using a cutoff of $5$?
 
 
+**Answer :** For the variance inflation function (VIF), you need to call the $\texttt{vif}$ function from the $\texttt{car}$ package. Just pass the name of the model here:
+
 ```{r}
-# Code
+car::vif(bp_model)
 ```
 
+Going by the cutoff value of $5$ as in the question, note that both $\texttt{Weight}$ and  $\texttt{BSA}$ have high VIF values. The interpretation is that both $\texttt{Weight}$ and  $\texttt{BSA}$ are highly correlated with some linear combination of the other predictor variables, excluding themselves.
+
+
+
+<br><br><br>
+
+
+# Question 4: Logistic Regression
+^[Courtesy: <https://datadryad.org/stash/dataset/doi:10.5061/dryad.sq72d>]
+
+### The frog abnormality dataset describes some characteristics of the Alaskan wood frog. There are some variables (namely $\texttt{ABNORMAL, SKEL_AB, EYE_AB, SURF_AB}$) that describes if there are some abnormality in the frogs or not. We will use predictors $\texttt{SVL, TAIL_LENGTH, BLEEDING_INJ}$ to predict $\texttt{Abnormal}$.
+
+
+### The original data file was taken from <https://datadryad.org/stash/dataset/doi:10.5061/dryad.sq72d>. You can also access this data [here](<https://github.com/dawranadeep/24FA_git/blob/main/Practice_qns/img/FrogAbnormalities.csv>). Following code downloads the in a dataframe called $\texttt{frog_data}$ and shows a snapshot:
+
+
+```{r}
+frog_data = read.csv(url("https://raw.githubusercontent.com/dawranadeep/24FA_git/refs/heads/main/Practice_qns/img/FrogAbnormalities.csv"))
+frog_data = frog_data[ complete.cases(frog_data$TAIL_LENGTH), ] 
+head(frog_data)
+```
+
+
+
+
+
+
+
+### <br> 1. Build the logistic regression model here. Show the model summary.
+
+
+**Answer:**
+
+This is the model I am tying to build:
+
+
+\begin{align*}
+p_i &= \mathbb{P}[\text{$i$-th frog is abnormal], or }\mathbb{P}[\text{ABNORMAL}_i = 1 ]\\
+\log \frac{p_i}{1 - p_i} &= \beta_0 + \beta_1 * \text{SVL} + \beta_2 * \text{TAIL_LENGTH} + \beta_3 * \text{BLEEDING_INJ}
+\end{align*}
+
+
+```{r}
+frog_model = glm(  ABNORMAL ~ SVL + TAIL_LENGTH + BLEEDING_INJ, data = frog_data, family = "binomial")
+summary(frog_model)
+```
+
+
+
+### <br> 2. From the summary output, can you simplify the model?
+
+
+**Answer:**
+
+
+Look at the summary output of the above model. The predictor $\texttt{TAIL_LENGTH}$ is not significant at level $\alpha = 0.05$. So, we can drop it and simplify the model as the following.
+
+```{r}
+frog_model2 = glm(  ABNORMAL ~ SVL + BLEEDING_INJ, data = frog_data, family = "binomial")
+summary(frog_model2)
+```
+
+Since all the predictors are significant this time, this is where we can stop.
+
+
+<br> <span style = "color:#0CAF59"> If you are interested in investigating the same using the inbuilt step function $\texttt{step}$, you will find a different answer. </span>
+
+
+
+```{r}
+backward_frog_model = step(frog_model, direction = "backward")
+```
+
+
+<span style = "color:#0CAF59">Notice in the output above that the AIC value is lowest for the initial model (i.e., no variables dropped from the model in part A). Whenever the algorithm tries to remove a variable, the AIC increases, making those models less preferable than the original model in part A. Therefore, after completing the backward elimination process using AIC, you'll end up with the model from part A.</span>
+
+
+```{r}
+summary(backward_frog_model)
+```
+
+<span style = "color:#0CAF59">This highlights the importance of understanding various criteria for a single problem and examining how they all behave.</span>
+
+
+
+### <br> 3. Check for multicollinearity in the data using both correlation and the VIF. Do you think there is multicollinearity?
+
+
+**Answer:** Just print the correlation coefficients and the vif values. You will see that there is no problem of multicollinearity in this particular model.
+
+```{r}
+cor( frog_data[ c("SVL", "TAIL_LENGTH", "BLEEDING_INJ")])
+
+
+car::vif( frog_model )
+```
 

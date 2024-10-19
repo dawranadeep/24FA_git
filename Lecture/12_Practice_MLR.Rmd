@@ -383,3 +383,62 @@ car::vif(new_model)
 ```
 
 
+
+
+
+
+<br><br><br>
+
+
+# Question 4: Logistic Regression
+^[Courtesy: <https://datadryad.org/stash/dataset/doi:10.5061/dryad.sq72d>]
+
+### The frog abnormality dataset describes some characteristics of the Alaskan wood frog. There are some variables (namely $\texttt{ABNORMAL, SKEL_AB, EYE_AB, SURF_AB}$) that describes if there are some abnormality in the frogs or not. We will use predictors $\texttt{SVL, TAIL_LENGTH, BLEEDING_INJ}$ to predict $\texttt{Abnormal}$.
+
+
+### The original data file was taken from <https://datadryad.org/stash/dataset/doi:10.5061/dryad.sq72d>. You can also access this data [here](<https://github.com/dawranadeep/24FA_git/blob/main/Practice_qns/img/FrogAbnormalities.csv>). Following code downloads the in a dataframe called $\texttt{frog_data}$ and shows a snapshot:
+
+
+```{r}
+frog_data = read.csv(url("https://raw.githubusercontent.com/dawranadeep/24FA_git/refs/heads/main/Practice_qns/img/FrogAbnormalities.csv"))
+frog_data = frog_data[ complete.cases(frog_data$TAIL_LENGTH), ] 
+head(frog_data)
+```
+
+
+### <br> 1. Build the logistic regression model here. Show the model summary.
+
+
+**Answer:**
+
+```{r}
+logistic_model = glm( ABNORMAL ~ SVL + TAIL_LENGTH + BLEEDING_INJ ,data = frog_data, family = "binomial")
+summary(logistic_model)
+```
+
+
+
+### <br> 2. From the summary output, can you simplify the model?
+
+
+**Answer:**
+
+```{r}
+logistic_model2 = glm( ABNORMAL ~ SVL + BLEEDING_INJ ,data = frog_data, family = "binomial")
+summary(logistic_model2)
+```
+
+
+
+
+### <br> 3. Check for multicollinearity in the data using both correlation and the VIF. Do you think there is multicollinearity?
+
+
+**Answer:**
+
+```{r}
+cor(  frog_data[c("SVL", "TAIL_LENGTH", "BLEEDING_INJ")])
+
+car::vif(logistic_model)
+
+```
