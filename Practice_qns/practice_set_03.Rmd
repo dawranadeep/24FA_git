@@ -1,0 +1,392 @@
+---
+title: "Some Practice Materials on Regression"
+subtitle: ""
+author: "Ranadeep Daw"
+date: "2024-09-07"
+output: 
+  html_document:
+    toc: true
+    toc_depth: 2
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, error = T, eval = T)
+```
+
+
+<br><br><br>
+
+
+
+## Question 1
+
+Look at the following 4 residuals-against-fitted plots for $4$ simple linear regression problems.
+
+
+```{r echo =F}
+set.seed(123)
+x = rnorm(100)
+y1 = 3 + 5 * x + rnorm(100, 0, 1)
+y1[50] = y1[50] +25
+y2 = 3 + 5 * x^2 + rnorm(100, 0, 1)
+y3 = 3 + 2 * seq(-2, 2, , 100) + rnorm(100, 0,  2 + 0.1 +  seq(-2, 2, , 100))
+y4 = 3 + 5 * c(-10, x) + rnorm(101, 0, 1)
+#y4[1] = 3 * y4[1]
+
+par(mfrow = c(1,2))
+plot( x, residuals(lm(y1 ~ x)), pch = 16, col = "red", title(main = "Plot 1"), xlab = "Fitted", ylab = "Residuals")
+plot( x, residuals(lm(y2 ~ x)), pch = 16, col = "blue", title(main = "Plot 2"), xlab = "Fitted", ylab = "Residuals")
+
+par(mfrow = c(1,2))
+plot( seq(-2, 2, , 100), residuals(lm(y3 ~ seq(-2, 2, , 100))), pch = 16, col = "green", title(main = "Plot 3"), xlab = "Fitted", ylab = "Residuals")
+plot(  c(-10, x), residuals(lm(y4 ~ c(-10, x))), pch = 16, col = "violet", title(main = "Plot 4"), xlab = "Fitted", ylab = "Residuals")
+```
+
+### <br> A. Which plot(s) has mean fitted residual value = 0?
+
+
+**Answer:**  All of them
+
+### <br> B. Which plot(s) shows an outlier?
+
+**Answer:** 
+
+### <br> C. Which plot is most likely to suggest a non-constant variance (or heteroscadasticity)?
+
+**Answer:** 
+
+
+
+### <br> D. Which plot suggests a nonlinear relationship?
+
+**Answer:** 
+
+
+### <br> E. How would you update the model in the answer to part D? (answers may vary)
+
+**Answer:** 
+
+
+### <br> F. Comment on plot 4. What are we seeing here?
+
+
+**Answer:** 
+
+
+
+
+## Question 2
+
+```{r echo = F}
+# Load necessary packages
+library(ggplot2)
+
+# Generate random data for training hours and years of experience
+set.seed(123)
+training_hours <- runif(28, 50, 200)  # Random training hours between 50 and 200
+experience <- 25 + 0.0000005 * training_hours + rnorm(28, 0, 10)  # Random linear relationship with noise
+
+# Plot the data
+ggplot(data.frame(training_hours, experience), aes(x = training_hours, y = experience)) +
+  geom_point() +
+  labs(x = "Training Hours", y = "Years of Experience") +
+  theme_minimal()
+
+```
+
+### <br> Professional trainers claim they can estimate how many years a person has worked in a particular sector by looking at the number of hours of professional training they've gone through. The following is a plot of years of experience vs number of training hours.
+
+### A. <br> What's your guess for the correlation coefficient?
+
+a) close to -1
+b) close to 0
+c) close to 1
+d) it's impossible to tell
+
+
+
+### B. If I fit a linear regression model, what is your guess for the model significance $p$ vlue?
+
+a) close to 1
+b) close to 0
+c) close to 0.05
+d) it's impossible to tell
+
+**Answer**:
+
+
+
+
+### C. Would you believe in the claims by the trainers that they can successfully predict the years of experience?
+
+**Answer**:
+
+
+### D. Researchers collected data on shoe size and number of vocabulary words known for a group of children and found a strong positive correlation between the two variables. Based on this information, can we conclude that shoe size causes a higher number of vocabulary words?
+
+
+
+a) Yes, because the data show a strong correlation between shoe size and vocabulary.
+b) Yes, because larger feet help in language development.
+c) No, because there is no relationship between the two variables.
+d) No, because while they are correlated, it is likely that a third variable (like age) is influencing both shoe size and vocabulary.
+
+
+### E. A survey found that there is a high positive correlation between the number of critical hospital beds occupied and the mortality rate in hospitals. A health official suggested reducing the number of hospital beds as a way to lower the mortality rate. What is your way of interpreting this?
+ 
+
+Options:
+
+a) This is perfect because of the pattern from a linear regression.
+b) This is not perfect because we should instead use a logistic regression since death is a 0/1 (binary) variable.
+c) Correlation does not imply causality
+d) There is no link between the two variables.
+
+
+## Question 3
+
+
+### In the following questions, what kind of model you will propose? Your options are linear regression, logistic regression, and a polynomial regression model.
+
+
+### <br> A. A medical researcher is studying the likelihood of patients developing a disease based on their age, weight, and smoking habits. The response is either "Yes" (disease present) or "No" (disease absent).
+
+**Answer:** 
+
+
+### <br> B. A researcher is modeling the relationship between temperature and crop yield. He found that with temperature increasing, yields initially keep increasing up to a point and then start to decline.
+
+
+**Answer:** 
+
+### <br> C. A wildlife biologist wants to model the presence of a certain species of beavers in a habitat based on temperature, distance from the road, and humidity.
+
+**Answer:** 
+
+### <br> D. A fitness coach wants to predict calories burned during a workout based on time spent exercising. She observes that beyond a certain point, longer exercise sessions lead to diminishing returns in calories burned.
+
+**Answer:** 
+
+
+
+### <br> E. A biologist is studying the effect of temperature (in degrees Celsius) on the rate of enzyme activity (in units per minute). They observe that as the temperature increases, the enzyme activity tends to increase as well, and the rate of increase appears to be fairly uniform across the range of temperatures studied. 
+
+**Answer:** 
+
+
+
+<br><br>
+
+## Question 4
+
+### Match the statements below with the corresponding terms from the list:
+
+| **Statements**                                                                                                | **Options**                                       |
+|---------------------------------------------------------------------------------------------------------------|---------------------------------------------------|
+| A. A measure that explains the strength and direction of a linear relationship between two continuous variables. | a. Covariance                     |
+| B. A regression approach where variables are removed step-by-step based on statistical significance criteria.   | b. Logit transformation                            |
+| C. The measure of the joint variability of two random variables.                                                | c.                     Correlation coefficient                      |
+| D. A test for normality of the residuals.                    | d. Shapiro-Wilk test                             |
+| E. A regression technique used when the relationship between the dependent variable and predictor variables is nonlinear. | e. R$^2$                           |
+| F. Test statistic in the output to test the significance of a linear regression model.                          | f. $F$ statistic                                   |
+| G. A statistical method used to predict a continuous outcome from one or more predictors.                       | g. Logistic regression                                   |
+| H. A measure of how close the predicted values in a simple regression model are to the actual observed values.   | h. Sum of squared errors (SSE)                     |
+| I. The sum of the squared differences between observed and predicted values in a linear regression model.        | i. Mean square error ($\widehat{\sigma}^2$)        |
+| J. A regression model used to predict an outcome with two possible categories.                                  | j.       Adjusted $R^2$                      |
+| K. A value used to compare models with different numbers of predictors, adjusting for the number of predictors.  | k. Homoscedasticity                                      |
+| L. A measure used to assess how well a polynomial regression model fits the data.                               | l. Backward elimination                            |
+| M. The assumption that the variance of the errors is constant across all levels of the independent variables.    | m. Polynomial regression                               |
+| N. A function that transforms a probability value into any number over the real line.                           | n. Spearman’s rank correlation coefficient         |
+| O. A measure used to describe the direction and strength of a monotonic relationship between variables.          | o. Linear Regression model                            |
+
+**Answer:**
+
+
+* A c
+* B l
+* C a
+* D d
+* E m
+* F f
+* G o
+* H i
+* I h
+* J g
+* K j
+* L e
+* M k
+* N b
+* O n
+
+
+
+
+## Question 5
+
+
+Someone considered predicting the electricity costs for their household over the course of a year in both India and the USA. A basic plot of the data reveals a smooth nonlinear trend, with electricity costs peaking in India during the hottest months (May -- July) and peaking in the USA during the coldest months (December -- February). To model these patterns, you decide to fit a quadratic regression model for each country (separately), using the month of the year (January = 1, February = 2, ..., December = 12) as the predictor variable:
+
+$\text{Cost} = \beta_0 + \beta_1 * \text{Month} + \beta_2 * \text{Month}^2 + \epsilon$.
+
+Which one is most likely among the following options?
+
+Options: 
+
+a) $\widehat{\beta}_2$ in India > 0; $\widehat{\beta}_2$ in the USA > 0.
+b) $\widehat{\beta}_2$ in India < 0; $\widehat{\beta}_2$ in the USA < 0.
+c) $\widehat{\beta}_2$ in India > 0; $\widehat{\beta}_2$ in the USA < 0.
+d) $\widehat{\beta}_2$ in India < 0; $\widehat{\beta}_2$ in the USA > 0.
+e) It is impossible to guess.
+
+
+## Question 6
+
+### A. Use the data (named `dugong_data`) on the age and the length of dugongs and build a regression model that you like. Comment on the scatterplot, your model, and how it is performing.  
+
+
+```{r}
+dugong_data = read.table(url("http://www.statsci.org/data/oz/dugongs.txt"), header = T)
+```
+
+**Answer**:
+
+```{r}
+# Code
+```
+
+
+
+### B. This is for future statistics classes. Update the model by using a `log` transformation on both the predictor and the response.
+
+
+
+**Answer**:
+log(Length) = $\beta_0 + \beta_1 * log(Age) + \epsilon$
+
+```{r}
+# Code
+```
+
+
+## Question 7
+
+#### Ideas for the last question in the exam
+
+* Consider a logistic regression model predicting the likelihood that a frog has an abnormality. 
+* The model outputs probabilities between 0 and 1. 
+* These can be converted into predicted classes ("Positive"/"1" or "Negative"/"0") based on a threshold.
+* Let's take a threshold of 0.5 and suppose that we have the following data:
+
+| **True Status (Actual)** | **Predicted Probability (Model)** | **Predicted Status (Threshold = 0.5)** |
+|--------------------------|-----------------------------------|---------------------------------------|
+| 1                  | 0.85                              | 1                              |
+| 1                  | 0.45                              | 0                              |
+| 0                  | 0.10                              | 0                              |
+| 1                  | 0.76                              | 1                              |
+| 0                  | 0.60                              | 1                              |
+| 0                  | 0.20                              | 0                              |
+| 1                  | 0.92                              | 1                              |
+| 0                  | 0.15                              | 0                              |
+
+### Definitions and Calculations
+
+1. **True Positives (TP)**: Cases where the model predicted "Positive" and the actual status is "Positive".
+    - In the table: 3 true positives (rows 1, 4, and 7).
+
+2. **True Negatives (TN)**: Cases where the model predicted "Negative" and the actual status is "Negative".
+    - In the table: 3 true negatives (rows 3, 6, and 8).
+
+3. **False Positives (FP)**: Cases where the model predicted "Positive" but the actual status is "Negative".
+    - In the table: 1 false positive (row 5).
+
+4. **False Negatives (FN)**: Cases where the model predicted "Negative" but the actual status is "Positive".
+    - In the table: 1 false negative (row 2).
+
+### Sensitivity (True Positive Rate)
+Sensitivity measures how well the model identifies actual positives (true positives) out of all actual positives.
+
+\[
+\text{Sensitivity} = \frac{\text{TP}}{\text{TP} + \text{FN}} = \frac{3}{3 + 1} = 0.75
+\]
+
+This means the logistic regression model correctly identifies 75% of the actual positive cases.
+
+### Specificity (True Negative Rate)
+Specificity measures how well the model identifies actual negatives (true negatives) out of all actual negatives.
+
+\[
+\text{Specificity} = \frac{\text{TN}}{\text{TN} + \text{FP}} = \frac{3}{3 + 1} = 0.75
+\]
+
+This means the model correctly identifies 75% of actual negative cases.
+
+### ROC Curve (Receiver Operating Characteristic)
+The ROC curve plots **True Positive Rate (Sensitivity)** against the **False Positive Rate (1 - Specificity)** at different probability thresholds.
+
+In our case, at a threshold of 0.5:
+- Sensitivity = 0.75
+- False Positive Rate = 1 - Specificity = 0.25
+
+Other thresholds (e.g., 0.3, 0.7) would yield different pairs of Sensitivity and False Positive Rate, and these would be plotted to generate the ROC curve.
+
+
+
+
+### Logistic Regression Classification with Multiple Thresholds
+
+| **True Status (Actual)** | **Predicted Probability (Model)** | **Predicted Status (Threshold = 0.5)** | **Predicted Status (Threshold = 0.3)** | **Predicted Status (Threshold = 0.7)** |
+|--------------------------|-----------------------------------|---------------------------------------|---------------------------------------|---------------------------------------|
+| 1                        | 0.85                              | 1                                     | 1                                     | 1                                     |
+| 1                        | 0.45                              | 0                                     | 1                                     | 0                                     |
+| 0                        | 0.10                              | 0                                     | 0                                     | 0                                     |
+| 1                        | 0.76                              | 1                                     | 1                                     | 1                                     |
+| 0                        | 0.60                              | 1                                     | 1                                     | 0                                     |
+| 0                        | 0.20                              | 0                                     | 0                                     | 0                                     |
+| 1                        | 0.92                              | 1                                     | 1                                     | 1                                     |
+| 0                        | 0.15                              | 0                                     | 0                                     | 0                                     |
+
+#### Sensitivity and Specificity Calculations:
+
+1. **Threshold = 0.5**
+   - **True Positives (TP)**: 3 (Rows 1, 4, 7)
+   - **True Negatives (TN)**: 3 (Rows 3, 6, 8)
+   - **False Positives (FP)**: 1 (Row 5)
+   - **False Negatives (FN)**: 1 (Row 2)
+   
+   **Sensitivity (Recall)** = TP / (TP + FN) = 3 / (3 + 1) = 0.75  
+   **Specificity** = TN / (TN + FP) = 3 / (3 + 1) = 0.75
+
+2. **Threshold = 0.3**
+   - **True Positives (TP)**: 5 (Rows 1, 2, 4, 7, 5)
+   - **True Negatives (TN)**: 3 (Rows 3, 6, 8)
+   - **False Positives (FP)**: 0
+   - **False Negatives (FN)**: 0
+   
+   **Sensitivity** = 5 / (5 + 0) = 1.00  
+   **Specificity** = 3 / (3 + 0) = 1.00
+
+3. **Threshold = 0.7**
+   - **True Positives (TP)**: 3 (Rows 1, 4, 7)
+   - **True Negatives (TN)**: 4 (Rows 3, 5, 6, 8)
+   - **False Positives (FP)**: 0
+   - **False Negatives (FN)**: 1 (Row 2)
+   
+   **Sensitivity** = 3 / (3 + 1) = 0.75  
+   **Specificity** = 4 / (4 + 0) = 1.00
+
+
+### AUC (Area Under the Curve)
+The AUC quantifies the overall ability of the logistic regression model to distinguish between positive and negative cases across all thresholds.
+
+- **AUC = 1** represents perfect discrimination.
+- **AUC = 0.5** represents no better than random guessing.
+
+In this example, based on the ROC curve, the **AUC might be around 0.94**, indicating great discriminative ability.
+
+
+### Logistic Regression Key Concepts:
+- **Probability Threshold**: Determines the cutoff for classifying a case as "Positive" or "Negative" (e.g., threshold = 0.5 or something else).
+- **Predicted Probability**: Output of logistic regression, representing the likelihood of the event (e.g., disease presence).
+- **ROC/AUC**: Useful for assessing how well the logistic regression model performs across different thresholds.
+
+
