@@ -1,0 +1,372 @@
+---
+title: "Time Series with R: Simplified Version"
+subtitle: "Example with NY Birth Data"
+author: "Ranadeep Daw"
+date: "`r Sys.Date()`"
+output:
+  prettydoc::html_pretty:
+    theme: "cayman"
+    center: true
+    toc: true
+    toc_depth: 2
+---
+  
+  
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = T, warning = F, message = F, error = F)
+```
+
+
+## Resources
+
+* A greate resource can be found at **A Little Book of R For Time Series** by Avril Coghlan. [Here](https://readthedocs.org/projects/a-little-book-of-r-for-time-series/downloads/pdf/latest/) is the publicly available resource.
+* For data, we will use  Rob Hyndman's Time Series Data Library, availble [here](http://robjhyndman.com/TSDL/).
+
+
+
+## $\texttt{R}$ Libraries
+
+* We will use the $\texttt{ggplot2}$, $\texttt{forecast}$, and $\texttt{tseries}$ libraries. If you don't have the library, you must install them each one at a time beforehand using $\texttt{install.packages(...)}$ command.
+
+```{r}
+library("forecast")
+library("tseries")
+library("ggplot2")
+```
+
+## Data 
+
+
+* We will use the <span style = "color: #7D3C98">nybirths</span> data, available at the following link: <span style = "color: #7D3C98">http://robjhyndman.com/tsdldata/data/nybirths.dat</span>. 
+* The dataset is on the number of births per month in New York city, between January 1949 to December 1959.
+
+
+<br><br><br> 
+
+## Step 1: Load the data in $\texttt{R}$
+
+* Usually I give you this step in homeworks and exams.
+* In future, if you do not know how to load a data, you can replicate the $\texttt{scan}$ code as below to read text files. 
+* Sometimes you have seen examples of $\texttt{read.table}$ or $\texttt{read.csv}$, that specifically reads the csv files.
+
+```{r}
+nybirths <- scan("http://robjhyndman.com/tsdldata/data/nybirths.dat", skip = 36)
+```
+* The above code loads the data in a dataframe called <span style = "color: #7D3C98">$\texttt{nybirths}$</span> in $\texttt{R}$. Look at the data:
+
+```{r}
+nybirths
+```
+
+
+
+<br><br><br> 
+
+## Step 2: Convert it to a time series
+
+* $\texttt{R}$ automatically does not know that it is a time series data. You have to use a code in order to convert it to a time series.
+* The syntax is <span style = "color: #7D3C98">$\texttt{ts(<data_name>, frequency = <frequency>)}$</span>.
+* Since this is monthly data, you can use a frequency value of $12$ here. Also, data starts at January 1949, which you can add by using the $\texttt{start}$ command:
+
+```{r}
+nybirths_ts = ts(nybirths, frequency = 12, start = c(1949, 1))
+nybirths_ts
+```
+
+
+
+
+<br><br><br> 
+
+
+## Step 3: Plot the time series
+
+* Before analyzing any data, you should plot it to visualize the pattern.
+* To plot a time series data, the syntax is: $\texttt{plot(<time_series>)}$.
+
+```{r}
+plot(nybirths_ts, ylab = "Birth Numbers", main = "Monthly birth numbers over NY")
+```
+
+* For more beautiful plot, you should use the $\texttt{autoplot}$ command from the $\texttt{forecast}$ package:
+
+```{r}
+autoplot(nybirths_ts, ylab = "Birth Numbers", main = "Monthly birth numbers over NY")
+```
+
+* <span style = "color: #BA4A00">**What do you see?**</span>
+
+  - Excluding the data at the very left end, there is an overall increasing trend.
+  - There is a repetitive variability in the data, i.e., every year there is a spike-ish pattern in the data.
+  - This is what we will do next: decompose the time series into it's components.
+  
+  
+<br><br><br> 
+
+
+## Step 4: Decomposition
+
+* Typically, we discuss $3$ to $4$ components of a time series.
+* The long-term pattern in the data is called **trend**.
+* The short-term repetitive pattern in the data is called **seasonality**.
+* The remaining part in the data is the **residual**/**error**.
+* With contextual knowledge, we sometimes may be able to find another component, the **cyclic** component of the time series.
+* In $\texttt{R}$, we use the command <span style = "color: #7D3C98">$\texttt{stl}$</span>, which stands for **Seasonal Decomposition of Time Series by Loess**. You have to mention the periodicity here using <span style = "color: #7D3C98">$\texttt{s.window}$</span> here.
+
+
+```{r}
+nybirths_components = stl(nybirths_ts, s.window = 12)
+nybirths_components
+```
+
+* Let's plot the decomposed time series:
+
+```{r}
+autoplot(nybirths_components)
+```
+
+* Check, how the overall trend is increasing, following the overall pattern of the data.
+* Look at the repetitive seasonal component that repeats each year in the same fashion.
+* If you want to extract different components from this decomposition, you can use the following code:
+
+```{r}
+trend_component = nybirths_components$time.series[, "trend"]  
+seasonal_component = nybirths_components$time.series[, "seasonal"]
+remainder_component = nybirths_components$time.series[, "remainder"]
+```
+
+
+
+
+* <span style = "color: #BA4A00">**What is next?**</span>
+
+  - See that the **seasonal component** repeats it's behavior each year. This pattern is easier to capture based on the repetitive behavior.
+  - **Remainder component** is the residual/error part of the decomposition of a time series; and hence we will not focus on this one.
+  - The **trend component** is the most interesting in terms of analysis. See the increasing pattern in the data; which we want to model and analyze below.
+
+<br><br><br> 
+
+
+## Step 5: Stationarity
+
+
+
+* In STL decomposition, the trend component might not be stationary because it reflects long-term changes.
+* Statistical models, like AR, MA, ARMA, ARIMA, require a stationary time series, where mean, variance, and autocovariance remain constant over time.
+* Therefore, our first job is to check if the series is stationary or not. If it is non-stationary, we need to convert the series into a stationary time series.
+* We can use the Augmented Dickey-Fuller (ADF) test to check if a series is stationary.
+* The null hypothesis is that the time series is not stationary. The alternate hypothesis of the ADF test is that the series is stationary.
+* Let's do the stationarity test of the trend component using the <span style = "color: #7D3C98">$\texttt{adf.test(<series_name>)}$</span> command:
+
+
+```{r}
+adf_test_result = adf.test(trend_component)
+adf_test_result
+```
+
+* See that, the $p$ value is really high (greater than typical value of 0.05), which means that our trend component is still non-stationary.
+* Our next job is to convert the nonstationary series into a stationary one.
+
+
+
+<br><br><br> 
+
+
+## Step 6: Differencing
+
+* To convert a nonstationary series into a stationary one, one uses differencing.
+* For example, if your series is given by $\{y_1, y_2, y_3, \ldots \}$, the first-order differenced series is given by:
+
+$$z_t = y_t - y_{t - 1} $$
+
+* If first-order differencing is not sufficient, you can apply second-order differencing to the already differenced series:
+
+$$z'_t = z_t - z_{t - 1} = (y_t - y_{t - 1}) - (y_{t-1} - y_{t - 2})$$
+
+* You can continue the same way, but please do not overdifferenciate the series, which is often a problem in Statistics.
+* At every step, you should perform a new ADF test to check stationarity using the <span style = "color: #7D3C98">$\texttt{adf.test(<series_name>)}$</span> command until the series becomes stationary.
+
+* Let's try this in $\texttt{R}$:
+
+```{r}
+diff_order_1 = diff(trend_component, lag = 1)
+adf.test(diff_order_1)
+```
+
+
+* So, your differenced series $\texttt{diff_order_1}$ is now stationary at level $\alpha = 0.05$.
+* However, if we are using a level of $0.01$, we need to do the differencing one more time since this differenced series is still not stationary at level $\alpha = 0.01$.
+* Let's do the differencing one more time just to make the series stationary at level $\alpha = 0.01$:
+
+```{r}
+diff_order_2 = diff(diff_order_1, lag = 1)
+adf.test(diff_order_2)
+```
+
+* See how low the $p$-value is. Now you can reject your $H_0$ of the ADF test and conclude stationarity.
+
+
+* Once we’ve achieved stationarity based on the statistical tests, it’s useful to visually confirm this by plotting the differenced series.
+
+* Remember, a stationary series should look like a random scatter around a constant mean and variance, without any clear trends or seasonality.
+
+* First look that the original trend component is visibly following non-stationarity:
+
+```{r}
+autoplot(trend_component, main = "Trend Component of Birth Numbers", ylab = "Birth Numbers")
+```
+
+
+* Let's look at the two differenced series that we just created.
+
+```{r}
+autoplot(diff_order_1, main = "First-Order Differenced Birth Numbers", ylab = "First-order Differenced Birth Numbers")
+autoplot(diff_order_2, main = "Second-Order Differenced Birth Numbers", ylab = "Second-order Differenced Birth Numbers")
+```
+
+* Observe that the differenced series now appears stationary, with fluctuations around a constant mean and relatively stable variance. There is no obvious trend remaining.
+
+
+<br><br><br> 
+
+
+## Step 7: ACF and PACF plots
+
+
+
+
+* Additionally, we can inspect the **ACF** (Autocorrelation Function) and **PACF** (Partial Autocorrelation Function) plots to help identify any remaining dependencies:
+  
+  - **ACF plot:**
+    - Autocorrelation is defined as the correlation between observations of a time series separated by a lag, $\delta$; i.e., <span style = "color:purple">$\rho_h$ = cor$\big[y_t, y_{t-\delta}\big]$.</span>
+    - Helps us identify the number of MA terms needed in the model.
+  - **PACF plot:** 
+    - Partial autocorrelation is the autocorrelation after you remove the effect of past few time points; i.e., <span style = "color:purple">$\phi_h$ = cor$\big[y_t - \hat{y}_t, y_{t-\delta} - \hat{y}_{t-\delta}\big]$.</span>
+    - Helps identify the number of AR terms.
+  - For any stationary series, the ACF and PACF should decay rapidly.
+  
+* Let's check the ACF plot for our first-order differenced series.
+
+
+```{r}
+par(mfrow = c(1, 2))
+acf(nybirths_ts, lag.max = 48, main = "ACF plot", ylab = "Original birth data")
+pacf(nybirths_ts, lag.max = 48,  main = "PACF plot", ylab = "Original birth data")
+```
+
+
+
+
+* <span style = "color: #BA4A00">**What do you see in the ACF plot?**</span>
+
+  - A high autocorrelation at a specific lag indicates that the series has a strong relationship with its past value at that lag.
+  - If autocorrelations drop off gradually over lags, this can indicate that the series is non-stationary.
+  - A sharp cutoff or rapid decrease indicates that differencing or a seasonal component may not be necessary, and the series may be stationary.
+  - In ARIMA modeling, the ACF helps identify the MA (Moving Average) component.
+  - <span style = "color:limegreen">**Here, see that autocorrelation is quite high at small lags, then it is decreasing. Then again, when it is the same month repeating over the next year, the autocorrelation is going higher and higher.**</span>
+  
+  
+  
+* <span style = "color: #BA4A00">**What do you see in the PACF plot?**</span>
+
+  - The Partial Autocorrelation Function (PACF) plot shows the partial correlation of the series with its own lagged values, controlling for the values of the intermediate lags.
+  - A high partial autocorrelation at a specific lag suggests a strong relationship with the value at that lag after removing the influence of shorter lags.
+  - If the PACF shows a gradual decline, it typically indicates that the series might need more differencing to achieve stationarity.
+  - In ARIMA modeling, the ACF helps identify the AR (autoregressive) component.
+  -  <span style = "color:limegreen">**Here, see that partial autocorrelation is quite high at the beginning, then it is decreasing and becoming negative since there may have been an over-adjustment from the initial lags. Some bumps are visible around the same months over the next years. **</span>
+
+
+
+
+
+<br><br><br> 
+
+
+## Step 8: ARIMA Model 
+
+
+Skipping this one to simplify.
+
+
+<br><br><br> 
+
+
+
+## Step 9: Automatic Modeling using $\texttt{auto.arima}$
+
+* $\texttt{R}$ has an inbuilt function, called $\texttt{auto.arima}$, that automatically finds some working values that works for your data.
+* You don't manually need to find the number of AR and MA terms; $\texttt{auto.arima}$ finds those values for you.
+
+```{r}
+automated_birthmodel = auto.arima(nybirths_ts)
+automated_birthmodel
+```
+
+
+This is a seasonal ARIMA model. It has two components:
+
+1. Non-seasonal component -- ARIMA(0,1,3):
+
+  * This part is the non-seasonal component of the model.
+  * The middle coefficient $1$ means that the series has been differnced once (i.e., $y_t - y_{t-1}$) before fitting the AR and MA parts.
+  * Then, $0$ AR and $3$ MA terms have been used in this component.
+  
+2. Seasonal component -- (2,1,1)[12]:
+
+  * To model the seasonal part, it found a seasonality of 12, which corresponds to monthly data.
+  * Again, the series got differenced once before fitting the model. 
+  * Finally, $2$ seasonal AR terms and $1$ seasonal moving average (MA) term has been used to fit this part of the data.
+
+
+<br><br><br> 
+
+
+## Step 10: Residual Test
+
+### 10A: Plot residuals
+
+* Residuals can be extracted using the $\texttt{residual(<model_name>)}$ command as below:
+
+```{r}
+residuals2 = residuals(automated_birthmodel)
+```
+
+* When you plot the residuals, there should be no visible or model-worthy pattern: 
+
+```{r}
+autoplot(residuals2, main = "Residual plot over time")
+```
+
+
+### 9B: Ljung-Box Test
+
+* An alternate and more scientific way is to use the **Ljung-Box test** for autocorrelation:
+  - The null hypothesis is that there is no autocorrelation in the data.
+  - The  alternate hypothesis is that there is autocorrelation in the data.
+  - The $\texttt{R}$ code is $\texttt{Box.test(<series_name>)}$. Whenever your $p$-value is less than $\alpha$, there is autocorrelation in the data.
+  
+* Example: See that the Ljung-Box test is showing no autocorrelation in the residual.
+  
+```{r}
+Box.test(residuals2)
+```
+
+
+
+<br><br><br> 
+
+
+
+
+## Step 11: Forecasting
+
+* The last step is to forecast the model.
+* Just to make it easier, we will use differencing only on the automated model.
+* With the automated model, we can use the function $\texttt{forecast(<model_name>, h = <num_periods>)}$ to forecast for $\texttt{<num_periods>}$ number of months.
+* Let's try to forecast for $5$ years or $60$ months in the future.
+
+```{r}
+forecasted_series = forecast(automated_birthmodel, h = 60)
+autoplot(forecasted_series)
+```
+

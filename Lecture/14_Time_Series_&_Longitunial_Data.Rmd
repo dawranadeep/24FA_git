@@ -1,0 +1,787 @@
+---
+title: "Introduction to Time Series"
+subtitle: ""
+author: "Ranadeep Daw"
+date: "`r Sys.Date()`"
+output:
+  revealjs::revealjs_presentation:
+    theme: "solar"
+    center: true
+    widescreen: true
+    self_contained: true
+    width: 1600
+    height: 900
+    df_print: kable
+    reveal_options:
+      slideNumber: 'c/t'
+      previewLinks: true
+---
+  
+  
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = T, warning = F, message = F)
+```
+
+## Introduction to Time Series
+
+* Time series data is any data collected or recorded over time. 
+* Longitudinal data is data collected from the same subjects over a period of time. It is also known as panel data.
+* The goal is to understand patterns, identify the characteristics of the data, and **make forecast** over future. 
+* This lecture will introduce a few key concepts in time series analysis with $\texttt{R}$ implementation.
+
+
+## Time Series Examples
+
+* Daily temperature data.
+* Stock prices over time.
+* Revenue of a company over years.
+* Growth of a bacteria.
+* Blood pressure per day.
+
+
+## Stock Price Data Example
+
+```{r echo=F, message=F}
+library(quantmod)
+# Fetch stock data from Yahoo Finance (Apple Inc.)
+symbols <- c("AAPL", "MSFT", "GOOG")
+
+getSymbols(symbols, src = "yahoo", from = "2015-01-01", to = Sys.Date())
+# Plot the closing prices
+chartSeries(AAPL, theme = chartTheme("white"), TA = NULL,
+            main = "Apple Inc. Stock Price (AAPL)", 
+            ylab = "Price (USD)", xlab = "Date")
+```
+
+
+
+## Stock Price Data: Longitudinal
+
+```{r echo=F}
+# Extract the adjusted closing prices for the stocks
+aapl_close <- Cl(AAPL)
+msft_close <- Cl(MSFT)
+goog_close <- Cl(GOOG)
+
+# Combine the closing prices into a single data frame
+stocks_data <- merge(aapl_close, msft_close, goog_close)
+
+# Rename columns for clarity
+colnames(stocks_data) <- c("Apple", "Microsoft", "Google")
+# Plot the combined stock prices
+plot(index(stocks_data), stocks_data$Microsoft, type = "l", col = "red", lwd = 2,
+     main = "Stock Prices of Apple, Microsoft, and Google", 
+     ylab = "Price (USD)", xlab = "Date")
+
+# Add Microsoft and Google stock prices to the same plot
+lines(index(stocks_data), stocks_data$Apple, col = "blue", lwd = 2)
+lines(index(stocks_data), stocks_data$Google, col = "green", lwd = 2)
+
+# Add a legend to the plot
+legend("topleft", legend = c("Microsoft", "Apple", "Google"), 
+       col = c("red", "blue", "green"), lty = 1, lwd = 2)
+
+```
+
+
+
+## Stock Price Download: Code
+
+
+
+```{r echo=T, eval=F}
+# Extract the adjusted closing prices for the stocks
+aapl_close <- Cl(AAPL)
+msft_close <- Cl(MSFT)
+goog_close <- Cl(GOOG)
+
+# Combine the closing prices into a single data frame
+stocks_data <- merge(aapl_close, msft_close, goog_close)
+
+# Rename columns for clarity
+colnames(stocks_data) <- c("Apple", "Microsoft", "Google")
+# Plot the combined stock prices
+plot(index(stocks_data), stocks_data$Microsoft, type = "l", col = "red", lwd = 2,
+     main = "Stock Prices of Apple, Microsoft, and Google", 
+     ylab = "Price (USD)", xlab = "Date")
+
+# Add Microsoft and Google stock prices to the same plot
+lines(index(stocks_data), stocks_data$Apple, col = "blue", lwd = 2)
+lines(index(stocks_data), stocks_data$Google, col = "green", lwd = 2)
+
+# Add a legend to the plot
+legend("topleft", legend = c("Microsoft", "Apple", "Google"), 
+       col = c("red", "blue", "green"), lty = 1, lwd = 2)
+
+```
+
+
+
+
+
+
+## Key Differences from Regression
+
+1. **Data Dependency:**
+
+  - **Time Series**: Observations are **time-dependent**; each point is dependent on past.
+  - **Regression**: Assumes independent observations.
+
+
+## Key Differences from Regression
+
+2. **Order of Observations:**
+
+- **Time Series**: The **order** of data points is critical (e.g., stock prices today are related to those from yesterday).
+- **Regression**: The order of data points **does not matter**, as observations are considered independent.
+
+
+## Autocorrelation:
+
+- In time series, data are correlated over time.
+- Autocorrelation measures the **correlation between observations at different time**.
+- If $\{y_t\}$ is your time series, then autocorrelation is defined by: 
+
+$$\rho_h = \text{cor}[y_t, y_{t-h}]$$
+
+
+## Autocorrelation in $\texttt{R}$
+
+
+* In $\texttt{R}$, you can use the $\texttt{acf}$ function to measure the autocorrelation.
+
+
+```{r out.width=500}
+AAPL_data = AAPL$AAPL.Adjusted
+acf(AAPL_data, main = "Autocorrelation of AAPL Prices")
+```
+
+
+
+
+
+
+## Stationarity
+
+
+* A stationary time series is one whose statistical properties do not depend on the time at which the series is observed.
+* The statistical properties of the time series (mean, variance, etc.) do not change over time.
+* **Properties:**
+  - **Constant Mean**: The mean of the series remains the same over time.
+  - **Constant Variance**: The variance is constant, meaning no trends or increasing fluctuations.
+  - **Constant Autocorrelation Structure**: The correlation between observations depends only on the lag between them, not the time at which the observations were made.
+
+
+## Type of non-stationarity
+
+
+* **Trend**: A long-term increase or decrease in the data.
+
+  - e.g.,: Stock prices often show upward trend.
+
+* **Seasonality**: Regular repeating patterns over specific time periods.
+  - Example: Temperature over different seasons.
+
+* **Changing Variance**: Fluctuations in variability over time.
+  - Example: Economic data during periods of high volatility.
+
+
+
+## Checking for stationarity
+
+1. **Visual/ eye test:** Plot the time series and check for visible trends or changing variance.
+
+```{r out.width=450}
+library("forecast")
+AAPL_data = AAPL$AAPL.Adjusted
+autoplot(AAPL_data, main = "Apple Stock Price", ylab = "Price")
+```
+
+
+
+## Checking for stationarity
+
+2A. **Augmented Dickey-Fuller (ADF) Test:** 
+  - Starts with the null hypothesis that data is not stationary. Reject this to claim stationarity.
+  - In $\texttt{R}$, use the $\texttt{adf.test}$ function from the $\texttt{tseries}$ package.
+  
+```{r eval=F}
+library("tseries")
+adf.test(<data_name>)
+```
+
+
+## Let's test for AAPL prices
+
+```{r}
+library("tseries")
+library("forecast")
+adf.test(AAPL_data)
+```
+
+
+
+
+
+## 2B. Kwiatkowski–Phillips–Schmidt–Shin (KPSS) test:
+
+  - Starts with the null hypothesis that data is not stationary. Reject this to claim stationarity.
+  - However, alternate hypothesis is **trend-stationary**, i.e., data has a trend and is stationary around it.
+  - In $\texttt{R}$, use the $\texttt{kpss.test}$ function from the $\texttt{tseries}$ package.
+  
+```{r eval=F}
+library("tseries")
+kpss.test(<data_name>)
+```
+
+
+## Let's test for AAPL prices
+
+```{r}
+library("tseries")
+library("forecast")
+kpss.test(AAPL_data)
+```
+
+
+
+## Differencing 
+
+* Differencing is one way to make a non-stationary time series stationary.
+* If you have a non-stationary time series $\{y_t\}$, you can use differencing to make a stationary series as: $z_t = y_t - y_{t-\lambda}$.
+* It helps remove **trends** and **seasonality** by differencing the data appropriately.
+- For example, from a monthly temperature data, we can use $y_{t} - y_{t-12}$ to remove the seasonal variability.
+
+
+
+
+## Example: 
+
+* In $\texttt{R}$, you can use the $\texttt{diff}$ function to use differencing.
+* Let's see the effect on the AAPL stock prices data.
+
+
+## Example (cont.): 
+
+```{r out.width=450}
+AAPL_diff = diff(AAPL_data)
+autoplot(AAPL_diff)
+```
+
+## ADF Test on Differencing
+
+* If I do an adf test on this differenced series, you will see that I will have to reject the null hypothesis (nonstationarity).
+
+```{r echo=F}
+adf.test(AAPL_diff[-1, ])
+```
+
+
+```{r echo=T, eval=F}
+adf.test(AAPL_diff)
+```
+
+## Components of Time Series
+
+* We typically discuss $4$ components of any time series:
+  - Trend
+  - Seasonality
+  - Cycle
+  - Noise/ Error
+
+
+
+
+## Component 1: Trend
+
+
+* **Definition:** The long-term increase or decrease in the data over time.
+* **Temperature Example:** Over years, the temperature may show a gradual upward trend due to global warming.
+* **Stock-price Example:** Stock prices of big tech companies like Microsift, Apple, Google has seen an overall increasing trend.
+
+
+## Component 2: Seasonality
+
+* **Definition:** Recurring short-term patterns in the data at regular intervals (e.g., daily, monthly, yearly).
+* **Temperature Example:** Temperatures follow a yearly seasonal pattern, with higher values in summer and lower in winter.
+* **Stock Example:** In the holiday season (November-December), there is an increased amount of sales, leading to good stock price performance. 
+
+
+## Component 3: Cycle
+
+* **Definition:**  Longer-term fluctuations or oscillations in the data that aren't fixed like seasonality.
+* **Temperature Example:** Temperature cycles could arise from multi-year climate patterns like El Niño or La Niña (warm/ cool phase of the sea surface temperature in the central and eastern tropical Pacific Ocean).
+* **Stock Price Example:** There is a theory(!!!) that the market performs slowly over the first two years of a presidential term, peaks on the third, and then falls on the fourth year. 
+
+
+
+## Component 4: Noise
+
+* Like any statistical model, random fluctuations in the data that we have no way to explain.
+* **Temperature Example:** Day-to-day temperature changes caused by unpredictable weather events.
+* **Stock Prices:** Little fluctuations (up/down) in the prices every day. Many people try to target it for gains if they have better knowledge about the market situation.
+
+
+
+## Time Series Modeling
+
+* We will discuss additive and multiplicative models.
+* The idea is to decompose the time series into different parts and then analyze them separately.
+* Again, modeling can be done in many ways, but let's discuss the simplest options that we can do here.
+
+## Additive Model
+
+In an **additive model**, the observed time series \( Y_t \) is represented as the sum of its individual components:
+
+\[
+Y_t = T_t + S_t + C_t + \epsilon_t
+\]
+
+
+- \( Y_t \) = Observed value of your response at time \( t \)
+- \( T_t \) = Trend component at time \( t \)
+- \( S_t \) = Seasonal component at time \( t \)
+- \( C_t \) = Cyclical component at time \( t \)
+- \( \epsilon_t \) = Noise/error at time \( t \), can not model this one. 
+
+
+## Additive Model
+
+In an **additive model**, the observed time series \( Y_t \) is represented as the sum of its individual components:
+
+\[
+Y_t = T_t + S_t + C_t + \epsilon_t
+\]
+
+
+- \( Y_t \) = Observed value of your response at time \( t \)
+- \( T_t \) = Trend component at time \( t \)
+- \( S_t \) = Seasonal component at time \( t \)
+- \( C_t \) = Cyclical component at time \( t \)
+- \( \epsilon_t \) = Noise/error at time \( t \), can not model this one.
+
+
+## Multiplicative Decomposition
+
+Another way of modeling, but is rarer to be found as application.
+
+\[
+Y_t = T_t \times S_t \times C_t \times \epsilon_t
+\]
+
+This is used when the amplitude of seasonal fluctuations increases with the level of the series, meaning the components interact.
+
+
+
+## Decomposition with $\texttt{R}$
+
+- **STL Decomposition** is a popular method to extract trend and seasonal components:
+
+  \[
+  Y_t = T_t + S_t + R_t
+  \]
+
+  where \( R_t \) is the remainder (which includes the cyclical and noise components).
+
+- The syntax is: $\texttt{stl(<data>, s.window = "periodic")}$. However, you can go way more complicated. Read about the options by looking at $\texttt{?stl}$.
+
+
+
+## Simulated Temperature Data: Code
+
+```{r echo=T, eval=F}
+# Load required library
+library(ggplot2)
+
+# Set seed for reproducibility
+set.seed(42)
+
+# Create time sequence: 3 years of daily data
+days <- 365 * 30
+time <- seq(1, days)
+
+# Simulate components of time series
+trend <- 15 + 0.005 * time                # Trend: Gradual increase over time
+seasonality <- 10 * sin(2 * pi * time / 365)  # Seasonality: Yearly cycle (sine wave)
+cycle <- 5 * sin(2 * pi * time / 2000)    # Cycle: Long-term cycles (e.g., 5-year cycle)
+noise <- rnorm(days, sd = 2)              # Noise: Random fluctuations
+
+# Combine all components into the temperature time series
+temperature <- trend + seasonality + cycle + noise
+
+# Create a data frame for plotting
+temperature_data <- data.frame(
+  Day = time,
+  Temperature = temperature
+)
+
+# Plot the combined time series
+ggplot(temperature_data, aes(x = Day, y = Temperature)) +
+  geom_line(color = "blue") +
+  labs(title = "Simulated Daily Temperature Data", y = "Temperature (°C)", x = "Day") +
+  theme_minimal()
+```
+
+
+
+## Simulated Temperature Data: Code
+
+```{r echo=F, eval=T}
+# Load required library
+library(ggplot2)
+
+# Set seed for reproducibility
+set.seed(42)
+
+# Create time sequence: 3 years of daily data
+days <- 365 * 30
+time <- seq(1, days)
+
+# Simulate components of time series
+trend <- 15 + 0.005 * time                # Trend: Gradual increase over time
+seasonality <- 10 * sin(2 * pi * time / 365)  # Seasonality: Yearly cycle (sine wave)
+cycle <- 5 * sin(2 * pi * time / 2000)    # Cycle: Long-term cycles (e.g., 5-year cycle)
+noise <- rnorm(days, sd = 2)              # Noise: Random fluctuations
+
+# Combine all components into the temperature time series
+temperature <- trend + seasonality + cycle + noise
+
+# Create a data frame for plotting
+temperature_data <- data.frame(
+  Day = time,
+  Temperature = temperature
+)
+
+# Plot the combined time series
+ggplot(temperature_data, aes(x = Day, y = Temperature)) +
+  geom_line(color = "blue") +
+  labs(title = "Simulated Daily Temperature Data", y = "Temperature (°C)", x = "Day") +
+  theme_minimal()
+```
+
+## Step 1: Convert it to time series
+
+* Your first step is to convert the temperature data into a time series that $\texttt{R}$ can recognize.
+* $\texttt{ts}$ is the code to convert into a time series:
+* Since this is a daily data, I will manually let $\texttt{R}$ know that the data has a period of $365$ days using the command $\texttt{frequency = }$. 
+
+
+```{r}
+temperature_ts <- ts(temperature, frequency = 365)
+
+```
+
+
+
+## STL Decomposition: Example
+
+
+```{r}
+temperature_ts <- ts(temperature, frequency = 365)
+decomposed <- stl(temperature_ts, s.window = "periodic")
+head(decomposed$time.series)
+```
+
+
+
+## Plot it
+
+```{r out.width=650}
+plot(decomposed)
+```
+
+## Anaylysis
+
+* See how the overall trend is increasing. Think about the overall pattern of temperature rising each year.
+* Look at the seasonal pattern. Every year, you will see the same pattern of temperature rise and cooling down as expected.
+
+
+## Separately Plotting: Trend
+
+
+```{r out.width=650}
+plot(decomposed$time.series[,2], ylab = "", main = "Trend")
+```
+
+
+
+## Separately Plotting: Seasonality
+
+
+```{r out.width=650}
+plot(decomposed$time.series[,1], ylab = "", main = "Seasonality")
+```
+
+
+## Separately Plotting: Noise/ Error/ Residual
+
+
+```{r out.width=650}
+plot(decomposed$time.series[,3], ylab = "", main = "Residual")
+```
+
+
+
+
+
+## What's next?
+
+* First, you decompose a time series into differen components.
+* Then, you take each component and try to model that.
+* Next, we will discuss how you can build your time series models.
+* Two famous models that you should know:
+  - Autoregressive Model (AR)
+  - Moving Average Model (MA)
+
+
+
+## Autoregressive Model
+
+
+* An **Autoregressive (AR)** model is a type of time series model where the current value of the series is a function of its previous values.
+
+* The AR model of order \(p\), denoted as AR(\(p\)), can be written as:
+
+\[
+Y_t = c + \phi_1 Y_{t-1} + \phi_2 Y_{t-2} + \dots + \phi_p Y_{t-p} + \epsilon_t
+\]
+
+- \(Y_t\) = The value of the time series at time \(t\)
+- \(c\) = Constant term/ intercept
+- \(\phi_1, \phi_2, \dots, \phi_p\) = Autoregressive coefficients
+- \(\epsilon_t\) = White noise (random error) at time \(t\)
+
+
+## Characteristics
+
+- The value of \(Y_t\) depends on its **past values** $Y_{t-1}, \cdots, Y_{t-p}$.
+- Useful for modeling time series data with a **lagged relationship**:
+  - Example 1: Sales may start rising few months after a TV ad.
+  - Example 2:  An above average value of Southern Oscillation Index (SOI) is likely to lead to a below average fish population about 6 months later
+
+
+
+
+## $\texttt{R}$ Implementation
+
+* Simplest AR model is the AR(1) model, where you just use 1 lagged term:
+
+\[
+Y_t = c + \phi Y_{t-1} \epsilon_t
+\]
+
+* Note: $|\phi| < 1$.
+* Let's try to simulate some data from an AR model in $\texttt{R}$.
+* You will need the $\texttt{forecast}$ library for this.
+* The function $\texttt{arima.sim}$ simulates the data
+
+
+```{r}
+library("forecast")
+set.seed(123)
+n <- 100
+ar1_data <- arima.sim(model = list(ar = 0.7), n = n)
+```
+
+
+## Plot the data
+
+
+
+```{r out.width=600}
+autoplot(ar1_data, type = "l", main = "Simulated AR(1) Process", ylab = "Value", xlab = "Time")
+```
+
+
+## Fitting the model
+
+* Once we have generated some data, let's try to fit the time series model.
+* To fit an AR(1) model, we have to use the code $\texttt{arima}$.
+* You also have to mention the $\texttt{order}$ using the argument $\texttt{order = c(p, 0, 0)}$.
+
+
+
+## Fitting the model
+
+```{r}
+ar1_model <- arima(ar1_data, order = c(1, 0, 0))  
+summary(ar1_model)
+```
+
+## Moving Average Model
+
+
+
+* A **Moving Average (MA)** model expresses the current value of a time series as a linear combination of past forecast errors (also called "shocks" or "innovations").
+
+* The MA model of order \(q\), denoted as MA(\(q\)), is written as:
+
+\[
+Y_t = c + \epsilon_t + \theta_1 \epsilon_{t-1} + \theta_2 \epsilon_{t-2} + \dots + \theta_q \epsilon_{t-q}
+\]
+
+- \(Y_t\) = The value of the time series at time \(t\)
+- \(c\) = Constant term
+- \(\epsilon_t\) = White noise (random error) at time \(t\)
+- \(\theta_1, \theta_2, \dots, \theta_q\) = Moving average coefficients
+
+
+
+## Characteristics an MA Model
+
+* The current value  depends on the current error and a weighted sum of past errors.
+* Unlike autoregressive (AR) models, where the value depends on past values of the series itself, an MA model depends only on past errors.
+* Simplest Model: MA(1) model.
+
+
+\[
+Y_t = c + \epsilon_t + \theta \epsilon_{t-1}
+\]
+
+* Note: $|\theta| < 1$.
+
+
+## Simulate Some Data
+
+```{r out.width=600}
+set.seed(123)
+ma_data <- arima.sim(model = list(ma = c(0.5)), n = 100)
+autoplot(ma_data)
+```
+
+
+## Fitting MA model
+
+* Change the $\texttt{order}$ to $\texttt{order = c(0, 0, q)}$.
+
+```{r}
+ma1_model <- arima(ma_data, order = c(0, 0, 1))  
+summary(ma1_model)
+```
+
+
+## ARIMA Model (Autoregressive Integrated Moving Average)
+
+* Together with AR and MA, we usually model the using the ARIMA model.
+* Such models have an AR component (of order $p$) and an MA component (of order $q$).
+* The entire model can be written as:
+
+
+\[
+Y_t = c + \phi_1 Y_{t-1} + \phi_2 Y_{t-2} + \dots + \phi_p Y_{t-p} + \\
+\theta_1 \epsilon_{t-1} + \theta_2 \epsilon_{t-2} + \dots + \theta_q \epsilon_{t-q} + \epsilon_t
+\]
+
+
+
+
+## Forecasting
+
+* Forecasting is one of the main objectives in time series analysis.
+* We try to predict future values based on past observations. 
+* After fitting a time series model (AR, MA, or ARIMA), we can use it to generate forecasts for future time periods.
+
+
+
+## Steps for Forecasting
+
+1. **Fit the Model**: First, fit an appropriate time series model to the data (e.g., AR, MA, or ARIMA model).
+   
+2. **Use the `forecast()` Function**: After fitting the model, use the `forecast()` function from the `forecast` package to predict future values.
+
+3. **Plot the Forecast**: Visualize the forecasted values along with the historical data to assess the forecast quality.
+
+
+
+## Forecasting with AR Model
+
+```{r out.width=600}
+ar_forecast <- forecast(ar1_model, h = 10)
+autoplot(ar_forecast, main = "AR(1) Model Forecast")
+```
+
+
+
+## Forecasting with MA Model
+
+```{r out.width=600}
+ma_forecast <- forecast(ma1_model, h = 10)
+autoplot(ma_forecast, main = "MA(1) Model Forecast")
+```
+
+
+
+
+## Example: Stock Price Data
+
+```{r echo=F}
+# Load necessary libraries
+library(quantmod)
+library(forecast)
+library(ggplot2)
+library(tseries)
+
+
+# Download stock price data (e.g., Apple)
+getSymbols("AAPL", src = "yahoo", from = "2020-01-01", to = Sys.Date())
+
+# Extract Adjusted Closing Prices
+stock_data <- as.ts(AAPL$AAPL.Adjusted)
+
+# Plot the stock data
+autoplot(stock_data, main = "Apple Stock Price - Adjusted Closing", ylab = "Price")
+```
+
+
+
+## Stationarity Check
+
+```{r}
+# Check for stationarity using the Augmented Dickey-Fuller Test
+adf.test(stock_data)
+
+
+# If not stationary, difference the data
+diff_stock <- diff(stock_data, lag = 1)
+adf.test(diff_stock)
+```
+
+
+## Stationarity Check (cont.)
+
+```{r out.width=600}
+# Plot the differenced data
+autoplot(diff_stock, main = "Differenced Apple Stock Price")
+```
+
+
+## Step 3: Fit ARIMA Model
+
+We can use the $\texttt{auto.arima}$ function to automatically select the best ARIMA model based on the data.
+
+
+```{r}
+arima_model <- auto.arima(stock_data)
+summary(arima_model)
+```
+
+
+
+
+## Step 4: Model Diagnostics
+
+* Check the residuals to ensure the model fits well and that the residuals behave like white noise (no significant autocorrelation).
+
+
+```{r out.width=450}
+checkresiduals(arima_model)
+```
+
+
+
+## Forecast the next 30 days
+
+```{r out.width=600}
+forecast_stock <- forecast(arima_model, h = 30)
+autoplot(forecast_stock, main = "ARIMA Forecast of Apple Stock Price")
+```

@@ -299,7 +299,7 @@ summary(mlr_model)
 ## $F$-test for model significance
 
 * **Hypotheses:** $H_0: \beta_1 = \beta_2 = \ldots = \beta_p = 0$; $H_A$:  At least one of the coefficient is not $0$.
-* **Test statistic:** $F = \frac{S_{ee}/p}{S_{yy}/(n-p-1)}$.
+* **Test statistic:** $F = \frac{S_{ee}/p}{(S_{yy}-S_{ee})/(n-p-1)}$.
 * Under $H_0$, the F-statistic follows a **F** distribution with degrees of freedoms $(p, n-p-1)$.
 * We reject the $H_0$ when the $p$-value (**the very last number in the summary table**) is less than $\alpha$. 
 

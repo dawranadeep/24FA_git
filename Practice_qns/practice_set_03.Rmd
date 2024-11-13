@@ -45,33 +45,34 @@ plot(  c(-10, x), residuals(lm(y4 ~ c(-10, x))), pch = 16, col = "violet", title
 ### <br> A. Which plot(s) has mean fitted residual value = 0?
 
 
-**Answer:**  All of them
+**Answer:**  All of them. In any linear regression model, the sum of the fitted residuals always equals zero, meaning their mean value is also zero.
 
 ### <br> B. Which plot(s) shows an outlier?
 
-**Answer:** 
+**Answer:**  On plot 1, there is one point with a residual value that stands out significantly from the others.
+
+In plot 4, observe that one point has a very different fitted value compared to the rest. However, its residual remains close to the mean value of $0$. Thus, this point doesn’t appear to be an outlier, but it may be an influential point for this regression model.
 
 ### <br> C. Which plot is most likely to suggest a non-constant variance (or heteroscadasticity)?
 
-**Answer:** 
+**Answer:** In plot 3, see that the variance of the residuals in increasing with respect to the fitted value. This one is most likely to show a non-constant variance.
 
 
 
 ### <br> D. Which plot suggests a nonlinear relationship?
 
-**Answer:** 
+**Answer:** Plot 2 clearly shows a non-linearity in the data that we haven't captured in the linear regression model.
 
 
 ### <br> E. How would you update the model in the answer to part D? (answers may vary)
 
-**Answer:** 
+**Answer:** The residual pattern in plot 2 appears quadratic, resembling a  $y = x^2$ shape. So, I will first try adding a quadratic term of the predictor.
 
 
 ### <br> F. Comment on plot 4. What are we seeing here?
 
 
-**Answer:** 
-
+**Answer:** As discussed in part B, this point is likely very influential (high leverage), despite not differing much from the others in terms of residual values. It may be worth re-checking this value and considering a different model that excludes such a highly influential point.
 
 
 
@@ -104,6 +105,8 @@ c) close to 1
 d) it's impossible to tell
 
 
+**Answer:** Just from guessing from the scatterplot, it seems that there is no relationship. Hence, my guess would be that it's a correlation coefficient close to $0$.
+
 
 ### B. If I fit a linear regression model, what is your guess for the model significance $p$ vlue?
 
@@ -112,14 +115,14 @@ b) close to 0
 c) close to 0.05
 d) it's impossible to tell
 
-**Answer**:
+**Answer**: Since there seems to be no relationship, the linear model would not be significant. Therefore, it seems to be a $p$ value > 0.05. However, it's unclear at this point whether the  p-value is closer to 1 or to 0.05. I did not set the options very nicely here.
 
 
 
 
 ### C. Would you believe in the claims by the trainers that they can successfully predict the years of experience?
 
-**Answer**:
+**Answer**: The claim seems to be meaningless from the scatterplot.
 
 
 ### D. Researchers collected data on shoe size and number of vocabulary words known for a group of children and found a strong positive correlation between the two variables. Based on this information, can we conclude that shoe size causes a higher number of vocabulary words?
@@ -132,6 +135,9 @@ c) No, because there is no relationship between the two variables.
 d) No, because while they are correlated, it is likely that a third variable (like age) is influencing both shoe size and vocabulary.
 
 
+
+**Answer**: Always remember that <span style='color:red'>correlation does not imply causation</span>. The two variables are related, but likely through a third variable, such as age. As age increases, a child's shoe size and vocabulary both tend to increase. Such correlations are known as <span style='color:red'>spurious correlations</span>, and the third variables (like age in this example) are called <span style='color:red'>confounding variables</span>.
+
 ### E. A survey found that there is a high positive correlation between the number of critical hospital beds occupied and the mortality rate in hospitals. A health official suggested reducing the number of hospital beds as a way to lower the mortality rate. What is your way of interpreting this?
  
 
@@ -143,35 +149,40 @@ c) Correlation does not imply causality
 d) There is no link between the two variables.
 
 
+**Answer**: Again, <span style='color:red'>correlation does not imply causation</span>. A hospital with more beds for critical patients is likely to receive more critical patients, which may lead to higher mortality numbers. Therefore, my interpretation is that the suggestion does not make sense.
+
+
+<br><br><br>
+
 ## Question 3
 
 
-### In the following questions, what kind of model you will propose? Your options are linear regression, logistic regression, and a polynomial regression model.
+### <br> In the following questions, what kind of model you will propose? Your options are linear regression, logistic regression, and a polynomial regression model.
 
 
 ### <br> A. A medical researcher is studying the likelihood of patients developing a disease based on their age, weight, and smoking habits. The response is either "Yes" (disease present) or "No" (disease absent).
 
-**Answer:** 
+**Answer:** Logistic regression since the response is yes/no.
 
 
 ### <br> B. A researcher is modeling the relationship between temperature and crop yield. He found that with temperature increasing, yields initially keep increasing up to a point and then start to decline.
 
 
-**Answer:** 
+**Answer:** "The response variable is continuous. From the description, the response initially increases and then begins to decrease. A linear model would only be appropriate if the data followed a single pattern (either increasing or decreasing), which does not appear to be the case here. So I would suggest a more complicated model here, such as polynomial regression.
 
 ### <br> C. A wildlife biologist wants to model the presence of a certain species of beavers in a habitat based on temperature, distance from the road, and humidity.
 
-**Answer:** 
+**Answer:** The data-type is binary, i.e., we are dealing with "present"/"absent" of the species here. So, clearly, it's a logistic regression problem.
 
 ### <br> D. A fitness coach wants to predict calories burned during a workout based on time spent exercising. She observes that beyond a certain point, longer exercise sessions lead to diminishing returns in calories burned.
 
-**Answer:** 
+**Answer:** The response variable is continuous, and the description indicates that there is a nonlinear relationship between time spent exercising and calories burned, with diminishing returns after a certain point. Therefore, I would suggest using a polynomial regression model to capture this complexity.
 
 
 
 ### <br> E. A biologist is studying the effect of temperature (in degrees Celsius) on the rate of enzyme activity (in units per minute). They observe that as the temperature increases, the enzyme activity tends to increase as well, and the rate of increase appears to be fairly uniform across the range of temperatures studied. 
 
-**Answer:** 
+**Answer:** The response variable is continuous, and the relationship between temperature and enzyme activity seems to be linear, as the rate of increase appears uniform. Therefore, a linear regression model would be appropriate for this analysis.
 
 
 
@@ -199,7 +210,7 @@ d) There is no link between the two variables.
 | N. A function that transforms a probability value into any number over the real line.                           | n. Spearman’s rank correlation coefficient         |
 | O. A measure used to describe the direction and strength of a monotonic relationship between variables.          | o. Linear Regression model                            |
 
-**Answer:**
+**Answer:** Note: you might get a slightly different answer.
 
 
 * A c
@@ -239,6 +250,54 @@ d) $\widehat{\beta}_2$ in India < 0; $\widehat{\beta}_2$ in the USA > 0.
 e) It is impossible to guess.
 
 
+**Answer:** Let's plot some hypothetical graph below.
+
+```{r echo=F}
+# Simulated data for electricity costs (in arbitrary units)
+months <- 1:12
+
+# Simulated costs for India and USA
+cost_india <- c(200, 300, 500, 800, 1000, 1200, 1100, 800, 600, 400, 300, 250)/10 # peak in May-July
+cost_usa <- c(1100, 1200, 800, 700, 600, 550, 400, 500, 600, 800, 900, 1000)/10 # peak in Dec-Feb
+
+# Fit quadratic regression models
+model_india <- lm(cost_india ~ months + I(months^2))
+model_usa <- lm(cost_usa ~ months + I(months^2))
+
+# Summary of models
+summary(model_india)
+summary(model_usa)
+
+# Plotting the data and regression lines
+library(ggplot2)
+
+# Create a data frame for plotting
+data <- data.frame(
+  Month = rep(months, 2),
+  Cost = c(cost_india, cost_usa),
+  Country = rep(c("India", "USA"), each = 12)
+)
+
+# Plot
+ggplot(data, aes(x = Month, y = Cost, color = Country)) +
+  geom_point() +
+  geom_smooth(method = "lm", formula = y ~ poly(x, 2), se = FALSE) +
+  labs(title = "Electricity Costs in India and USA", 
+       x = "Month", 
+       y = "Electricity Cost") +
+  scale_x_continuous(breaks = 1:12, labels = month.abb) +
+  theme_minimal()
+
+```
+
+
+When presented with a graph like this, it's important to focus on its shape. If the shape resembles a "U," then $\widehat{\beta}_2$ is greater than 0. If it is like **inverted U**, $\widehat{\beta}_2$ is less than 0.
+
+Here, option d) ($\widehat{\beta}_2$ in India < 0; $\widehat{\beta}_2$ in the USA > 0) seems the best.
+
+
+<br><br><br>
+
 ## Question 6
 
 ### A. Use the data (named `dugong_data`) on the age and the length of dugongs and build a regression model that you like. Comment on the scatterplot, your model, and how it is performing.  
@@ -250,9 +309,43 @@ dugong_data = read.table(url("http://www.statsci.org/data/oz/dugongs.txt"), head
 
 **Answer**:
 
+First, plot the scatterplot. You will see that a linear model will not be good enough here.
+
 ```{r}
-# Code
+Age = dugong_data$Age
+Length = dugong_data$Length
+
+# Assuming Age and Length are your vectors and dugong_data is your data frame
+plot(Age, Length, pch = 19, main = "Scatterplot and regression models", xlab = "Age", ylab = "Length")
+abline(lm(Length ~ Age), col = "green")
 ```
+
+
+
+Look that the linear regression is not good enough. Now, let's fit a polynomial model with degree $2$. See from the model fit that this one performed much better.
+
+```{r}
+Age = dugong_data$Age
+Length = dugong_data$Length
+
+# Assuming Age and Length are your vectors and dugong_data is your data frame
+plot(Age, Length, pch = 19, main = "Scatterplot and regression models", xlab = "Age", ylab = "Length")
+abline(lm(Length ~ Age), col = "green")
+
+# Fit a polynomial regression model
+mod2 <- lm(Length ~ poly(Age, 2), data = dugong_data)
+lines(Age, fitted(mod2), col = "blue", lwd = 2)  # Changed pch to lwd for the line thickness
+
+# Add a legend
+legend("bottomright", legend = c("Linear regression fit", "Polynomial regression fit"), 
+       col = c("green", "blue"), lty = 1, lwd = 2, pch = NA)  # Set pch to NA for lines
+
+
+summary(mod2)
+
+```
+
+From the summary table, the model is significant. All the predictor terms are significant. Therefore, I will consider this my final model. However, you are welcome to explore more complex models if you wish.
 
 
 
@@ -260,17 +353,32 @@ dugong_data = read.table(url("http://www.statsci.org/data/oz/dugongs.txt"), head
 
 
 
-**Answer**:
-log(Length) = $\beta_0 + \beta_1 * log(Age) + \epsilon$
+**Answer**:  Now it's time to explore how we can leverage concepts from the scatterplot to apply linear regression. We aim to build the following model:
+
+
+$$ \log(\text{Length}) = $\beta_0 + \beta_1 * \log(\text{Age}) + \epsilon$$
+
+
 
 ```{r}
-# Code
+log_Age = log(Age)
+log_Length = log(Length)
+
+
+plot(log_Age, log_Length, pch = 16)
+
+abline( lm(log_Length ~ log_Age), col = "red")
 ```
 
+See how nicely this data has now converted to alinear model now. 
+
+
+
+<br><br><br>
 
 ## Question 7
 
-#### Ideas for the last question in the exam
+#### <br> Ideas for the last question in the exam
 
 * Consider a logistic regression model predicting the likelihood that a frog has an abnormality. 
 * The model outputs probabilities between 0 and 1. 
@@ -357,13 +465,13 @@ Other thresholds (e.g., 0.3, 0.7) would yield different pairs of Sensitivity and
    **Specificity** = TN / (TN + FP) = 3 / (3 + 1) = 0.75
 
 2. **Threshold = 0.3**
-   - **True Positives (TP)**: 5 (Rows 1, 2, 4, 7, 5)
+   - **True Positives (TP)**: 4 (Rows 1, 2, 4, 7)
    - **True Negatives (TN)**: 3 (Rows 3, 6, 8)
-   - **False Positives (FP)**: 0
+   - **False Positives (FP)**: 1 (Row 5)
    - **False Negatives (FN)**: 0
    
-   **Sensitivity** = 5 / (5 + 0) = 1.00  
-   **Specificity** = 3 / (3 + 0) = 1.00
+   **Sensitivity** = 4 / (4 + 0) = 1.00  
+   **Specificity** = 3 / (3 + 1) = 0.75
 
 3. **Threshold = 0.7**
    - **True Positives (TP)**: 3 (Rows 1, 4, 7)
@@ -382,6 +490,10 @@ The AUC quantifies the overall ability of the logistic regression model to disti
 - **AUC = 0.5** represents no better than random guessing.
 
 In this example, based on the ROC curve, the **AUC might be around 0.94**, indicating great discriminative ability.
+
+
+
+![](https://raw.githubusercontent.com/dawranadeep/24FA_git/refs/heads/main/Practice_qns/img/AUC.png)
 
 
 ### Logistic Regression Key Concepts:

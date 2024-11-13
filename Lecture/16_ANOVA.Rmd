@@ -1,0 +1,506 @@
+---
+title: "Analysis of Variance"
+subtitle: "ANOVA Tables"
+author: "Ranadeep Daw"
+date: "`r Sys.Date()`"
+output:
+  revealjs::revealjs_presentation:
+    theme: "solar"
+    center: true
+    widescreen: true
+    self_contained: true
+    width: 1600
+    height: 900
+    df_print: kable
+    reveal_options:
+      slideNumber: 'c/t'
+      previewLinks: true
+---
+  
+  
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = T, warning = F, message = F)
+```
+
+
+
+
+
+
+
+## Analysis of Variance
+
+
+* You have already seen one example of analysis of variance.
+* Recall the linear  regression problem:
+
+
+<span style = "color:#0CAF59">$$y_i = \beta_0 + \beta_1 X_{1i} + \beta_2 X_{2i} + \ldots + \beta_p X_{pi} + \epsilon_i$$</span>
+
+
+* We want to explain the total sum of squares (SST) = $\sum_{i=1}^n (y_i - \bar{y})^2$ in the response variable $y$.
+
+
+
+## Analysis of Variance
+
+* We use the linear regression model to predict as:
+
+<span style = "color:#0CAF59">$$ \hat{y}_i = \widehat{\beta}_0 + \widehat{\beta}_1 X_{1i} + \widehat{\beta}_2 X_{2i} + \ldots + \widehat{\beta}_p X_{pi} $$</span>
+
+* We defined two quantities:
+  - Sum of squares of error (SSE) = $\sum_{i=1}^n (y_i - \hat{y}_i)^2$
+  - Regression sum of squares (RSS) = $\sum_{i=1}^n (\hat{y}_i - \bar{y})^2$.
+
+* **RSS** is what we can explain through the model.
+* **SSE** is what we can not explain.
+
+
+
+## Model Significance Test
+
+* If there are $n$ subjects and $p$ predictors in the regression model, SSE has a degrees of freedom $n-p-1$.
+* Given $n$ subjects, SST has a degrees of freedom $n-1$.
+* The remaining $p$ degrees of freedom is correspoding to RSS.
+* We discussed the model significance test: $H_0: \beta_1 = \ldots = \beta_p = 0$; $H_A$: At least one coefficient is not $0.$
+
+
+## Model Significance Test (cont.)
+
+
+* We use the $F$ statistic is given by:
+
+<span style = "color:#0CAF59">$$\text{F} = \frac{\frac{\text{RSS}}{p}}{\frac{\text{SSE}}{n-p-1}} $$</span>
+
+* Under $H_0$, F is distributed as a $F$ distribution with degrees of freedoms $p$ and $n-p-1$.
+
+* We reject $H_0$ at level $\alpha$ if F > $F_{\alpha; p, n-p-1}$ (or if the $p$ value < $\alpha).$
+
+
+
+## Example 
+
+
+* As an example, let's again use the $\texttt{mtcars}$ data using the $\texttt{mpg}$ as the dependent variable, and $\texttt{disp}$ as the independent variable.
+
+
+```{r}
+data("mtcars")
+mpg_model = lm( mpg ~ disp, data = mtcars )
+summary(mpg_model)
+```
+
+
+## ANOVA Table
+
+* In this lecture, we will print the details of the $F$ test in the ANOVA(**AN**alysis **O**f **VA**riance) table and will be of the following format:
+
+
+| Source        | Df           | Sum Sq        | Mean Sq      | F value      |
+|---------------|--------------|---------------|--------------|--------------|
+| Predictor 1   | *$df_1$*     | *SS1*         | *MS1* = $\frac{SS1}{df_1}$        | *F1* = $\frac{MS1}{MSE}$         |
+| Predictor 2   | *$df_2$*     | *SS2*         | *MS2* = $\frac{SS2}{df_2}$       | *F2*  = $\frac{MS2}{MSE}$       |
+| $\vdots$      | $\vdots$     | $\vdots$      | $\vdots$     | $\vdots$     |
+| Residuals     | *$df_E$*     | *SSE*      | *MSE* =   $\frac{SSE}{df_E}$   |              |
+
+
+
+## ANOVA Table Example in $\texttt{R}$
+
+
+```{r}
+summary.aov(mpg_model)
+```
+
+* Also shows you the $p$ value of the ANOVA table.
+* Whenever $p$ value < $\alpha$, the corresponding predictor is **significant**.
+* This also shows that in the regression model, the predictor variable has a significance in predicting the response. It's not meaningless or removable from the model.
+
+
+
+
+
+## Categorical Variables
+
+* Before the next part, we need to define <span style = "color:red">categorical variables</span> -- a variable that can only realize a few categories.
+* You already saw an example of this -- binary resonse variable:
+  - A variable that can realize only two categories - Yes/No; 1/0; Head/Tail.
+  
+## Categorical Variables (Cont.)
+
+
+* To generalize further, a categorical variable can observe $k$ different categories: Level $1$, ..., level $k$.
+  - **Example 1**: Customer satisfaction levels taking **$5$** possible categories --  
+  <span style="color:#FF0000">1. Very dissatisfied</span>,  
+  <span style="color:#FF7F00">2. Dissatisfied</span>,  
+  <span style="color:#7FFF00">3. Neutral</span>,  
+  <span style="color:#008000">4. Satisfied</span>,  
+  <span style="color:blue">5. Very satisfied</span>.
+  - **Example 2**: A multiple choice question with possible answers Yes/No/Maybe.
+
+
+
+  
+
+
+## ANOVA for Categorical Predictors
+
+* ANOVA tables become more interesting with categorical predictor variables. 
+* One may be interested in knowing how different categories of a predictor can affect the response differently. 
+* For example, one may divide a set of patients into two groups -- treatment and placebo. We want to know if the treatment works better than the placebo.
+* In this case, we typically use the terminology *treatment* to denote the levels of the predictor variables.
+
+
+
+
+
+## Example: `sleep` data
+
+* Example: In $\texttt{R}$, the `sleep` data has three variables -- `extra` as the response variable ($y$), and `group` as the predictor variable ($x$). `ID` variable are patient IDs.
+* The `extra` variable shows the effect of two drugs on increase in hours of sleep.
+* The `group` variable is categorical and has two levels -  `1` and `2`.
+
+
+## Example: `sleep` data
+
+
+```{r}
+data("sleep")
+sleep
+```
+
+
+## Example: `sleep` data
+
+* Here, the question of interest is that if there is a difference in the effect of the two drugs on the response: `extra`.
+* Careful! We want to check the **difference** only, not the absolute effect of a drug on the response.
+* We can now build a regression model with `extra` as response and `group` as predictor first.
+* Then, we  can build the ANOVA table to formally test our question of interest.
+
+## ANOVA Table for Categorical Data
+
+* Define $\mu_k$: the mean effect of the predictor when at level $k$.
+* So in this example, $\mu_1$ is the mean effect of drug 1 on the patients on the response variable `extra`.
+* $\mu_2$ is the mean effect of drug 2.
+* Here, we will be interested in fitting the regression model:
+
+$$y_{ij} = \mu_i + \epsilon_{ij}$$
+
+\noindent where $i= 1,2$; $j = 1, \ldots, n_i$.
+
+
+## ANOVA F Test Hypothesis
+
+* If the two drugs (1 and 2) have the similar effect on the response variable, we can simplify the above model as:
+$$y_{ij} = \mu + \epsilon_{ij}$$
+
+* When a predictor at all it's different levels has the exact same effect on the response variable, there is no significance of the predictor in the regression model.
+
+* Therefore, in this regression model, we would be interested in testing the significance of the predictor `group` by testing the following hypothesis: <span style = "color:#0CAF59">$H_0: \mu_1 = \mu_2$</span>, <span style="color:#FF0000">$H_A: \mu_1 \neq \mu_2.$</span>
+
+
+
+## Example with `sleep` data
+
+* Let's try to visualize first if the `group` variable has any effect on the response variable `extra`.
+
+* Plot the predictor level-wise boxplot of the response variable to see how the response variable behaves against the predictor variables different levels, or against different treatment effects.
+
+
+## Example with `sleep` data
+
+```{r out.width=500}
+boxplot(extra ~ group, data = sleep,
+        main = "Effect of Drug Type on Extra Sleep",
+        xlab = "Drug Type (Group)", ylab = "Increase in Sleep (hours)",
+        col = c("skyblue", "salmon"), names = c("Drug 1", "Drug 2"))
+```
+
+
+
+
+
+## Example with `sleep` data
+
+
+* Look at the `boxplot`. The overall pattern is that the drug 2 improves the sleep hour (`extra` or $y$) better than drug 1.
+* But, can we prove that, <span style="color:#FF0000">statistically</span>, the predictor `group` has a significant effect on the response `extra`? (i.e., is $\mu_1 \neq \mu_2$?)
+* Let's do the formal test in $\texttt{R}$ : $H_0: \mu_1 = \mu_2, H_A: \mu_1 \neq \mu_2.$</span>
+
+
+## Example with `sleep` data
+
+```{r}
+data("sleep")
+sleep_model = lm( extra ~ group, data = sleep)
+summary.aov(sleep_model)
+```
+
+
+## Example with `sleep` data
+
+* Look at the $p$ value.
+* Only when a $p$ value is less than our typical significance level of $0.05$, the predictor becomes significant.
+* Otherwise, can't reject $H_0$: $\mu_1 = \mu_2$.
+* Hence, here, the predictor is not statistically significant.
+
+## Check with Regression Problem
+
+* Look at the summary of the regression model:
+
+```{r}
+summary(sleep_model)
+```
+
+* See that the model is not significant, i.e., $p$ value > $\alpha$. 
+
+
+
+## Generalized ANOVA with Categorical Data
+
+* Now, it's time to extend the theory for general predictor variables with $k$ levels.
+* Consider a regression problem with response $y$ and a predictor variable with $k$ levels.
+* Consider that the $k$-th level has an effect $\mu_k$ on the response.
+* Then, the regression model can be rewritten as:
+
+$$y_{ij} = \mu_i + \epsilon_{ij}$$
+
+\noindent where $i=1, 2, \ldots, k$; $j= 1,\ldots, n_i$.
+
+
+ 
+ 
+## ANOVA with Categorical Data
+
+* First define: $\bar{y}_i = \frac{1}{n_i}\sum_{j=1}^{n_i} y_{ij}, \bar{y} = \frac{1}{n}\sum_{1}^{n_i}\sum_{j=1}^{n_i} y_{ij}$.
+
+* Define the following:
+
+  - **Total Sum of Squares**: <span style = "color:#0CAF59">$\text{SST} = \sum_{i=1}^k \sum_{j=1}^{n_i} (y_{ij} - \bar{y})^2.$</span>
+
+  - **Regression Sum of Squares**: <span style = "color:#0CAF59">$\text{RSS} = \sum_{i=1}^k n_i (\bar{y}_i - \bar{y})^2.$</span>
+
+  - **Sum of Squared Errors**: <span style = "color:#0CAF59">$\text{SSE} = \sum_{i=1}^k \sum_{j=1}^{n_i} (y_{ij} - \bar{y}_i)^2.$</span>
+
+* Note: <span style = "color:red">TSS = RSS + SSE.</span>
+
+
+
+##  ANOVA: Degrees of freedoms
+
+* If the total number of observations are $n = n_1 + \ldots + n_k$, the total sum of squares has a degrees of freedom $df_T = n-1$.
+* If the predictor variable has $k$ levels, the degrees of freedom is $df_{R} = k-1$.
+* The remaining degrees of freedom is given by $n-k$, which is the degrees of freedom for regression, or also known as degrees of freedom for treatment.
+
+
+
+##  ANOVA: F test
+
+* $H_0$: $\mu_1 = \ldots = \mu_k$; $H_A$: At least one effect is different.
+<br><br>
+
+* F statistic = $\frac{\frac{RSS}{k-1}}{\frac{SSE}{n-k}}.$
+* Reject $H_0$ if F > $F_{\alpha; k-1, n-k}$ or if the associated $p$ value < $\alpha$.
+
+
+## Example 2: `InsectSprays` data in `R`
+
+* The `InsectSprays` data contains $n=72$ observations of insects in agricultural experimental units treated with different insecticides.
+* It has two variables -- response variable (or $y$) is the variable `count`, and the predictor variable (or $x$) is named as `spray`.
+* The predictor variable `spray` has $k=6$ levels- A, B, C, D, E, F.
+* So, $df_T$ = 72-1 = 71, $df_R$ = 6-1 = 5, $df_E$ = $72-6$ = 66.
+
+
+## Example 2: `InsectSprays` data 
+
+* First, visualize the effect of `spray` on `count`.
+
+```{r out.width=490}
+data("InsectSprays") # Don't do this step in Homework
+boxplot(count ~ spray, data = InsectSprays,
+        xlab = "Type of spray", ylab = "Insect count")
+```
+
+
+## Example 2: `InsectSprays` data 
+
+* Let's build the ANOVA table in `R`.
+
+
+```{r}
+spray_model = lm( count ~ spray, data = InsectSprays )
+summary.aov(spray_model)
+```
+
+
+
+## Example 2: `InsectSprays` data 
+
+* Now, let's formally write the ANOVA F test for this model.
+* Note, here we have $6$ levels of the treatment (or predictor variable `spray`) -- $\mu_1, \mu_2, \ldots, \mu_6$.
+* SSE (Sum of square of errors) = 1015, with degrees of freedom 66.
+* RSS (Regression sum of square) = 2669, with degrees of freedom 5.
+* F = (2669/5)/(1015/66) = 34.71.
+* Associated $p$ value < $\alpha = 0.05$. Hence, reject $H_0$ of ANOVA F test that $\mu_1 = \ldots = \mu_6$.
+
+
+
+## Plotting
+
+* You can similarly do the residual-against-fitted plot and QQplot just like a regression model.
+
+
+```{r out.width=450}
+plot(  spray_model, which = 1 )
+```
+
+
+## Plotting 
+
+
+```{r out.width=600}
+plot(  spray_model, which = 2 )
+```
+
+
+
+
+## Example 3: `PlantGrowth` data 
+
+* Another inbuilt `R` data. It has a response variable `weight` and a categorical predictor `group` with possible levels `ctrl`, `trt1`, and `trt2`.
+* The data has $n=30$ observations.
+
+* Let's build the ANOVA table:
+
+
+## Example 3: `PlantGrowth` data 
+
+```{r}
+data("PlantGrowth")
+PlantGrowth
+```
+
+
+## Example 3: `PlantGrowth` data 
+
+```{r}
+plant_model = lm(weight ~ group, data = PlantGrowth)
+summary.aov(plant_model)
+```
+
+
+## Example 3: `PlantGrowth` data
+
+* See that since the predictor `group` has k=3 levels, the degrees of freedom = 2.
+* Total degrees of freedom = 30-1 = 29.
+* F = (3.7663 /2)/(10.4921/27) = 4.846.
+* Reject $H_0$ that $\mu_1 = \mu_2 = \mu_3$ since $p$ value < $0.05$.
+
+
+
+## Example 3: `PlantGrowth` data
+
+Also, visualize the effect of the predictor `group` on response `weight`.
+
+
+```{r out.width=500}
+boxplot(weight ~ group, data = PlantGrowth)
+```
+
+
+## Tukey's Multiple Comparison
+
+* Once your $H_0$ is rejected, you only know that at least one of your treatment effects ($\mu_i$) are different from others.
+* However, you don't know exactly which one is different, or how they behave in comparison to each other.
+* The  Tukey HSD (Honestly Significant Difference) helps you compare the differences between the treatment effects $\mu_i - \mu_j$.
+* The $\texttt{R}$ code is `TukeyHSD(aov(<model_name>))`.
+
+
+##  Tukey's Multiple Comparison: Example
+
+* In the last example of `PlantGrowth` data, the TukeyHSD() output will show the pairwise comparisons between the groups (ctrl vs. trt1, ctrl vs. trt2, and trt1 vs. trt2).
+* It will show the difference in means, confidence intervals, and adjusted p-values.
+
+```{r}
+TukeyHSD(aov(plant_model))
+```
+
+## Tukey's Multiple Comparison: Example
+
+* **How to interpret the output**?
+  - The p-value for trt2 vs. ctrl is significant at level $0.05$, since the associated  p value is smaller than 0.05. This suggests a difference in means between  trt2 and ctrl.
+  - The comparisons for trt1 vs. ctrl and trt1 vs. trt2 are not statistically significant, meaning no **statistically significant** difference was found for those pairs.
+
+
+
+## Pairwise t test
+
+* Another alternate idea is to perform a pairwise t tests between a pair of effects of the treatments.
+* So for example, in this data, we will perform multiple t tests for the difference between trt1 vs trt2, trt1 vs ctrl., trt2 vs. ctrl.
+* Due to the multiplicity of the number of t tests, here one needs to adjust the $p$ values of the tests because it increases the likelihood of finding at least one statistically significant result purely by chance.
+
+
+
+## Pairwise t test 
+
+* There are multiple ways to address this:
+  - "none": No adjustment.
+  - "bonferroni": Bonferroni correction. Divides the significance level by the number of tests.
+  - "holm": Holm's method. A stepwise approach to  sequentially adjusting p-values for comparisons.
+  - "BH": Benjamini-Hochberg correction.
+  - "fdr": False Discovery Rate.
+
+
+## Example: pairwise t test with no correction
+
+```{r}
+pairwise.t.test(PlantGrowth$weight, PlantGrowth$group,
+                p.adjust.method = "none")
+```
+
+
+## Example: pairwise t test with Bonferroni's correction
+
+```{r}
+pairwise.t.test(PlantGrowth$weight, PlantGrowth$group,
+                p.adjust.method = "bonferroni")
+```
+
+
+## Example: pairwise t test with Holm's correction
+
+```{r}
+pairwise.t.test(PlantGrowth$weight, PlantGrowth$group,
+                p.adjust.method = "holm")
+```
+
+
+## Summary
+
+* You will typically see an increase in the $p$ values when you use an adjustment.
+* Different adjustment methods will lead to different increment in the p values, resulting in different type 1 and type 2 errors of the test.
+* In our example, so far the results have been consistent at level $0.05$, i.e., only the `trt1 - trt2` has shown significant difference.
+* There are other methods, such as Fisher's LSD test, Dunnett’s test, etc., that will also allow you to similarly check the pairwise differences.
+
+
+
+
+
+## Two-Way ANOVA
+
+* Time to delve deeper.
+* Up until now, we've worked with one response variable, \( y \), and a single categorical predictor variable, \( x \), with levels \( 1, \ldots, k \).
+* Now, we’re expanding to a case with two predictor variables, \( A \) and \( B \).
+* Predictor \( A \) has \( a \) levels, labeled \( A_1, \ldots, A_a \).
+* Predictor \( B \) has \( b \) levels, labeled \( B_1, \ldots, B_b \).
+
+
+## Two-way ANOVA
+
+
+
+* It's time to extend the ANOVA table to a more generalized case.
+* So far, we have used one response variable $y$; and one categorical predictor variable $x$ at levels $1, \ldots, k$.
+* Now, we will extend it to two predictors cases -- i.e., we will consider two predictor variables: A and B.
+* Predictor A will have $a$ levels -- level $A_1, \ldots, A_a$.
+* Predictor B will have $b$ levels -- level $B_1, \ldots, B_b$.

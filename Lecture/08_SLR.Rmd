@@ -582,7 +582,7 @@ summary(my_model)
 
 ## Cont.
 
-* Our test statistic is: $F = \frac{S_{ee}/1}{S_{yy}/(n-2)}$.
+* Our test statistic is: $F = \frac{S_{ee}/1}{(S_{yy} - S_{ee})/(n-2)}$.
 * Under $H_0$, the F-statistic follows a **F** distribution with degrees of freedoms $(1, n-2)$.
 * We reject the $H_0$ when $p$-value < $\alpha$.
 
