@@ -1,0 +1,521 @@
+---
+title: " Practice for Final"
+subtitle: ""
+author: "Ranadeep Daw"
+date: "2024-11-19"
+output: 
+  prettydoc::html_pretty:
+    toc: true
+    toc_depth: 2
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, error = T, eval = T)
+```
+
+
+<br><br><br>
+
+
+
+# Question 1
+
+### Look at the following 4 residuals-against-fitted plots for $4$ simple linear regression problems.
+
+
+```{r echo =F}
+set.seed(123)
+x = rnorm(100)
+y1 = 3 + 5 * x + rnorm(100, 0, 1)
+y1[50] = y1[50] +25
+y2 = 3 + 5 * x^2 + rnorm(100, 0, 1)
+y3 = 3 + 2 * seq(-2, 2, , 100) + rnorm(100, 0,  2 + 0.1 +  seq(-2, 2, , 100))
+y4 = 3 + 5 * c(-10, x) + rnorm(101, 0, 1)
+#y4[1] = 3 * y4[1]
+
+par(mfrow = c(1,2))
+plot( x, residuals(lm(y1 ~ x)), pch = 16, col = "red", title(main = "Plot 1"), xlab = "Fitted", ylab = "Residuals")
+plot( x, residuals(lm(y2 ~ x)), pch = 16, col = "blue", title(main = "Plot 2"), xlab = "Fitted", ylab = "Residuals")
+
+par(mfrow = c(1,2))
+plot( seq(-2, 2, , 100), residuals(lm(y3 ~ seq(-2, 2, , 100))), pch = 16, col = "green", title(main = "Plot 3"), xlab = "Fitted", ylab = "Residuals")
+plot(  c(-10, x), residuals(lm(y4 ~ c(-10, x))), pch = 16, col = "violet", title(main = "Plot 4"), xlab = "Fitted", ylab = "Residuals")
+```
+
+### <br> A. Which plot(s) has mean fitted residual value = 0?
+
+
+**Answer:**  All of them. In any linear regression model, the sum of the fitted residuals always equals zero, meaning their mean value is also zero.
+
+### <br> B. Which plot(s) shows an outlier?
+
+**Answer:**  On plot 1, there is one point with a residual value that stands out significantly from the others.
+
+In plot 4, observe that one point has a very different fitted value compared to the rest. However, its residual remains close to the mean value of $0$. Thus, this point doesn’t appear to be an outlier, but it may be an influential point for this regression model.
+
+### <br> C. Which plot is most likely to suggest a non-constant variance (or heteroscadasticity)?
+
+**Answer:** In plot 3, see that the variance of the residuals in increasing with respect to the fitted value. This one is most likely to show a non-constant variance.
+
+
+
+### <br> D. Which plot suggests a nonlinear relationship?
+
+**Answer:** Plot 2 clearly shows a non-linearity in the data that we haven't captured in the linear regression model.
+
+
+### <br> E. How would you update the model in the answer to part D? (answers may vary)
+
+**Answer:** The residual pattern in plot 2 appears quadratic, resembling a  $y = x^2$ shape. So, I will first try adding a quadratic term of the predictor.
+
+
+### <br> F. Comment on plot 4. What are we seeing here?
+
+
+**Answer:** As discussed in part B, this point is likely very influential (high leverage), despite not differing much from the others in terms of residual values. It may be worth re-checking this value and considering a different model that excludes such a highly influential point.
+
+
+
+<br><br><br>
+
+# Question 2^[Courtesy: Material found [here](<https://www2.stat.duke.edu/courses/Summer13/sta111.001-2/Lectures_site/M3_practice.pdf>)]
+
+
+
+###  Consider the following two simple linear regression models with classical notations. The lines represent the fitted linear regression equation $\widehat{y}_i = \widehat{α} + \widehat{β} x_i + \epsilon_i$. For both scatter plots, we have $\widehat{α} = 0$ and $\widehat{β} = 1$. Both scatter plots also have the exact same predictors $x_i$.
+
+
+
+```{r echo=FALSE}
+set.seed(123)
+x = seq(0, 1, , 100)
+y1 = x + rnorm(100, 0, 0.05)
+y2 = x + rnorm(100, 0, 0.2)
+
+mod1 = lm( y1 ~ x)
+mod2 = lm( y2 ~ x)
+
+par(mfrow = c(1,2))
+plot(x, y1, pch = 16, ylab = "y", main  = "Case 1")
+abline(mod1, col = "red")
+plot(x, y2, pch = 16, ylab = "y", main  = "Case 2")
+abline(mod2, col = "blue")
+```
+
+
+### A. Which one is larger?
+  * $R^2$ for Case 1.
+  * $R^2$ for Case 2.
+  * Can't be determined.
+  
+
+**Answer:** $R^2$ for Case 1.
+
+
+### B. Which one is larger?
+  * $\hat{\sigma}^2$ for Case 1.
+  * $\hat{\sigma}^2$ for Case 2.
+  * Can't be determined.
+  
+**Answer:** $\hat{\sigma}^2$ for Case 2.
+  
+#### C. Prediction error ($y_i - \widehat{y}_i$) for a new data for x = 0.5. Which one is larger?
+  * Case 1.
+  * Case 2.
+  * Can't be determined.
+  
+**Answer:**   Can't be determined.
+
+
+
+
+ <br> <br><br>
+ 
+# Question 3
+
+
+
+
+#### For the same $x_i$ values, consider the following four models that describe how $y_i$ is generated. Match each model to its corresponding residual plot. Each model corresponds to exactly one residual plot. 
+
+
+```{r echo=F}
+y1 = 5* x + rnorm(100, 0, 0.25)
+y2 = 5* x + rnorm(100, 0, 0.25 * x)
+y3 = 5* x + rnorm(100, 0, 1)
+y4 = 5* x^2 + rnorm(100, 0, 0.25)
+
+mod1 = lm(y1 ~ x)
+mod2 = lm(y2 ~ x)
+mod3 = lm(y3 ~ x)
+mod4 = lm(y4 ~ x)
+
+par(mfrow = c(2,2))
+plot(mod3, 1, col = "red", pch = 16, 
+     title(main = "Case 1"))
+plot(mod1, 1, col = "cyan", pch = 16, 
+     title(main = "Case 2"))
+plot(mod4, 1, col = "blue", pch = 16, 
+     title(main = "Case 3"))
+plot(mod2, 1, col = "green", pch = 16, 
+     title(main = "Case 4"))
+```
+
+
+### A. $y_i = 5x_i + \epsilon_i$, $\epsilon_i \sim \mathbb{N}(0, 0.25)$.
+
+### B. $y_i = 5x_i + \epsilon_i x_i$, $\epsilon_i \sim \mathbb{N}(0, 0.25)$.
+
+### C. $y_i = 5x_i^2 + \epsilon_i$, $\epsilon_i \sim \mathbb{N}(0, 0.25)$.
+
+### D. $y_i = 5x_i + \epsilon_i$, $\epsilon_i \sim \mathbb{N}(0, 1)$.
+
+
+
+**Answer:** 
+
+* Case 1 -> D
+* Case 2 -> A
+* Case 3 -> C
+* Case 4 -> B
+
+
+
+<br><br><br>
+
+# Question 4 
+
+
+### Backward Elimination Procedure. Consider the following data on the amount of zooplankton and a few predictors:
+
+- **Response (\(y\))**: Zooplankton quantity.  
+- **Predictor 1 (\(X_1\))**: Sea-surface temperature.  
+- **Predictor 2 (\(X_2\))**: Sea-surface height.  
+
+### We fitted a multiple linear regression model of the following form:
+
+\[
+y_i = \beta_0  + \beta_1 X_{1i} + \beta_2 X_{2i} + \beta_3 X_{2i}^2 + \epsilon_i
+\]
+
+
+
+
+### Suppose we now want to use a **backward elimination procedure** to find the optimal regression model. Following is a table with all possible models that can be constructed here. The column 1 shows all the possible predictors in the model. Column 2 gives you the corresponding predictor significance $p$ values (from the model summary coefficients table). Column 3 and 4 tell you the adjusted $R^2$ of the respective models, and the AIC values. Remember, **lower AIC = preferable model**.
+
+
+| Model  predictors                     | Respective \(p\)-Values       | Adjusted \(R^2\) | AIC   |
+|:-------------------------------------:|:-----------------------------:|:----------------:|:-----:|
+| A. **Intercept**              | 0.01                         | 0.10             | 120.5 |
+| B. **Intercept, \(X_1\)**     | 0.01, 0.45                   | 0.25             | 115.3 |
+| C. **Intercept, \(X_2\)**     | 0.02, 0.60                   | 0.08             | 122.1 |
+| D. **Intercept, \(X_2^2\)**   | 0.01, 0.25                   | 0.15             | 119.4 |
+| E. **Intercept, \(X_1, X_2\)**| 0.01, 0.45, 0.60             | 0.18             | 118.2 |
+| F. **Intercept, \(X_1, X_2^2\)**| 0.01, 0.45, 0.25           | 0.22             | 117.6 |
+| G. **Intercept, \(X_2, X_2^2\)**| 0.01, 0.60, 0.25           | 0.20             | 118.8 |
+| H. **Intercept, \(X_1, X_2, X_2^2\)**| 0.01, 0.45, 0.60, 0.25 | 0.21             | 125.0 |
+
+
+
+### <br> A. A. Perform backward selection using the variable significance criterion (p-value < α = 0.05). What is the order of elimination for the variables? (i.e., which model is selected first, followed by the next, and so on?)
+
+
+**Answer:** 
+
+1. Start with the complete model: intercept, \(X_1, X_2, X_2^2\).
+2. Eliminate \(X_2\) (highest \(p\)-value: 0.60), leaving: intercept, \(X_1, X_2^2\).
+3. Eliminate \(X_1\) (highest \(p\)-value: 0.45), leaving: intercept, \(X_2^2\).
+4. Eliminate \(X_2^2\) (still insignificant), leaving only the intercept.
+
+**Final Model:** \(y_i = \beta_0 + \epsilon_i\)
+
+
+### <br> B.  Perform backward selection using the AIC criterion (lower AIC = better model). What is the order of elimination for the variables in this case? (i.e., which model is selected first, followed by the next, and so on?)
+
+
+**Answer:** 
+
+1. Start with the full model: \(X_1, X_2, X_2^2\) (AIC: 125.0).
+2. Drop \(X_2\): Model with intercept, \(X_1, X_2^2\) (AIC: 117.6).
+3. Drop \(X_2^2\): Model with intercept, \(X_1\) (AIC: 115.3).
+4. Dropping any further variables increases AIC. 
+
+**Final Model:** \(y_i = \beta_0 + \beta_1 X_{1i} + \epsilon_i\)
+
+
+
+### <br> C. Based on the adjusted $R^2$ criterion, which model would you select as the best?
+
+
+**Answer:** The model with the highest adjusted \(R^2\) is the one with intercept and \(X_1\).
+
+**Final Model:** \(y_i = \beta_0 + \beta_1 X_{1i} + \epsilon_i\)
+
+
+<br><br><br>
+
+
+# Question 5
+
+### Look at the following weekly sales dataset: $\{15, 20, 25, 15, 15, 20\}$. Note: Sample standard deviation ($\sigma$) = 4.08, sample IQR = 5.
+
+
+### <br> A. Calculate the mean and  median.
+
+**Answer:**
+
+* **Mean**: \(18.33\)
+* **Median**:
+  - Arrange the observations in increasing order: \(\{15, 15, 15, 20, 20, 25\}\).
+  - Since there is an even number of observations, the median is the mean of the middle two numbers: \((15 + 20)/2 = 17.5\).
+* **Variance**: \((4.08)^2 = 16.64\).
+
+
+
+### <br> B. The mode is the value that appears most frequently in a dataset. Calculate the mode.
+
+
+**Answer:** Since $15$ appears 3 times in the data, mode = 15.
+
+
+### C. Under normality assumption, what are your estimates for the population mean, median, variance, and IQR?
+
+**Answer:** Under the normality assumption, population estimates are based on sample statistics:
+
+* **Estimated mean**: \(18.3\)
+* **Estimated variance**: \((4.08)^2 = 16.64\)
+* **Estimated median**: Same as the sample median, \(18.3\)
+* **Estimated IQR**: \(1.34 \times \text{estimated standard deviation} = 1.34 \times 4.08 = 5.47\)
+
+
+
+### D. Under no parametric assumption, what are your estimates for the population mean, median, variance, and IQR?
+
+**Answer:** In the nonparametric case, estimate the population parameters using corresponding sample statistics.
+
+
+* **Estimated mean**: \(18.3\)
+* **Estimated variance**: \((4.08)^2 = 16.64\)
+* **Estimated median**: = sample median = 17.5
+* **Estimated IQR**: = sample IQR = 5.
+
+<br><br><br>
+
+# Question 6
+
+```{r echo=F}
+set.seed(42)
+data <- rnorm(100, mean = 0, sd = 5)
+outliers <- abs(rnorm(25, mean = 10, sd = 5))
+data_with_outliers <- c(data, outliers)
+data_with_outliers = data_with_outliers[data_with_outliers > 0 ]
+boxplot(data_with_outliers, main = "Boxplot", 
+        ylab = "")
+```
+
+
+### Look at the above boxplot of a data. What inference can you draw based on the boxplot?
+
+### Can you guess which one is larger here? Mean or median?
+
+
+
+**Answer:** 
+
+* The boxplot shows a skewed distribution towards higher values (right-skewed) with several outliers. From the graph, the minimum value in the dataset is near \(0\), and the median is approximately \(5\). However, there are several observations above the upper fence, indicating the presence of outliers.
+
+* The mean is likely larger than the median because of the extreme positive outliers. These outliers pull the mean towards the higher side, while the median remains relatively robust and unaffected.
+
+
+
+<br> <br> <br>
+
+# Question 7
+
+
+
+
+#### Look at the following output of a $t$ test in $\texttt{R}$.
+
+```{r echo=F}
+bodyfat_data = read.csv(url("https://hbiostat.org/data/repo/bodyfat.csv"))
+x = bodyfat_data$BodyFat
+t.test(x, mu=20, alternative = "less", conf.level = 1-0.05)
+```
+
+
+### <br> A. What test am I performing here?  Write down the null and alternate hypotheses.
+
+
+**Answer:** $H_0: \mu = 20$, $H_A: \mu < 20$.
+
+### <br>  B. How many observations are there in the data?
+
+**Answer:** 251 + 1 = 252
+
+###  <br> C. What is the significance ($\alpha$) of the test? What is the confidence level of the associated confidence interval?
+
+
+**Answer:** $\alpha = 0.05$; Confidence level of the confidence interval = 95%.
+
+###  <br> D.What is the associated confidence interval for the population parameter that is being tested?
+
+
+**Answer:**  The 95% CI is given by $(-\infty, 20.02114)$
+
+###  <br> E.   What is the conclusion of the test?
+
+**Answer:** Can not reject $H_0$ since p value > $\alpha$.
+
+
+ <br> <br><br>
+ 
+# Question 8
+
+
+### For each scenario, identify if you should do a two sample paired t test or independent t test. Recall: typically, if the same subjects measured twice, i.e., once each for each sample, you got a paired test.
+
+
+
+
+### A. Measure the cholesterol levels of the same patients before and after taking a new drug to determine if the drug is effective.
+
+
+**Answer:** **Paired**. The same subjects are measured twice—before and after taking the drug.
+
+
+
+### B.  Patients with "gamer's thumb" symptoms were randomly assigned different treatments, where some applied heat to the wrist in the morning, while others performed a wrist massage before bedtime. Pain levels were measured on a scale of 1–10 after one week of treatment.
+
+
+
+**Answer:** **Independent**. Each subject is either applying heat or performing a wrist massage.
+
+
+### C. Patients with "gamer's thumb" symptoms were instructed to apply heat to the wrist in the morning and perform a wrist massage before bedtime. Five minutes after each treatment, they recorded their pain levels on a scale of 1–10.
+
+
+**Answer:** **Paired**. Each subject applies both treatments—heat in the morning and wrist massage at bedtime. Pain levels are compared for the same subject to determine which treatment is more effective.
+
+
+
+### D. Testing if life quality improves after therapy.
+
+
+**Answer:** **Paired**. The same person's life quality is measured before and after undergoing therapy.
+
+
+
+### E. Test whether there is a difference in average cholesterol levels between males and females in a given population.
+
+**Answer:** **Independent**. Each subject belongs to either the male group or the female group.
+
+
+
+### F. A study is being designed to evaluate whether a new coach can improve the performance of a particular soccer team.
+
+**Answer:** **Independent**. Performance results can be compared before and after hiring the new coach.
+
+
+<br><br><br>
+
+# Question 9
+
+### What test would you do in the following cases? Options can be two sample independent test, two sample paired test, binomial test, Wilcoxon signed rank test, Wilcoxon rank sum test. **Recall, rank sum is for independent samples, signed rank is for paired samples.**
+
+
+### <br> A. A public health report states that the median fasting blood glucose level in a region is 90 mg/dL. A researcher collects a random sample of 30 individuals from the region to test if the median fasting blood glucose level differs from 90 mg/dL.
+
+**Answer:** Binomial test/Wilcoxon test (nonparametric test for median).
+
+
+
+### <br> B. A study is conducted to compare the pain relief between two types of medications: Drug A and Drug B, under normality assumption of the population data. Two independent groups of patients are given either Drug A or Drug B, and their pain relief scores (on a scale of 1–10) are recorded.
+
+
+**Answer:** Two-sample independent \(t\)-test.
+
+#### <br> C. A group of patients follows a specific diet for 6 months, and their cholesterol levels are measured before and after the diet. A researcher wants to test if the median cholesterol levels improve after the medication.
+
+
+
+**Answer:** Wilcoxon signed-rank test.
+
+
+#### <br> D.  Researchers compare the number of hours slept by two groups of athletes: sprinters and long-distance runners. We want to test if there is a significant difference between the two groups by comparing their medians.
+
+**Answer:** Wilcoxon rank-sum test.
+
+#### <br> E. A study is conducted on a group of 40 patients with high blood pressure. Each patient’s blood pressure is measured before and after receiving a new treatment. However, due to the small sample size, normality of the population cannot be assumed.
+
+
+**Answer:** Wilcoxon signed-rank test.
+
+#### <br> F. A researcher wants to compare the median incomes of two different groups:  urban vs rural areas. The income data is skewed, and the researcher is concerned about normality.
+
+
+**Answer:** Wilcoxon rank-sum test.
+
+
+
+
+
+
+
+
+
+<br><br><br>
+
+# Question 10
+
+
+#### Match the four cases to the appropriate statistical test outputs. <br>
+
+### A. All 8 students take two tests, and we compare the average performance on both tests.
+
+### B. All 8 students take two tests, and we compare their median scores on both tests.
+
+### C. 16 students are divided into two groups, with each group taking only one of the two tests. We want to compare the average scores between the two tests.
+
+### D. 16 students are divided into two groups, with each group taking only one of the two tests. We want to compare the two tests without assuming normality in the population.
+
+
+**Case 1**:
+```{r echo=F, warning=F}
+Project_based = c(38, 54, 63, 45, 40, 49, 58, 57)
+Concept_based = c(55, 84, 79, 65, 78, 74, 58, 69)
+
+t.test(Project_based, Concept_based, paired=TRUE,
+       alternative = "two.sided",
+       mu=0, conf.level = 1-0.05)
+```
+
+**Case 2**:
+```{r echo=F, warning=F}
+t.test(Project_based, Concept_based, paired=FALSE,
+       alternative = "two.sided",
+       mu=0, conf.level = 1-0.05)
+```
+
+
+**Case 3**:
+```{r echo=F, warning=F}
+wilcox.test(Project_based, Concept_based, paired=TRUE,
+       alternative = "two.sided",
+       mu=0, conf.level = 1-0.05, conf.int = T)
+```
+
+**Case 4**:
+```{r echo=F, warning=F}
+wilcox.test(Project_based, Concept_based, paired=FALSE,
+       alternative = "two.sided",
+       mu=0, conf.level = 1-0.05, conf.int = T)
+```
+
+
+**Answer:**
+
+* A -> 1
+* B  -> 3
+* C -> 2
+* D -> 4

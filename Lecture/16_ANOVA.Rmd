@@ -87,6 +87,15 @@ knitr::opts_chunk$set(echo = T, warning = F, message = F)
 ```{r}
 data("mtcars")
 mpg_model = lm( mpg ~ disp, data = mtcars )
+mpg_model
+```
+
+
+
+## Example 
+
+
+```{r}
 summary(mpg_model)
 ```
 
@@ -491,16 +500,220 @@ pairwise.t.test(PlantGrowth$weight, PlantGrowth$group,
 * Time to delve deeper.
 * Up until now, we've worked with one response variable, \( y \), and a single categorical predictor variable, \( x \), with levels \( 1, \ldots, k \).
 * Now, we’re expanding to a case with two predictor variables, \( A \) and \( B \).
-* Predictor \( A \) has \( a \) levels, labeled \( A_1, \ldots, A_a \).
-* Predictor \( B \) has \( b \) levels, labeled \( B_1, \ldots, B_b \).
+* Predictor \( A \) has \( a \) levels, labeled \( \alpha_1, \ldots, \alpha_a \).
+* Predictor \( B \) has \( b \) levels, labeled \( \beta_1, \ldots, \beta_b \).
 
 
-## Two-way ANOVA
+## Two-way ANOVA: Example 1
+
+* Suppose you are studying the effects of different fertilizers and sunlight levels on plant growth.
+  - **Response Variable:** Plant growth (height or weight).
+  - **Predictor A:** Consider 3 types of fertilizers - fertilizer 1,2, and 3.
+  - **Predictor B:** Sunlight level with 2 levels — full sunlight and partial sunlight.
+* A two-way ANOVA would help determine if plant growth differs significantly across fertilizer types, sunlight levels, and if there's an <span style = "color:0CAF59">interaction effect</span> between the type of fertilizer and sunlight exposure.
 
 
 
-* It's time to extend the ANOVA table to a more generalized case.
-* So far, we have used one response variable $y$; and one categorical predictor variable $x$ at levels $1, \ldots, k$.
-* Now, we will extend it to two predictors cases -- i.e., we will consider two predictor variables: A and B.
-* Predictor A will have $a$ levels -- level $A_1, \ldots, A_a$.
-* Predictor B will have $b$ levels -- level $B_1, \ldots, B_b$.
+
+## Interaction-free (or Additive) Model 
+
+* First, consider the simpler model, without the interaction term.
+* This is also called the additive model/ main effects model.
+* The regression model looks like the following:
+
+$$y_{ijk} = \alpha_i + \beta_j + \epsilon_{ijk}$$
+
+  - where $y_{ijk}$ is the $k$-th observation that is receiving the $i$-th level of predictor A (or $\alpha_i$), $j$-th level of predictor B (or $\beta_j$)
+  - $\epsilon_{ijk}$ error term of the model.
+  
+
+## ANOVA Table format
+
+
+| Source        | Df           | Sum Sq        | Mean Sq      | F value      |
+|---------------|--------------|---------------|--------------|--------------|
+| Predictor A   | a - 1        | *SSA*         | *MSA* = $\frac{SSA}{a-1}$        | $F_A = \frac{MSA}{MSE}$         |
+| Predictor B   | b - 1        | *SSB*         | *MSB* = $\frac{SSB}{b-1}$       | $F_B = \frac{MSB}{MSE}$       |
+| Residuals     | (n-1) - (a-1) - (b-1) = n-a-b+1     | *SSE*      | *MSE* =   $\frac{SSE}{n-a-b+1}$   |              |
+
+
+
+## F Test  For Predictor A
+
+  * $H_0$: Predictor A has no significance, or alternatively, $\alpha_1 = \alpha_2 = \ldots = \alpha_a$. 
+  * $H_A$: At least one level of A has a different effect from the others.
+  * Reject $H_0$ if $F_A > F_{\alpha; a-1, n-a-b+1}$ or if the corresponding $p$ value < $\alpha$.
+  
+## F Test  For Predictor B
+
+  * $H_0$: Predictor B has no significance, or alternatively, $\beta_1 = \beta_2 = \ldots = \beta_b$. 
+  * $H_A$: At least one level of B has a different effect from the others.
+  * Reject $H_0$ if $F_B > F_{\alpha; b-1, n-a-b+1}$ or if the corresponding $p$ value < $\alpha$.
+  
+  
+
+## Example: `warpbreaks` data
+
+* This data set is on the number of warp breaks per loom. It has 54 observations on 3 variables.
+  -	`breaks`:		The number of breaks
+  -	`wool`:	Type of wool (`A` or `B`)
+  -	`tension`:	The level of tension (`L`, `M`, `H`)
+
+
+* Let's see the boxplot of effects, build the regression model, and the ANOVA table.
+
+## Example: `warpbreaks` data
+
+```{r out.width=550}
+boxplot(breaks ~ wool + tension, data = warpbreaks,
+        col = c("#66C2A5", "#FC8D62"),
+        xlab = "Wool Type and Tension Level", ylab = "Number of Breaks",
+        names = c("A-Low", "B-Low", "A-Medium", "B-Medium", "A-High", "B-High")) 
+```
+
+## Example: `warpbreaks` data
+
+```{r}
+data("warpbreaks") # No need of this line in your homework
+warp_model = lm(breaks ~ wool + tension, data = warpbreaks)
+summary.aov(warp_model)
+```
+
+
+## Test for Variable `wool`
+
+* $H_0$: Effect of wool type A = Effect of wool type B.
+* $H_A$: Effect of wool type A $\neq$ Effect of wool type B.
+* Check the $p$ value (0.07) in the ANOVA table. If we are testing at level $\alpha = 0.05$, we can not reject $H_0$.
+* Therefore, in this regression model, `wool` does not have a significant contribution (or effect of different levels of `wool` are not statistically different).
+
+
+## Test for Variable `tension`
+
+* $H_0$:  The effect of low, medium, and high tension levels are equal.
+* $H_A$: At least one tension level has a different effect from the others.
+* Check the $p$ value (0.001) in the ANOVA table. We  can reject $H_0$.
+* Therefore, in this regression model, `tension` has a significant effect in the model, suggesting that at least one level of `tension` differs significantly from the others in terms of affecting the response.
+
+
+
+## Postdoc Testing/ Multiple Comparison
+
+* Let's try the Tukey's HSD test first to see which `tension` levels are statistically different.
+
+```{r}
+TukeyHSD( aov(warp_model)  )
+```
+
+## Tukey's Test
+
+* See that the 95% confidence interval for `wool` contains 0. Alternatively, the $p$ value is high (> 0.05). Hence, `wool` is insignificant, or no difference between the 2 levels of `wool`.
+* For `tension`, the 95% CI of M-L (medium - low) and H-L are always negative. Hence, these two levels are statistically different.
+* You can also look at the $p$ values and figure out which one is different. Remember, $p$ < $\alpha$ implies statistically different from $0$.
+
+
+
+## Interaction Model
+
+* In usual real-world cases, the combined effect of two predictors A and B is not simply additive, but depends on the specific levels of each factor. 
+* The interaction model helps us to quantify these dependency effects.
+
+* Example: Consider a study on the effects of a new drug and diet-type on blood pressure. Here, 
+  - Predictor A: **Medication** with two levels — "drug" and "placebo".
+  - Predictor B: **Diet**  with two levels — "low-sodium" and "regular".
+
+
+## Interaction Model
+
+* **If there is no interaction:** We would expect that each predictor has an additive, independent effect on blood pressure. 
+  - For instance, if the medication reduces blood pressure by 10 units and the low-sodium diet reduces it by 5 units, using both might result in a reduction of 15 units.
+
+
+## Interaction Model
+
+* **If there is an interaction:** The effect of the medication could depend on the type of diet. For example:
+  - With a regular diet, the medication might reduce blood pressure by 10 units.
+  - However, with a low-sodium diet, the medication could work much better and reduce blood pressure by 20 units instead of the expected 15 units.
+
+
+
+
+
+## Regression Model with Interaction
+
+
+* The regression model with interaction looks like the following:
+
+$$y_{ijk} = \alpha_i + \beta_j + (\alpha \beta)_{ij}  + \epsilon_{ijk}$$
+
+* Here  $y_{ijk}$ is the  k-th observation that is receiving the i-th level of predictor A (or $\alpha_i$), j-th level of predictor B (or $\beta_j$), and ($\alpha \beta)_{ij} represents the interaction effect between levels of A and B.
+
+* $\epsilon_{ijk}$  is the error term of the model.
+
+
+
+
+## ANOVA Table format
+
+
+| Source        | Df           | Sum Sq        | Mean Sq      | F value      |
+|---------------|--------------|---------------|--------------|--------------|
+| Predictor A   | a - 1        | *SSA*         | *MSA* = $\frac{SSA}{a-1}$        | $F_A = \frac{MSA}{MSE}$         |
+| Predictor B   | b - 1        | *SSB*         | *MSB* = $\frac{SSB}{b-1}$       | $F_B = \frac{MSB}{MSE}$       |
+| Interaction     | (a-1)(b-1)     | *SSAB*      | *MSAB* =   $\frac{SSAB}{(a-1)(b-1)}$   |         $F_{AB} = \frac{MSAB}{MSE}$      |
+| Residuals     | n- a b     | *SSE*      | *MSE* =   $\frac{SSE}{n- ab}$   |              |
+
+
+
+## F test for Interaction
+
+* You can do the main effects test (for A and B) similarly.
+* To test the interaction, we use the following:
+  - $H_0$: No interaction effect or $(\alpha \beta)_{ij}$ = 0 for all i and j.
+  - $H_A$: At least one of them is non-zero or there is some interaction effect.
+* Reject $H_0$ if F > $F_{\alpha; (a-1)(b-1), n -ab}$ or if the corresponding p value < $\alpha$.
+
+
+
+## Example: `warpbreaks` data with interaction term
+
+
+
+
+```{r}
+data("warpbreaks") # No need of this line in your homework
+warp_model = lm(breaks ~ wool + tension + wool:tension , data = warpbreaks)
+summary.aov(warp_model)
+```
+
+
+## F tests
+
+* **Is the interaction term significant**?
+  - Yes since the $p$ value is 0.02. This means that the two predictors `wool` and `tension` are interacting based on which level which predictor is at.
+
+* **Is the variable `wool` significant?**
+  - No since $p$ value (0.007) < $0.05$.
+  
+  
+* **Is the variable `tension` significant?**
+  - Yes since $p$ value > typical level of $0.05$.
+  
+  
+
+## Tukey's Test
+
+```{r}
+TukeyHSD( aov(warp_model) )
+```
+
+
+
+
+## Summary
+
+* In ANOVA, the primary goal is to test the impact of various levels of a categorical predictor on a response variable.
+* We aim to identify differences in effects across these levels. Differnt effects means significant predictor.
+* The F-test begins with the hypothesis that there is no difference in effects among the levels.
+* If the F-test indicates a significant result, post hoc tests can be performed to conduct pairwise comparisons.
+* In two-way ANOVA models, interaction terms are often essential because the effect of one factor may vary across the levels of another factor.

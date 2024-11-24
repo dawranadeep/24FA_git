@@ -1,0 +1,204 @@
+---
+title: "ANOVA"
+subtitle: "Examples using R"
+author: "Ranadeep Daw"
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    theme: cerulean
+    toc: true
+    toc_depth: 2
+    keep_md: false
+---
+  
+  
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = T, warning = F, message = F)
+```
+
+
+
+## Question 1
+
+
+### Researchers conducted a study on 90 patients to investigate the effects of two factors, `Treatment` and `Age Group`, on recovery time after surgery. `Treatment` has three types: "standard", "new-drug", and "alternative-therapy". `Age Group` has three levels: "young", "middle-aged", and "elderly".  Below is an incomplete two-way ANOVA table with interaction summarizing the results. What are the values of A -- K?
+
+| Source        | Df               | Sum Sq   | Mean Sq   | F value  |
+|---------------|------------------|----------|-----------|----------|
+| Treatment     |        3-1 = 2        |    3600- (170 + 200 + 1620) = 1610  |  1610/2 = 805      |   805/20 = 40.25     |
+| Age Group     |        3-1 =2          |    85 * 2 = 170     |   85      |  85/20 = 4.25     |
+| Treatment:Age Group |   2* 2 = 4        |  200     |   200/4 = 50       |   50/20 = 2.5      |
+| Residuals     |        89 - 2 -2 -4 = 81         |    81 * 20 = 1620     |   20      |          |
+| **Total**     |        90 -1 = 89         | **3600** |           |          |
+
+
+
+**Answer:** Keep these key formulae in mind:  
+
+1. **Degrees of freedom for the main effects**:  
+   \( \text{df}_{\text{Any main effect}} = \text{number of levels} - 1 \)  
+
+2. **Interaction degrees of freedom** (for interaction models):  
+   \( \text{df}_{\text{Interaction term}} = \text{Product of the main effect degrees of freedom} \)  
+
+3. **Total Sum of Squares (SST)**:  
+   \( \text{SST} = \text{SSA} + \text{SSB} + \text{SSAB} + \text{SSE} \)  
+
+4. **Mean Squares (MS)**:  
+   \( \text{MS}_{X} = \frac{\text{SS}_{X}}{\text{df}_{X}} \)  
+
+5. **F-statistic for any component**:  
+   \( F_{X} = \frac{\text{MS}_{X}}{\text{MSE}} \)  
+ 
+
+
+<br><br><br>
+
+## Question 2^[Courtesy: Statistical Methods II by Derek L. Sonderegger, taken from [here]<https://bookdown.org/dereksonderegger/571/6-two-way-anova.html#two-way-anova-1>] 
+
+
+### Use the following data called `fruit_data`. The response variable here is `Yield`: the yield of fruits from three varieties of a citrus tree. The two categorical predictors here are `Var` (variety) and `Pest` (type of pesticide).
+
+```{r}
+Pesticide <- factor(c('A','B','C','D')) 
+Variety <- factor(c('1','2','3')) 
+fruit_data <- data.frame( expand.grid(rep=1:2, Pest=Pesticide, Var=Variety) ) 
+fruit_data$Yield <- c(49,39,50,55,43,38,53,48,55,41,67,58,53,42,85,73,66,68,85,92,69,62,85,99)
+fruit_data
+```
+
+
+### <br> a. Test the hypothesis that there is no difference between the different pesticide effects on Yield. You need to build the interaction plot, build the appropriate ANOVA table, state the hypotheses, and then conduct the test. 
+
+
+**Answer:**
+
+
+```{r}
+boxplot(Yield ~ Pest, data = fruit_data,
+        col = c("skyblue", "lightcoral", "palegreen", "gold"),
+        xlab = "Pesticide",
+        main = "Boxplot of Yield against Pesticide Types")
+```
+
+
+
+```{r}
+model1 = lm(Yield ~ Pest, data = fruit_data)
+summary.aov(model1)
+```
+
+* $H_0$: Effect of Pesticide type A = Effect of Effect of Pesticide type B = Effect of Pesticide type C = Effect of Pesticide type D.
+* $H_A$: At least one of them is different from others.
+* F statistic = 2.994.
+* $p$ value = 0.0552 > $\alpha$ = 0.05. Hence, we can not reject $H_0$.
+* To interpret, we don't have enough evidence to claim that different pesticides have a different effect on the response variable, `Yield`.
+
+
+### <br> b. Do you need to perform a Tukey's HSD test here? Irrespective of the answer, perform the test and comment on the findings.
+
+**Answer:** We do not need to do a posthoc analysis here since the F test was not rejected. However, let's still try to see what the Tukey's HSD test gives us.
+
+```{r}
+TukeyHSD(aov(model1))
+```
+As expected in part A, none of the pairwise differences are statistically significant. Tukey's test, which assumes the null hypothesis of no difference between two levels, confirms this as all $p$-values are greater than the significance level ($α=0.05$).
+
+
+
+### <br> c. Test the hypothesis that there is no difference in `Yield` among the varieties (Variable `Var`) of the trees. Again, you need to build the interaction plot, build the appropriate ANOVA table, state the hypotheses, and then conduct the test.
+
+
+**Answer:**
+
+
+```{r}
+boxplot(Yield ~ Var, data = fruit_data)
+```
+
+
+```{r}
+model2 = lm(Yield ~ Var, data = fruit_data)
+summary.aov(model2)
+```
+
+
+
+* $H_0$: Effect of Variety type 1 = Effect of Effect of Variety type 2 = Effect of Variety type 3.
+* $H_A$: At least one of them is different from others.
+* F statistic = $13.15$.
+* $p$ value = 0.0002 < $\alpha$ = 0.05. Hence, we can reject $H_0$.
+* To interpret our F test, there is sufficient evidence to conclude that different varieties lead to different yields.  
+
+
+### <br> d. Do you need to perform a Tukey's  HSD test for part (c)? Irrespective of the answer, perform the test and comment on the findings.
+
+**Answer:**
+
+Since F test led to a rejection of $H_0$, we need to peform Tukey's test here.
+
+
+```{r}
+TukeyHSD( aov(model2))
+```
+
+We see that at $\alpha = 0.05$, effect of variety type 3 is statistically different from the other two (see the correspoding p values in the `p adj` column). However,  no difference found between variety 1 and 2.
+
+### <br> e. Build the two way additive ANOVA model and the corresponding interaction plot. Which predictor(s) is/are significant in this model? Do the Tukey's HSD test afterwards and comment what you found.
+
+
+**Answer:**
+
+```{r}
+boxplot( Yield ~ Pest + Var, data = fruit_data)
+```
+
+
+```{r}
+model3 = lm(Yield ~ Pest + Var, data = fruit_data)
+summary.aov(model3)
+```
+
+
+We can perform F-tests similar to those in parts A and C, so they are not repeated here. However, it is important to note that **`Pesticide` becomes a significant variable** when `Variety` is included in the model, unlike the results in part A.  
+
+
+Let's perform the Tukey's test to check the mutual differences further.
+
+```{r}
+TukeyHSD( aov(model3))
+```
+
+
+
+See that some pesticide types now exhibit significantly different effects on the response (again, check $p$ values). Additionally, all the varieties now show statistically significant differences from one another, unlike the result in part D, where varieties 1 and 2 did not have statistically different effects.  
+
+
+
+### <br> f. Build the two way ANOVA model with interaction. Is the interaction term necessary in the model?
+
+
+**Answer:**
+
+```{r}
+model4 = lm(Yield ~ Pest * Var, data = fruit_data)
+summary.aov(model4)
+```
+
+Let's formally write down the test for interaction effects.
+
+* $H_0$: The interaction term is not significant, or, there are no interaction effects between the two predictors `Pesticide` and `Variety`.
+* $H_A$: The interaction term is significant, or, there are interaction effects between the two predictors `Pesticide` and `Variety`.
+* $F$ statistic = $1.801.
+* p value =  $0.18168$ > $\alpha$. Hence, we do not need the interaction term in our model.
+
+
+Now let's do the Tukey's test. Since both the main effects are significant, you can expect some pairwise differences to be significant with very small p values. For the interaction term, although the interaction effect is insignificant, it may still result in some differences that are significantly different from 0 in Tukey's test. See below:
+
+
+```{r}
+TukeyHSD(aov(model4))
+```
+
+
+
